@@ -1,4 +1,5 @@
 import {
+  acceptRequest,
   createRequest,
   listenForRequests,
 } from "@/services/firebase/firestore";
@@ -36,6 +37,24 @@ export default function HomeScreen() {
     }
   }
 
+  async function testAcceptRequest() {
+    // accepts the first request
+    if (requests.length === 0) {
+      Alert.alert("No requests, create one first.");
+      return;
+    }
+
+    try {
+      const requestId = requests[0].id;
+      const tripId = await acceptRequest(requestId, "test-driver-000");
+      Alert.alert(`Accepted, trip created: ${tripId}`);
+      console.log(tripId);
+    } catch (error) {
+      Alert.alert(String(error));
+      console.error(error);
+    }
+  }
+
   return (
     <ScrollView style={{ flex: 1, padding: 20 }}>
       <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
@@ -43,6 +62,7 @@ export default function HomeScreen() {
       </Text>
 
       <Button title="Create Test Request" onPress={testCreateRequest} />
+      <Button title="Accept First Request" onPress={testAcceptRequest} />
 
       <View style={{ marginTop: 30 }}>
         <Text style={{ fontSize: 20, fontWeight: "bold" }}>
