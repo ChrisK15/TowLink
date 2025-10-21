@@ -61,6 +61,29 @@ export async function acceptRequest(requestId: string, driverId: string): Promis
 	}
 }
 
+export async function updateTripStatus(tripId: string, status: 'en_route' | 'arrived' | 'in_progress' | 'completed' | 'cancelled'): Promise<void> {
+	try {
+		if (status === 'arrived') {
+			await updateDoc(doc(db, 'trips', tripId), {
+			status: status,
+			arrivalTime: Timestamp.now()
+		});
+		} else if (status === 'completed') {
+			await updateDoc(doc(db, 'trips', tripId), {
+			status: status,
+			completionTime: Timestamp.now()
+		});
+		} else {
+			await updateDoc(doc(db, 'trips', tripId), {
+			status: status,
+		});
+		}	
+	} catch (error) {
+		console.error(error);
+		throw (error);
+	}
+}
+
 export function listenForRequests(callback: (requests: any[]) => void) {
 	const q = query(
 		collection(db, 'requests'),
