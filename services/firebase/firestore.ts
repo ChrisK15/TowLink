@@ -1,4 +1,4 @@
-import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { addDoc, collection, onSnapshot, query, Timestamp, where } from "firebase/firestore";
 import { db } from './config';
 
 export async function createRequest(
@@ -24,4 +24,20 @@ export async function createRequest(
 	);
 
 	return docRef.id;
+}
+
+export function listenForRequests(callback: (requests: any[]) => void) {
+	const q = query(
+		collection(db, 'requests'),
+		where('status', '==', 'searching')
+	);
+
+	return onSnapshot(q, (snapshot) => {
+		const requests = snapshot.docs.map(doc => ({
+			id: doc.id,
+			...doc.data()
+		}));
+
+		callback(requests);
+	})
 }
