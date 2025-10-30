@@ -67,6 +67,9 @@ export default function HomeScreen() {
     try {
       await updateTripStatus(currentTripId, newStatus as any);
       Alert.alert(`Success, status updated to ${newStatus}`);
+      if (newStatus === "completed") {
+        setCurrentTripId(null);
+      }
     } catch (error) {
       Alert.alert(String(error));
     }
