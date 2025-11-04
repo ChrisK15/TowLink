@@ -45,59 +45,59 @@ firebase emulators:start
 
 ### Application Structure
 
+#### Current Structure (What Exists Now):
+```
+/app/(tabs)/
+  /index.tsx          # POC test screen with all functionality
+  /_layout.tsx        # Tab navigation layout
+  /explore.tsx        # Placeholder from template
+
+/services/firebase/
+  /config.ts          # Firebase initialization with AsyncStorage
+  /firestore.ts       # All Firestore operations (createRequest, acceptRequest, etc.)
+
+/types/
+  /models.ts          # TypeScript interfaces (User, Driver, Request, Trip, etc.)
+
+/components/          # Themed components from Expo template
+/hooks/               # Theme hooks from Expo template
+/constants/           # Theme constants from Expo template
+```
+
+#### Planned Structure (Future Phases):
 ```
 /app                    # Expo Router file-based routing
-  /_layout.tsx         # Root layout with theme + auth provider
-  /(auth)/             # Authentication screens group
+  /_layout.tsx         # Root layout with theme
+  /(auth)/             # Authentication screens (Phase 4)
     /login.tsx
     /register.tsx
-    /role-select.tsx
-  /(commuter)/         # Commuter mode screens group
-    /(tabs)/
-      /request.tsx     # Main request assistance screen
-      /history.tsx
-      /profile.tsx
-  /(driver)/           # Driver mode screens group
-    /(tabs)/
-      /dashboard.tsx   # Driver availability + incoming requests
-      /active.tsx      # Active trip management
-      /earnings.tsx
-      /profile.tsx
+  /(commuter)/         # Commuter mode screens (Phase 2-3)
+    /request.tsx       # Request screen with map
+    /tracking.tsx      # Track active trip
+  /(driver)/           # Driver mode screens (Phase 2-3)
+    /dashboard.tsx     # Driver dashboard with requests
+    /active-trip.tsx   # Active trip management
 
-/components            # Reusable UI components
-  /ui/                 # Base UI primitives
-  /maps/               # Map-related components (DriverMarker, RoutePolyline)
-  /themed-*.tsx        # Theme-aware components
+/components            # Reusable UI components (Phase 2+)
+  /maps/               # Map-related components
+  /ui/                 # Custom UI components
 
-/services              # Business logic & external integrations
+/services              # Business logic layer
   /firebase/
-    /auth.ts           # Authentication service
-    /firestore.ts      # Database operations
-    /storage.ts        # File uploads (driver documents)
+    /firestore.ts      # ✅ EXISTS - Database operations
+    /auth.ts           # Authentication service (Phase 4)
   /location/
-    /tracking.ts       # Background location tracking
-    /matching.ts       # Driver-commuter matching algorithm
+    /tracking.ts       # GPS location tracking (Phase 2)
   /maps/
-    /geocoding.ts      # Address <-> coordinates
-    /routing.ts        # Route calculation & ETA
+    /routing.ts        # Route calculation (Phase 2)
 
-/hooks                 # Custom React hooks
-  /use-auth.ts         # Authentication state & user role
-  /use-location.ts     # Location permissions & tracking
-  /use-realtime-*.ts   # Firestore real-time subscriptions
-
-/contexts              # React Context providers
-  /auth-context.tsx    # User authentication state
-  /trip-context.tsx    # Active trip state management
-
-/types                 # TypeScript type definitions
-  /models.ts           # User, Driver, Request, Trip types
-  /firebase.ts         # Firestore document types
+/hooks                 # Custom React hooks (Phase 2+)
+  /use-location.ts     # Location tracking hook
+  /use-auth.ts         # Authentication hook
 
 /constants
-  /theme.ts            # Colors, fonts, spacing
-  /maps.ts             # Map config (initial region, zoom levels)
-  /config.ts           # App constants (timeouts, service radius)
+  /theme.ts            # ✅ EXISTS - Theme constants
+  /config.ts           # App constants (Phase 2)
 ```
 
 ### Core Data Models
@@ -119,7 +119,7 @@ firebase emulators:start
 
 **requests/** - Service requests from commuters
 - `commuterId`, `location`, `address`
-- `serviceType`: 'tow' | 'jumpstart' | 'tire_change' | 'fuel_delivery'
+- `serviceType`: 'tow' (simplified for MVP)
 - `status`: 'searching' | 'matched' | 'accepted' | 'cancelled'
 - `matchedDriverId`, `createdAt`, `expiresAt`
 
@@ -253,37 +253,86 @@ Use file extensions for platform differences:
 
 ## Development Phases
 
-### Phase 1: Proof of Concept (Current - Weeks 1-2)
-- [x] Basic Expo setup
-- [ ] Firebase configuration
-- [ ] Two-screen demo: Request + Driver Dashboard
-- [ ] Simple location sharing test
-- [ ] Basic matching simulation
+### Phase 1: Proof of Concept ✅ COMPLETE
+**Status:** Complete - Working real-time request/trip lifecycle
 
-### Phase 2: MVP Core Features (Weeks 3-8)
-- [ ] Complete authentication (email/password, role selection)
-- [ ] Full request creation flow with map
-- [ ] Driver matching algorithm (Cloud Function or client)
-- [ ] Real-time location tracking for drivers
-- [ ] Trip status management (all states)
-- [ ] Push notifications (request alerts, status updates)
-- [ ] Map integration (react-native-maps, routes, ETAs)
+**What Was Built:**
+- ✅ Firebase project setup and configuration
+- ✅ Firestore integration with real-time listeners
+- ✅ Core services: `createRequest()`, `listenForRequests()`, `acceptRequest()`, `updateTripStatus()`
+- ✅ TypeScript type definitions for all data models
+- ✅ POC test screen demonstrating full flow
+- ✅ Two-device real-time synchronization working
 
-### Phase 3: Polish & Testing (Weeks 9-12)
-- [ ] Comprehensive error handling
-- [ ] Offline support and sync
-- [ ] Performance optimization (location update throttling)
-- [ ] User acceptance testing
-- [ ] Bug fixes and refinement
-- [ ] Code documentation and README
+**Demo Capabilities:**
+- Commuter creates request → Driver sees it instantly
+- Driver accepts → Trip created, both sides update
+- Driver updates status → Commuter sees changes in real-time
 
-### Phase 4: Advanced Features (Semester 2)
+---
+
+### Phase 2: Maps & Core UI (CURRENT)
+**Goal:** Add maps and build basic functional screens
+
+**Tasks:**
+- [ ] Install and configure react-native-maps
+- [ ] Create map component showing pickup/dropoff pins
+- [ ] Build commuter request screen (map + bottom sheet)
+- [ ] Build driver dashboard screen (map + request list)
+- [ ] Add role selector screen
+- [ ] Integrate UI with existing Firestore functions
+- [ ] Basic styling (using teammate's Figma designs)
+
+**Deliverable:** Functional app with map interface (Uber-style with sliding panels)
+
+---
+
+### Phase 3: Location Tracking & Matching
+**Goal:** Add real-time GPS tracking and smart driver matching
+
+**Tasks:**
+- [ ] Implement GPS location tracking (expo-location)
+- [ ] Update driver location to Firestore every 10 seconds
+- [ ] Display driver location on commuter's map
+- [ ] Calculate and display ETA
+- [ ] Add distance calculation for pricing
+- [ ] Implement basic geospatial queries (find nearby drivers)
+- [ ] Add route display on map
+
+**Deliverable:** Live driver tracking with dynamic pricing
+
+---
+
+### Phase 4: Production Features & Polish
+**Goal:** Make it production-ready
+
+**Tasks:**
+- [ ] Full authentication system (email/password)
+- [ ] User profiles and settings
+- [ ] Trip history
+- [ ] Rating system
+- [ ] Push notifications (FCM)
+- [ ] Error handling and edge cases
+- [ ] Offline support
+- [ ] Performance optimization
+- [ ] Comprehensive testing
+
+**Deliverable:** Production-ready app for beta testing
+
+---
+
+### Phase 5: Advanced Features (Future/Optional)
+**Goal:** Enterprise features
+
+**Tasks:**
 - [ ] Stripe payment integration
-- [ ] Rating/review system
-- [ ] Trip history and analytics
 - [ ] Driver verification workflow
 - [ ] Admin dashboard (web)
-- [ ] Earnings tracking
+- [ ] Analytics and reporting
+- [ ] In-app chat
+- [ ] Multi-service support (jumpstart, tire change, etc.)
+
+**Deliverable:** Full-featured marketplace platform
 
 ## Recommended Libraries
 
@@ -592,25 +641,32 @@ Before moving to the next feature, ensure the student understands:
 - [ ] Payment integration (Stripe)
 - [ ] Driver verification workflow
 
-### Next Immediate Steps:
+### Next Immediate Steps (Phase 2 - Maps & Core UI):
 
-**Option A - Better UI:**
-1. Build proper Driver Dashboard screen
-2. Build proper Commuter Request screen
-3. Add role selector for mode switching
-4. Polish with styling and better UX
+Following the phase plan above, here are the concrete next steps:
 
-**Option B - Add Maps:**
-1. Install and configure react-native-maps
-2. Display pickup/dropoff pins on map
-3. Show driver location in real-time
-4. Calculate and display routes
+1. **Set up react-native-maps**
+   - Install react-native-maps package
+   - Configure Google Maps API key in app.json
+   - Create basic MapView component that displays
 
-**Option C - Production Ready:**
-1. Build full authentication flow
-2. Implement proper navigation structure
-3. Add error handling and edge cases
-4. Deploy to TestFlight/Play Store beta
+2. **Build Commuter Request Screen**
+   - Map with current location centered
+   - Pickup/dropoff address input fields (or draggable map pins)
+   - "Request Tow" button
+   - Bottom sheet UI pattern (map + overlay)
+
+3. **Build Driver Dashboard Screen**
+   - Map showing driver's current location
+   - Available/Offline toggle switch
+   - List of incoming requests (from Firestore listener)
+   - Accept/Reject buttons for each request
+
+4. **Test Maps on Both Platforms**
+   - Verify map renders on iOS simulator
+   - Verify map renders on Android emulator
+   - Test address input functionality
+   - Test pin placement on map
 
 ### Files Created:
 
@@ -624,10 +680,14 @@ Before moving to the next feature, ensure the student understands:
 **Testing:**
 - `app/(tabs)/index.tsx` - POC test screen with working demo
 
-### Known Issues/Limitations:
+### Known Issues/Limitations (POC):
 
-- Location coordinates currently hardcoded (0, 0) - will need actual GPS in Phase 2
-- Single test screen instead of proper app navigation
-- No authentication - using hardcoded user IDs for testing
-- No distance/price calculation - hardcoded to $75
-- Service type limited to 'tow' only (simplified from original multi-service design)
+**Current POC Limitations:**
+- Location coordinates hardcoded to (0, 0) - will integrate actual GPS in Phase 2
+- Single test screen with buttons - will build proper UI screens in Phase 2
+- No authentication system - using hardcoded user IDs ("test-commuter-000", "test-driver-000")
+- No distance/price calculation - hardcoded to $75 (will calculate based on route in Phase 3)
+- Service type simplified to 'tow' only (intentional design decision)
+- No map visualization - will add react-native-maps in Phase 2
+
+**These are expected for a POC** - the goal was to prove Firebase real-time sync works, which it does!
