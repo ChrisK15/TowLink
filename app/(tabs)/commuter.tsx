@@ -75,6 +75,16 @@ export default function CommuterScreen() {
         </TouchableOpacity>
       )}
 
+      {/* Request Button bottom */}
+      <TouchableOpacity
+        style={styles.requestButton}
+        onPress={() => Alert.alert("Request pressed!")}
+      >
+        <Text style={styles.requestButtonText}>
+          Request Roadside Assistance
+        </Text>
+      </TouchableOpacity>
+
       <Text style={styles.title}>Commuter Screen - Building...</Text>
     </View>
   );
@@ -116,5 +126,25 @@ const styles = StyleSheet.create({
   },
   locationIcon: {
     fontSize: 24,
+  },
+  requestButton: {
+    position: "absolute",
+    bottom: 100,
+    left: 20,
+    right: 20,
+    backgroundColor: "#00D9FF", // Cyan color from design
+    paddingVertical: 18,
+    borderRadius: 12,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  requestButtonText: {
+    color: "#000",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
