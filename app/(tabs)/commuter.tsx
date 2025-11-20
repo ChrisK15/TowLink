@@ -9,6 +9,7 @@ export default function CommuterScreen() {
     longitude: number;
   } | null>(null);
   const [mapRef, setMapRef] = useState<MapView | null>(null);
+  const [selectedService, setSelectedService] = useState("towing");
 
   // Get location
   useEffect(() => {
@@ -85,7 +86,36 @@ export default function CommuterScreen() {
         </Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>Commuter Screen - Building...</Text>
+      <Text style={styles.title}>Commuter Screen</Text>
+
+      {/* Service type selector */}
+      <View style={styles.serviceSelector}>
+        <TouchableOpacity
+          style={[
+            styles.serviceOption,
+            selectedService === "towing" && styles.serviceOptionActive,
+          ]}
+          onPress={() => setSelectedService("towing")}
+        >
+          <Text style={styles.serviceIcon}>🚗</Text>
+          <Text style={styles.serviceText}>Towing</Text>
+        </TouchableOpacity>
+
+        <View style={[styles.serviceOption, styles.serviceOptionDisabled]}>
+          <Text style={styles.serviceIcon}>🔋</Text>
+          <Text style={styles.serviceText}>Battery</Text>
+        </View>
+
+        <View style={[styles.serviceOption, styles.serviceOptionDisabled]}>
+          <Text style={styles.serviceIcon}>⛽</Text>
+          <Text style={styles.serviceText}>Fuel</Text>
+        </View>
+
+        <View style={[styles.serviceOption, styles.serviceOptionDisabled]}>
+          <Text style={styles.serviceIcon}>🔧</Text>
+          <Text style={styles.serviceText}>Tire</Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -100,7 +130,7 @@ const styles = StyleSheet.create({
   title: {
     position: "absolute",
     top: 50,
-    left: 20,
+    left: 100,
     fontSize: 20,
     fontWeight: "bold",
     color: "white",
@@ -129,7 +159,7 @@ const styles = StyleSheet.create({
   },
   requestButton: {
     position: "absolute",
-    bottom: 100,
+    bottom: 105,
     left: 20,
     right: 20,
     backgroundColor: "#00D9FF", // Cyan color from design
@@ -146,5 +176,39 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  serviceSelector: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  serviceOption: {
+    backgroundColor: "rgba(40, 40, 40, 0.9)",
+    padding: 12,
+    borderRadius: 12,
+    alignItems: "center",
+    flex: 1,
+    marginHorizontal: 5,
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  serviceOptionActive: {
+    borderColor: "#00D9FF",
+    backgroundColor: "rgba(0, 217, 255, 0.2)",
+  },
+  serviceOptionDisabled: {
+    opacity: 0.5,
+  },
+  serviceIcon: {
+    fontSize: 28,
+    marginBottom: 4,
+  },
+  serviceText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "600",
   },
 });
