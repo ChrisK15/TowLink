@@ -4,13 +4,18 @@ import {
   listenForRequests,
   updateTripStatus,
 } from "@/services/firebase/firestore";
+import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 import { Alert, Button, ScrollView, Text, View } from "react-native";
-import MapView from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 
 export default function HomeScreen() {
   const [requests, setRequests] = useState<any[]>([]);
   const [currentTripId, setCurrentTripId] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
 
   useEffect(() => {
     console.log("start listening");
@@ -23,6 +28,32 @@ export default function HomeScreen() {
       unsubscribe();
     };
   }, []);
+
+  async function getUserLocation() {
+    try {
+      // Request permission
+      const { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        Alert.alert("Permission denied", "Location access needed.");
+        return;
+      }
+
+      // Get position
+      const location = await Location.getCurrentPositionAsync({});
+
+      setUserLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+
+      Alert.alert(
+        `Success!, Your location is: ${location.coords.latitude}, ${location.coords.longitude}`
+      );
+    } catch (error) {
+      Alert.alert("Error", String(Error));
+    }
+  }
 
   async function testCreateRequest() {
     try {
@@ -84,13 +115,33 @@ export default function HomeScreen() {
 
       <MapView
         style={{ width: "100%", height: 300 }}
-        initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-      />
+        region={
+          userLocation
+            ? {
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              }
+            : {
+                latitude: 37.78825,
+                longitude: -122.4324,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }
+        }
+      >
+        {userLocation && (
+          <Marker
+            coordinate={userLocation}
+            title="You are here"
+            description="Your current location"
+          />
+        )}
+      </MapView>
+
+      <Button title="Get my Location" onPress={getUserLocation} />
+
       <Button title="Create Test Request" onPress={testCreateRequest} />
       <View style={{ height: 10 }} />
       <Button title="Accept First Request" onPress={testAcceptRequest} />
