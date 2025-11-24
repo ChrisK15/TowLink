@@ -1,3 +1,4 @@
+import { createRequest } from "@/services/firebase/firestore";
 import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -10,6 +11,7 @@ export default function CommuterScreen() {
   } | null>(null);
   const [mapRef, setMapRef] = useState<MapView | null>(null);
   const [selectedService, setSelectedService] = useState("towing");
+  const [isCreatingRequest, setIsCreatingRequest] = useState(false);
 
   // Get location
   useEffect(() => {
@@ -50,6 +52,30 @@ export default function CommuterScreen() {
     }
   }
 
+  async function handleRequestAssistance() {
+    if (!userLocation) {
+      Alert.alert("Location required, please wait for your location to load");
+      return;
+    }
+
+    setIsCreatingRequest(true);
+    try {
+      const requestId = await createRequest(
+        "test-commuter-001",
+        "My current location",
+        "Destination address"
+      );
+      Alert.alert("Request sent, searching for nearby drivers...");
+
+      console.log("Request created:", requestId);
+    } catch (error) {
+      Alert.alert("Error, failed to create a request. Please try again");
+      console.error(error);
+    } finally {
+      setIsCreatingRequest(false);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <MapView
@@ -78,11 +104,17 @@ export default function CommuterScreen() {
 
       {/* Request Button bottom */}
       <TouchableOpacity
-        style={styles.requestButton}
-        onPress={() => Alert.alert("Request pressed!")}
+        style={[
+          styles.requestButton,
+          isCreatingRequest && styles.requestButtonDisabled,
+        ]}
+        onPress={handleRequestAssistance}
+        disabled={isCreatingRequest}
       >
         <Text style={styles.requestButtonText}>
-          Request Roadside Assistance
+          {isCreatingRequest
+            ? "Creating Request..."
+            : "Request Roadside Assistance"}
         </Text>
       </TouchableOpacity>
 
@@ -171,6 +203,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 6,
     elevation: 8,
+  },
+  requestButtonDisabled: {
+    opacity: 0.6,
   },
   requestButtonText: {
     color: "#000",
