@@ -49,6 +49,7 @@ firebase emulators:start
 ```
 /app/(tabs)/
   /index.tsx          # POC test screen with all functionality
+  /commuter.tsx       # ✅ NEW - Commuter request screen with map
   /_layout.tsx        # Tab navigation layout
   /explore.tsx        # Placeholder from template
 
@@ -62,6 +63,10 @@ firebase emulators:start
 /components/          # Themed components from Expo template
 /hooks/               # Theme hooks from Expo template
 /constants/           # Theme constants from Expo template
+
+app.config.js         # ✅ NEW - Expo config with environment variables
+.env                  # ✅ NEW - Environment variables (not in git)
+.env.example          # ✅ NEW - Environment variable template
 ```
 
 #### Planned Structure (Future Phases):
@@ -580,6 +585,8 @@ Before moving to the next feature, ensure the student understands:
 
 **Phase 1 - Proof of Concept COMPLETE! ✅**
 
+**Phase 2 - Maps & Core UI (IN PROGRESS) 🚧**
+
 ### What's Been Built:
 
 **Core Infrastructure:**
@@ -616,15 +623,33 @@ Before moving to the next feature, ensure the student understands:
 - ✅ TypeScript type safety
 - ✅ Async/await patterns
 - ✅ Error handling with try/catch
+- ✅ Google Maps API integration
+- ✅ expo-location GPS tracking
+- ✅ Environment variables for API keys
+- ✅ MapView component with markers
+- ✅ React Native StyleSheet styling
+
+**Phase 2 Progress (Maps & Core UI):**
+- ✅ react-native-maps installed and configured
+- ✅ Google Maps API key secured with environment variables
+- ✅ Commuter Request Screen (`app/(tabs)/commuter.tsx`) built with:
+  - Full-screen map with user's GPS location
+  - Auto-location detection on screen load
+  - Location centering button
+  - "Request Roadside Assistance" button (connected to Firebase)
+  - Service type selector (Towing highlighted, others disabled)
+  - Real-time request creation working
+- [ ] Driver Dashboard Screen (next up!)
+- [ ] Route display between pickup/dropoff
+- [ ] Real-time driver location tracking during trip
 
 ### What's NOT Built Yet (Future Phases):
 
-**Phase 2 - Maps & Location:**
-- [ ] Google Maps integration (react-native-maps)
-- [ ] Real-time GPS driver location tracking
-- [ ] Route calculation and display
-- [ ] Pickup/dropoff location pins
-- [ ] ETA calculations
+**Phase 2 - Still TODO:**
+- [ ] Driver Dashboard Screen with map and request list
+- [ ] Available/Offline toggle for drivers
+- [ ] Accept/Reject request functionality in UI
+- [ ] Trip tracking view for commuters
 
 **Phase 3 - Smart Matching:**
 - [ ] Geospatial queries (find nearby drivers)
@@ -632,6 +657,8 @@ Before moving to the next feature, ensure the student understands:
 - [ ] Push notifications (Firebase Cloud Messaging)
 - [ ] Request timeout handling
 - [ ] Multiple driver handling
+- [ ] ETA calculations
+- [ ] Route calculation and display
 
 **Phase 4 - Polish & Production:**
 - [ ] Full authentication system (signup/login screens)
@@ -672,15 +699,19 @@ Following the phase plan above, here are the concrete next steps:
 
 **Configuration:**
 - `services/firebase/config.ts` - Firebase initialization with AsyncStorage persistence
+- `app.config.js` - Expo config with environment variables for API keys
+- `.env` - Environment variables (Google Maps API key) - **NOT committed to git**
+- `.env.example` - Template showing required environment variables
 
 **Data Layer:**
 - `types/models.ts` - TypeScript interfaces (User, Driver, Request, Trip, etc.)
 - `services/firebase/firestore.ts` - All Firestore operations
 
-**Testing:**
+**Screens:**
 - `app/(tabs)/index.tsx` - POC test screen with working demo
+- `app/(tabs)/commuter.tsx` - Commuter request screen with map and location
 
-### Known Issues/Limitations (POC):
+### Known Issues/Limitations:
 
 **Current POC Limitations:**
 - Location coordinates hardcoded to (0, 0) - will integrate actual GPS in Phase 2
