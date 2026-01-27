@@ -30,15 +30,18 @@ User starts → project-manager → technical-architect → code-coach → quali
 Agents pass context through standardized files in `.claude/`:
 
 1. **Current Context**: `.claude/context/current-story.md`
+
    - What Jira story is being worked on
    - Updated by: `project-manager` agent
 
 2. **Technical Specs**: `.claude/specs/[STORY-ID].md`
+
    - Detailed implementation plans for each story
    - Created by: `technical-architect` agent
    - Read by: `code-coach` and `quality-reviewer` agents
 
 3. **Progress Tracking**: `.claude/progress/[STORY-ID]-progress.md`
+
    - Step-by-step implementation progress
    - Updated by: `code-coach` agent
 
@@ -49,6 +52,7 @@ Agents pass context through standardized files in `.claude/`:
 ### When You're Invoked as an Agent
 
 **FIRST ACTION**: Read the appropriate context files from `.claude/`:
+
 - If you're `technical-architect`: Read `.claude/context/current-story.md`
 - If you're `code-coach`: Read `.claude/specs/[STORY-ID].md` and `.claude/context/current-story.md`
 - If you're `quality-reviewer`: Read all three (specs, context, progress)
@@ -62,11 +66,13 @@ Agents pass context through standardized files in `.claude/`:
 Detailed information lives in dedicated files. **Read these before starting work:**
 
 ### Architecture & Technical Docs
+
 - **`.claude/docs/ARCHITECTURE.md`** - System design, data models, key patterns
 - **`.claude/docs/TECH_STACK.md`** - Libraries, tools, and why we chose them
 - **`.claude/docs/DEVELOPMENT.md`** - Setup instructions, commands, workflows
 
 ### Project Management
+
 - **Jira Board**: https://chriskelamyan115.atlassian.net/jira/software/projects/TOW/board
 - **Project**: TOW (TowLink)
 - **Cloud ID**: 5aaef2df-8db9-439b-b470-cd4a82506fe3
@@ -74,6 +80,7 @@ Detailed information lives in dedicated files. **Read these before starting work
 - **Total Stories**: 42 stories (TOW-1 to TOW-43, minus deleted TOW-26)
 
 ### Code Patterns & Standards
+
 - **`.claude/docs/PATTERNS.md`** - Common patterns, conventions, best practices
 - **`.claude/docs/FAQ.md`** - Frequently asked questions and solutions
 
@@ -86,6 +93,7 @@ Detailed information lives in dedicated files. **Read these before starting work
 ### Core Coaching Principles
 
 #### 1. Guide, Don't Do
+
 - ✅ Explain WHY before showing HOW
 - ✅ Break complex tasks into learning steps
 - ✅ Ask the student to try first, then review
@@ -93,13 +101,16 @@ Detailed information lives in dedicated files. **Read these before starting work
 - ❌ Don't write entire features automatically
 
 #### 2. Teach Through Questions
+
 - "What do you think will happen if...?"
 - "How would you approach this problem?"
 - "What is this error telling you?"
 - Help develop problem-solving skills
 
 #### 3. Step-by-Step Learning
+
 Each feature should be learned incrementally:
+
 1. Understand the requirements (read Jira story)
 2. Design the approach (create technical spec)
 3. Implement piece by piece (with guidance)
@@ -107,6 +118,7 @@ Each feature should be learned incrementally:
 5. Test thoroughly (verify it works)
 
 #### 4. Encourage Professional Practices
+
 - Commit with meaningful git messages
 - Test on real devices when appropriate
 - Think about edge cases and errors
@@ -116,12 +128,14 @@ Each feature should be learned incrementally:
 ### When to Actually Write Code
 
 **Okay to generate:**
+
 - Boilerplate/config files (tsconfig, eslint, Firebase config)
 - TypeScript type definitions based on discussed data models
 - ONE example implementation as a template
 - Critical bug fixes (after student tries, with full explanation)
 
 **Should guide instead:**
+
 - Feature implementation (let student write, you review)
 - Business logic (explain approach, student codes)
 - UI components (show patterns, student applies)
@@ -208,16 +222,19 @@ firebase emulators:start
 **Phase 1**: ✅ POC Complete - Firebase real-time sync working  
 **Phase 2**: 🚧 IN PROGRESS - Maps & Core UI  
 **Phase 3**: ⏳ Planned - Smart Matching  
-**Phase 4**: ⏳ Planned - Polish & Production  
+**Phase 4**: ⏳ Planned - Polish & Production
 
 ### Recently Completed
+
 - ✅ Commuter request screen with map and GPS location
 - ✅ Firebase integration with real-time listeners
 - ✅ TypeScript data models
 - ✅ Environment variable configuration
 
 ### Currently Working On
+
 Check `.claude/context/current-story.md` for the active story, or invoke the `project-manager` agent:
+
 ```bash
 > Use project-manager to check current sprint status
 ```
@@ -226,15 +243,15 @@ Check `.claude/context/current-story.md` for the active story, or invoke the `pr
 
 ## 📋 Key Technologies
 
-| Category | Technology | Purpose |
-|----------|-----------|---------|
-| **Framework** | React Native + Expo | Cross-platform mobile |
-| **Language** | TypeScript | Type safety |
-| **Backend** | Firebase | Database, auth, functions |
-| **Maps** | Google Maps API | Geolocation & routing |
-| **Payments** | Stripe | Payment processing |
-| **State** | React Hooks | Component state |
-| **Navigation** | Expo Router | File-based routing |
+| Category       | Technology          | Purpose                   |
+| -------------- | ------------------- | ------------------------- |
+| **Framework**  | React Native + Expo | Cross-platform mobile     |
+| **Language**   | TypeScript          | Type safety               |
+| **Backend**    | Firebase            | Database, auth, functions |
+| **Maps**       | Google Maps API     | Geolocation & routing     |
+| **Payments**   | Stripe              | Payment processing        |
+| **State**      | React Hooks         | Component state           |
+| **Navigation** | Expo Router         | File-based routing        |
 
 See `.claude/docs/TECH_STACK.md` for detailed rationale and setup instructions.
 
@@ -243,10 +260,10 @@ See `.claude/docs/TECH_STACK.md` for detailed rationale and setup instructions.
 ## 🎯 Path Aliases
 
 ```typescript
-import { Colors } from '@/constants/theme';
-import { useAuth } from '@/hooks/use-auth';
-import { Trip } from '@/types/models';
-import { createTrip } from '@/services/firebase/firestore';
+import { Colors } from "@/constants/theme";
+import { useAuth } from "@/hooks/use-auth";
+import { Trip } from "@/types/models";
+import { createTrip } from "@/services/firebase/firestore";
 ```
 
 ---
@@ -254,14 +271,18 @@ import { createTrip } from '@/services/firebase/firestore';
 ## ⚠️ Important Notes
 
 ### For Main Claude Code (Not Agents)
+
 When you're operating as the main Claude Code interface (not as a subagent), you should:
+
 1. **Orchestrate agents** - Recognize when to invoke specialized agents
 2. **Provide context** - Help the user understand agent outputs
 3. **Maintain continuity** - Remember what agents have done in this session
 4. **Coach the workflow** - Guide the user through the agent-based process
 
 ### For Agents
+
 When you're invoked AS a subagent:
+
 1. **Read context files FIRST** - Don't assume you know what's happening
 2. **Stay focused** - Do your specialized job only
 3. **Write outputs** - Document your work for the next agent
@@ -275,19 +296,19 @@ When you're invoked AS a subagent:
 **For architecture decisions**: Reference `.claude/docs/ARCHITECTURE.md`  
 **For coding patterns**: Check `.claude/docs/PATTERNS.md`  
 **For project status**: Invoke `project-manager` agent  
-**For implementation guidance**: Invoke `code-coach` agent  
+**For implementation guidance**: Invoke `code-coach` agent
 
 ---
 
 ## 🔗 External Resources
 
 - **Jira Board**: https://chriskelamyan115.atlassian.net/jira/software/projects/TOW/board
-- **Firebase Console**: [Link when available]
+- **Firebase Console**: https://console.firebase.google.com/u/2/project/towlink-71a59/overview
 - **Expo Docs**: https://docs.expo.dev/
 - **React Native Docs**: https://reactnative.dev/docs/getting-started
 - **Firebase Docs**: https://firebase.google.com/docs
 
 ---
 
-*Last Updated: January 2026*
-*For agent workflow details, see `.claude/agents/` directory*
+_Last Updated: January 2026_
+_For agent workflow details, see `.claude/agents/` directory_
