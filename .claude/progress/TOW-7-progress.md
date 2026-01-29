@@ -4,21 +4,27 @@
 
 **Status**: In Progress
 **Started**: January 27, 2026
-**Current Step**: Step 1 - Creating authentication service layer
+**Current Step**: Step 2 - Understanding Firebase Auth Errors
 
 ---
 
 ## Completed Steps
-(None yet - just getting started!)
+- [x] **Step 1: Create the Authentication Service Layer** ✅
+  - Created `services/firebase/authService.ts`
+  - Implemented `signUpWithEmail()` function with:
+    - Firebase Auth account creation using `createUserWithEmailAndPassword`
+    - Firestore user document creation with id, email, createdAt, role fields
+    - Try/catch error handling
+    - Proper TypeScript typing with Promise return type
+  - Student learned: async/await, Firebase APIs, Firestore structure, error handling basics
 
 ---
 
 ## Current Step
-- [ ] Step 1: Create the Authentication Service Layer
-  - Create `services/firebase/authService.ts`
-  - Implement `signUpWithEmail()` function
-  - Add error handling for Firebase errors
-  - Create helper function to create user document in Firestore
+- [ ] Step 2: Understand Firebase Auth Errors
+  - Learn about common Firebase Auth error codes
+  - Create user-friendly error messages
+  - Add error mapping function to authService.ts
 
 ---
 
@@ -43,7 +49,9 @@
 ---
 
 ## Questions & Decisions
-(Will be updated as we progress)
+- **Decision**: Used nullish coalescing (`user.email ?? email`) in return statement for defensive programming
+- **Learning moment**: Student built entire service function piece by piece, learning imports → function signature → async logic → error handling
+- **Pattern established**: Service layer functions use try/catch, async/await, and return typed promises
 
 ---
 
