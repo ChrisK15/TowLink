@@ -49,8 +49,7 @@ export default function SignupScreen() {
 			const result = await signUpWithEmail(email, password);
 			console.log('Account created successfully!', result.userId);
 			router.push({
-				pathname: '/(auth)/role-selection',
-				params: { userId: result.userId },
+				pathname: '/role-selection',
 			});
 		} catch (error: any) {
 			setError(error.message);

@@ -1,5 +1,6 @@
 import { updateUserRole } from '@/services/firebase/authService';
-import { router, useLocalSearchParams } from 'expo-router';
+import { auth } from '@/services/firebase/config';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -10,14 +11,18 @@ export default function RoleSelectionScreen() {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
 
-	const { userId } = useLocalSearchParams<{ userId: string }>();
-
 	const handleContinue = async () => {
-		if (!selectedRole || !userId) return;
+		if (!selectedRole) return;
+
+		const currentUser = auth.currentUser;
+		if (!currentUser) {
+			setError('Session expired. Please sign up again.');
+			return;
+		}
 
 		setLoading(true);
 		try {
-			await updateUserRole(userId, selectedRole);
+			await updateUserRole(currentUser.uid, selectedRole);
 			console.log('Role selected successfully!');
 			router.replace('/(tabs)');
 		} catch (error: any) {
