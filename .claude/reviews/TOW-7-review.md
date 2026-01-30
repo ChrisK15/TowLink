@@ -6,6 +6,7 @@
 **Review Date**: January 29, 2026
 **Implementation Status**: Complete
 **Files Reviewed**:
+
 - `/Users/chris/projects/towlink/services/firebase/authService.ts`
 - `/Users/chris/projects/towlink/app/(auth)/signup.tsx`
 - `/Users/chris/projects/towlink/app/(auth)/_layout.tsx`
@@ -18,6 +19,7 @@
 ## Acceptance Criteria Verification
 
 ### Core Functionality
+
 - [x] User can enter email, password, and confirm password - PASSED
 - [x] Password must be at least 8 characters - PASSED (validated client-side on line 24-27 of signup.tsx)
 - [x] Email validation checks for valid format - PASSED (contains '@' check on line 20-22 of signup.tsx)
@@ -30,6 +32,7 @@
   - [x] `role` field (set to null) - PASSED (line 21)
 
 ### Error Handling
+
 - [x] Email already in use error - PASSED (authService.ts line 29-32)
 - [x] Weak password error - PASSED (authService.ts line 34-36)
 - [x] Invalid email format error - PASSED (authService.ts line 37-39)
@@ -37,6 +40,7 @@
 - [x] Passwords don't match validation - PASSED (signup.tsx line 28-31)
 
 ### User Experience
+
 - [x] Success handling - PASSED (console.log on line 37, user created successfully)
 - [x] Loading state prevents double-submission - PASSED (disabled={loading} on line 109)
 - [x] Loading state shows visual feedback - PASSED (conditional button text on line 118, conditional background color on line 111)
@@ -50,45 +54,57 @@
 ### Strengths
 
 #### 1. Excellent Service Layer Pattern ✅
+
 The separation between business logic (authService.ts) and UI (signup.tsx) is exemplary. This follows industry best practices and makes the code:
+
 - Testable (can test service without UI)
 - Reusable (can call signUpWithEmail from anywhere)
 - Maintainable (Firebase logic in one place)
 
 #### 2. Proper TypeScript Usage ✅
+
 All functions are properly typed:
+
 - `signUpWithEmail` has correct parameter types and Promise return type
 - Component state is implicitly typed through useState
 - Error handling uses type assertion (`any`) only where necessary
 
 #### 3. Comprehensive Error Handling ✅
+
 The error handling covers:
+
 - All three primary Firebase auth errors
 - Generic fallback for unexpected errors
 - Console logging for debugging (line 28 of authService.ts)
 - User-friendly error messages that guide the user
 
 #### 4. Security Best Practices ✅
+
 - Passwords hidden with `secureTextEntry={true}` (lines 78, 93 of signup.tsx)
 - No password logging in production code
 - Client-side validation before server calls
 - Firebase handles password hashing and encryption
 
 #### 5. Clean Form Validation ✅
+
 The validation logic uses early returns (lines 16-31 of signup.tsx), which:
+
 - Makes the code readable and linear
 - Prevents nested if statements
 - Follows the "fail fast" principle
 - Clears previous errors before validation (line 14)
 
 #### 6. Proper Async/Await Pattern ✅
+
 The async flow is correct:
+
 - `try/catch/finally` structure (lines 35-42 of signup.tsx)
 - Loading state set before async call (line 33)
 - Loading state reset in `finally` block (line 40-41)
 - Prevents race conditions
 
 #### 7. Good Route Structure ✅
+
 - Proper use of Expo Router route groups
 - Clean separation of auth and main app routes
 - Redirect component used correctly (index.tsx)
@@ -105,27 +121,37 @@ The async flow is correct:
 ## Warnings
 
 ### 1. Inline Styles vs StyleSheet ⚠️
+
 **Location**: signup.tsx (all style props)
 
 **Issue**: All styles are inline rather than using React Native StyleSheet.
 
 **Why it matters**:
+
 - Inline styles are created on every render (minor performance impact)
 - Harder to maintain consistent spacing/colors
 - No TypeScript autocomplete for style properties
 
 **Recommendation**:
+
 ```typescript
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20 },
-  input: { borderWidth: 1, padding: 10, marginBottom: 10, borderRadius: 5, backgroundColor: '#fff' },
-  // etc.
+	container: { flex: 1, justifyContent: 'center', padding: 20 },
+	input: {
+		borderWidth: 1,
+		padding: 10,
+		marginBottom: 10,
+		borderRadius: 5,
+		backgroundColor: '#fff',
+	},
+	// etc.
 });
 ```
 
 **Severity**: LOW - Current implementation works fine, but refactoring would improve maintainability.
 
-### 2. Basic Email Validation ⚠️
+### 2. Basic Email Validation ⚠️ - IMPLEMENTED
+
 **Location**: signup.tsx line 20
 
 **Issue**: Email validation only checks for '@' character.
@@ -133,11 +159,12 @@ const styles = StyleSheet.create({
 **Current**: `!email.includes('@')`
 
 **More robust option**:
+
 ```typescript
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 if (!emailRegex.test(email)) {
-  setError('Please enter a valid email address');
-  return;
+	setError('Please enter a valid email address');
+	return;
 }
 ```
 
@@ -146,6 +173,7 @@ if (!emailRegex.test(email)) {
 **Severity**: LOW - Firebase will reject invalid emails anyway, so this is just UX improvement.
 
 ### 3. No Success Redirect/Message ⚠️
+
 **Location**: signup.tsx line 37
 
 **Issue**: After successful signup, user only sees console.log. No navigation or visual feedback.
@@ -153,6 +181,7 @@ if (!emailRegex.test(email)) {
 **Current behavior**: User is left on signup screen with no indication of success.
 
 **Expected behavior**: Should either:
+
 - Navigate to role selection screen (TOW-8)
 - Navigate to main app
 - Show success message
@@ -162,11 +191,13 @@ if (!emailRegex.test(email)) {
 **Severity**: LOW - Acceptable for development, should be addressed in next story.
 
 ### 4. Hardcoded Colors ⚠️
+
 **Location**: signup.tsx lines 52, 111
 
 **Issue**: Using hardcoded color values instead of theme constants.
 
 **Examples**:
+
 - `color: '#fff'` (line 52)
 - `backgroundColor: '#0a7ea4'` (line 111)
 - `color: 'red'` (line 103)
@@ -180,6 +211,7 @@ if (!emailRegex.test(email)) {
 ## Suggestions
 
 ### 1. Add autoComplete Attributes 💡
+
 **File**: signup.tsx
 
 **What**: Add `autoComplete` prop to password fields for better UX.
@@ -187,51 +219,60 @@ if (!emailRegex.test(email)) {
 **Why**: iOS/Android can suggest strong passwords and autofill.
 
 **Example**:
+
 ```typescript
 <TextInput
-  placeholder="Password"
-  value={password}
-  onChangeText={setPassword}
-  secureTextEntry={true}
-  autoComplete="password-new"  // Add this
-  textContentType="newPassword"  // iOS-specific
+	placeholder="Password"
+	value={password}
+	onChangeText={setPassword}
+	secureTextEntry={true}
+	autoComplete="password-new" // Add this
+	textContentType="newPassword" // iOS-specific
 />
 ```
 
-### 2. Extract Validation to Separate Function 💡
+### 2. Extract Validation to Separate Function 💡 - IMPLEMENTED
+
 **File**: signup.tsx
 
 **What**: Move validation logic out of handleSignup into its own function.
 
 **Why**:
+
 - Easier to test
 - Easier to reuse
 - Keeps handleSignup focused on orchestration
 
 **Example**:
+
 ```typescript
-function validateSignupForm(email: string, password: string, confirmPassword: string): string | null {
-  if (!email || !password || !confirmPassword) {
-    return 'All fields are required.';
-  }
-  if (!email.includes('@')) {
-    return 'Invalid email format.';
-  }
-  // etc...
-  return null; // No errors
+function validateSignupForm(
+	email: string,
+	password: string,
+	confirmPassword: string
+): string | null {
+	if (!email || !password || !confirmPassword) {
+		return 'All fields are required.';
+	}
+	if (!email.includes('@')) {
+		return 'Invalid email format.';
+	}
+	// etc...
+	return null; // No errors
 }
 
 const handleSignup = async () => {
-  const validationError = validateSignupForm(email, password, confirmPassword);
-  if (validationError) {
-    setError(validationError);
-    return;
-  }
-  // ... rest of signup logic
-}
+	const validationError = validateSignupForm(email, password, confirmPassword);
+	if (validationError) {
+		setError(validationError);
+		return;
+	}
+	// ... rest of signup logic
+};
 ```
 
 ### 3. Add Loading Indicator 💡
+
 **File**: signup.tsx
 
 **What**: Use ActivityIndicator component while loading instead of just text.
@@ -239,6 +280,7 @@ const handleSignup = async () => {
 **Why**: More professional loading experience.
 
 **Example**:
+
 ```typescript
 import { ActivityIndicator } from 'react-native';
 
@@ -254,6 +296,7 @@ import { ActivityIndicator } from 'react-native';
 ```
 
 ### 4. Add Keyboard Dismiss 💡
+
 **File**: signup.tsx
 
 **What**: Dismiss keyboard when tapping outside inputs.
@@ -261,19 +304,21 @@ import { ActivityIndicator } from 'react-native';
 **Why**: Better mobile UX.
 
 **Example**:
+
 ```typescript
 import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 return (
-  <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    <View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
-      {/* form content */}
-    </View>
-  </TouchableWithoutFeedback>
+	<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+		<View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
+			{/* form content */}
+		</View>
+	</TouchableWithoutFeedback>
 );
 ```
 
 ### 5. Consider KeyboardAvoidingView 💡
+
 **File**: signup.tsx
 
 **What**: Wrap form in KeyboardAvoidingView to prevent keyboard from covering inputs.
@@ -281,16 +326,17 @@ return (
 **Why**: On smaller devices, keyboard might cover the Sign Up button.
 
 **Example**:
+
 ```typescript
 import { KeyboardAvoidingView, Platform } from 'react-native';
 
 return (
-  <KeyboardAvoidingView
-    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    style={{ flex: 1 }}
-  >
-    {/* form content */}
-  </KeyboardAvoidingView>
+	<KeyboardAvoidingView
+		behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+		style={{ flex: 1 }}
+	>
+		{/* form content */}
+	</KeyboardAvoidingView>
 );
 ```
 
@@ -299,6 +345,7 @@ return (
 ## Testing Results
 
 ### Manual Testing Performed
+
 Based on progress notes, the following tests were conducted:
 
 ✅ Empty fields validation - PASSED
@@ -311,12 +358,14 @@ Based on progress notes, the following tests were conducted:
 ✅ Dark mode styling - PASSED (fixed during implementation)
 
 ### Edge Cases Tested
+
 ✅ Firebase error handling (email already in use) - Expected to work based on code review
 ✅ Loading state prevents double-submission - PASSED (disabled={loading})
 ✅ Error message display - PASSED
 ✅ Error clearing on retry - PASSED (setError('') on line 14)
 
 ### Not Yet Tested
+
 ⚠️ Network failure during signup (should handle gracefully)
 ⚠️ Firebase timeout scenarios
 ⚠️ Real device testing (tested in simulator only per context)
@@ -329,23 +378,28 @@ Based on progress notes, the following tests were conducted:
 ### Type Safety: EXCELLENT ✅
 
 #### Service Layer (authService.ts)
+
 - Return type explicitly declared: `Promise<{ userId: string; email: string }>` ✅
 - Parameter types declared: `email: string, password: string` ✅
 - Error type assertion justified: `catch (error: any)` - necessary for Firebase errors ✅
 - Proper use of nullish coalescing: `user.email ?? email` (defensive programming) ✅
 
 #### UI Layer (signup.tsx)
+
 - All useState calls have implicit types ✅
 - No unnecessary type assertions ✅
 - Error handling correctly typed: `catch (error: any)` ✅
 
 #### Data Models (types/models.ts)
+
 - User interface correctly updated with optional fields ✅
 - `role` union type includes `null` as required ✅
 - `createdAt` type is `Date` (matches Firestore Timestamp conversion) ✅
 
 ### Potential Type Issue
+
 ⚠️ Minor type inconsistency:
+
 - Firestore stores `createdAt` as `Timestamp` (line 20 of authService.ts)
 - User interface declares `createdAt: Date` (line 7 of models.ts)
 
@@ -360,17 +414,20 @@ Based on progress notes, the following tests were conducted:
 ### Implemented Security Measures ✅
 
 1. **Password Security**
+
    - Passwords hidden with `secureTextEntry={true}` ✅
    - Minimum 8 character requirement ✅
    - No password logging in code ✅
    - Firebase handles hashing and encryption ✅
 
 2. **Data Protection**
+
    - No sensitive data in console.log statements ✅
    - Firebase Auth credentials stored securely by Firebase SDK ✅
    - React Native AsyncStorage persistence configured correctly ✅
 
 3. **Input Validation**
+
    - Client-side validation before server calls ✅
    - Firebase provides server-side validation ✅
    - Error messages don't leak sensitive info ✅
@@ -397,6 +454,7 @@ Based on progress notes, the following tests were conducted:
 The implementation perfectly demonstrates the service layer pattern:
 
 **authService.ts** (Business Logic)
+
 - Single responsibility: Firebase operations
 - Returns typed data
 - Handles all Firebase errors
@@ -404,6 +462,7 @@ The implementation perfectly demonstrates the service layer pattern:
 - Testable in isolation
 
 **signup.tsx** (Presentation)
+
 - Single responsibility: User interaction
 - Calls service, doesn't know Firebase exists
 - Handles loading and error UI states
@@ -414,6 +473,7 @@ This is exactly what we want in a well-architected application.
 ### Code Organization: GOOD ✅
 
 File structure follows project standards:
+
 - Auth screens in `app/(auth)/` route group ✅
 - Service logic in `services/firebase/` ✅
 - Type definitions in `types/` ✅
@@ -447,6 +507,7 @@ This implementation successfully taught the student:
 ### Code Quality for Learning
 
 The code demonstrates:
+
 - Clean, readable implementation
 - Good variable naming
 - Proper use of React patterns
@@ -462,6 +523,7 @@ This is exactly the quality expected from a learning project.
 ### Current Performance: GOOD ✅
 
 **What's Working Well**:
+
 - Async operations don't block UI ✅
 - Loading state prevents multiple submissions ✅
 - Firebase SDK handles connection pooling ✅
@@ -470,6 +532,7 @@ This is exactly the quality expected from a learning project.
 **Minor Optimization Opportunities**:
 
 1. **Inline Styles** (mentioned earlier)
+
    - Impact: Negligible (styles recreated each render)
    - Fix: Convert to StyleSheet
    - Priority: LOW
@@ -508,6 +571,7 @@ Performance is perfectly acceptable for this feature.
 ### Setup: CORRECT ✅
 
 Firebase configuration in `config.ts` is properly set up:
+
 - Correct initialization with `initializeApp` ✅
 - Auth initialized with React Native persistence ✅
 - Firestore and Storage exported ✅
@@ -516,6 +580,7 @@ Firebase configuration in `config.ts` is properly set up:
 ### Data Structure: CORRECT ✅
 
 User document created with exact fields specified:
+
 ```typescript
 {
   id: user.uid,           // ✅ Matches Firebase Auth UID
@@ -528,6 +593,7 @@ User document created with exact fields specified:
 ### Error Handling: COMPREHENSIVE ✅
 
 All critical Firebase errors handled:
+
 - `auth/email-already-in-use` ✅
 - `auth/weak-password` ✅
 - `auth/invalid-email` ✅
@@ -547,6 +613,7 @@ All critical Firebase errors handled:
 ### Overall Assessment: EXCELLENT ✅
 
 This is a **high-quality implementation** that:
+
 - Meets all acceptance criteria (100%)
 - Follows architectural best practices
 - Demonstrates strong understanding of concepts
@@ -560,6 +627,7 @@ The implementation is **approved for production** use. The warnings and suggesti
 ### Code Quality Score: A (90/100)
 
 **Breakdown**:
+
 - Functionality: 100/100 (all criteria met)
 - Code Quality: 90/100 (excellent patterns, minor style improvements possible)
 - TypeScript: 95/100 (properly typed, one minor inconsistency)
@@ -569,6 +637,7 @@ The implementation is **approved for production** use. The warnings and suggesti
 - Maintainability: 90/100 (clean code, could use StyleSheet)
 
 **Deductions**:
+
 - -5 for inline styles instead of StyleSheet
 - -5 for not using theme constants
 - -5 for basic email validation
@@ -582,12 +651,14 @@ These are all minor issues that don't impact functionality.
 ### Before Marking TOW-7 as Done
 
 1. **Optional Improvements** (Student's Choice)
+
    - [ ] Refactor to use StyleSheet for better performance
    - [ ] Add theme colors from `@/constants/theme`
    - [ ] Improve email validation regex
    - [ ] Add success message or navigation after signup
 
 2. **Testing Recommendations**
+
    - [ ] Test on physical device (optional)
    - [ ] Test network failure scenarios
    - [ ] Verify Firestore security rules (future story)
@@ -603,6 +674,7 @@ These are all minor issues that don't impact functionality.
 ✅ **TOW-7 is complete and ready for the next story**
 
 The student should move to **TOW-8: Role Selection During Signup**, which will build on this foundation by:
+
 - Adding role selection (commuter/driver/both)
 - Navigating to role screen after signup
 - Updating user document with selected role
@@ -614,6 +686,7 @@ The service layer and form patterns established in TOW-7 provide an excellent fo
 ## Review Summary
 
 **What Went Well**:
+
 - Excellent understanding of service layer pattern
 - Strong grasp of async/await and error handling
 - Clean, readable code
@@ -621,6 +694,7 @@ The service layer and form patterns established in TOW-7 provide an excellent fo
 - No critical issues
 
 **What Could Be Better**:
+
 - Use StyleSheet instead of inline styles
 - Use theme constants for colors
 - Add success feedback after signup
@@ -628,6 +702,7 @@ The service layer and form patterns established in TOW-7 provide an excellent fo
 
 **Student Progress**:
 The student has demonstrated strong competency in:
+
 - Firebase Authentication
 - React Native forms
 - TypeScript

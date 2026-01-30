@@ -2,6 +2,27 @@ import { signUpWithEmail } from '@/services/firebase/authService';
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
+function validateSignupForm(
+	email: string,
+	password: string,
+	confirmPassword: string
+): string | null {
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	if (!email || !password || !confirmPassword) {
+		return 'All fields are required.';
+	}
+	if (!emailRegex.test(email)) {
+		return 'Please enter a valid email address';
+	}
+	if (password.length < 8) {
+		return 'Password is too short. Please include at least 8 characters.';
+	}
+	if (password !== confirmPassword) {
+		return 'Passwords do not match.';
+	}
+	return null;
+}
+
 export default function SignupScreen() {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -11,22 +32,13 @@ export default function SignupScreen() {
 	const [loading, setLoading] = useState(false);
 
 	const handleSignup = async () => {
-		setError('');
-
-		if (!email || !password || !confirmPassword) {
-			setError('All fields are required.');
-			return;
-		}
-		if (!email.includes('@')) {
-			setError('Invalid email format.');
-			return;
-		}
-		if (password.length < 8) {
-			setError('Password is too short. Please include at least 8 characters.');
-			return;
-		}
-		if (password !== confirmPassword) {
-			setError('Passwords do not match.');
+		const validationError = validateSignupForm(
+			email,
+			password,
+			confirmPassword
+		);
+		if (validationError) {
+			setError(validationError);
 			return;
 		}
 
