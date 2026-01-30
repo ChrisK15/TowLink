@@ -44,11 +44,19 @@ export default function SignupScreen() {
 
 	return (
 		<View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
-			<Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>
+			<Text
+				style={{
+					fontSize: 24,
+					fontWeight: 'bold',
+					marginBottom: 20,
+					color: '#fff',
+				}}
+			>
 				Create Account
 			</Text>
 			<TextInput
 				placeholder="Email"
+				placeholderTextColor="#888"
 				value={email}
 				onChangeText={setEmail}
 				keyboardType="email-address"
@@ -58,10 +66,12 @@ export default function SignupScreen() {
 					padding: 10,
 					marginBottom: 10,
 					borderRadius: 5,
+					backgroundColor: '#fff',
 				}}
 			/>
 			<TextInput
 				placeholder="Password"
+				placeholderTextColor="#888"
 				value={password}
 				onChangeText={setPassword}
 				autoCapitalize="none"
@@ -71,10 +81,12 @@ export default function SignupScreen() {
 					padding: 10,
 					marginBottom: 10,
 					borderRadius: 5,
+					backgroundColor: '#fff',
 				}}
 			/>
 			<TextInput
 				placeholder="Confirm Password"
+				placeholderTextColor="#888"
 				value={confirmPassword}
 				onChangeText={setConfirmPassword}
 				autoCapitalize="none"
@@ -84,6 +96,7 @@ export default function SignupScreen() {
 					padding: 10,
 					marginBottom: 10,
 					borderRadius: 5,
+					backgroundColor: '#fff',
 				}}
 			/>
 			{error ? (

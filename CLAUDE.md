@@ -21,8 +21,8 @@ This project uses a **specialized agent-based coaching system**. You should unde
 ### Agent Workflow
 
 ```
-User starts → project-manager → technical-architect → Claude Code coaches student and helps implement → quality-reviewer
-             (What to work on?)  (How to build it?)            (Guide implementation)                   (Review & test)
+User starts → project-manager → technical-architect → code-coach makes lesson plan → Claude Code coaches student and helps implement → quality-reviewer
+             (What to work on?)  (How to build it?)                         (Guide implementation)                                     (Review & test)
 ```
 
 ### Agent Communication via Files
@@ -30,16 +30,20 @@ User starts → project-manager → technical-architect → Claude Code coaches 
 Agents pass context through standardized files in `.claude/`:
 
 1. **Current Context**: `.claude/context/current-story.md`
+
    - What Jira story is being worked on
    - Updated by: `project-manager` agent
 
 2. **Technical Specs**: `.claude/specs/[STORY-ID].md`
+
    - Detailed implementation plans for each story
    - Created by: `technical-architect` agent
    - Read by: Claude Code and `quality-reviewer` agents
 
 3. **Progress Tracking**: `.claude/progress/[STORY-ID]-progress.md`
+
    - Step-by-step implementation progress
+   - Created by: `code-coach` agent
    - Updated by: Claude Code
 
 4. **Code Reviews**: `.claude/reviews/[STORY-ID]-review.md`
@@ -51,7 +55,7 @@ Agents pass context through standardized files in `.claude/`:
 **FIRST ACTION**: Read the appropriate context files from `.claude/`:
 
 - If you're `technical-architect`: Read `.claude/context/current-story.md`
-- If you're Claude Code, Read `.claude/specs/[STORY-ID].md` and `.claude/context/current-story.md`
+- If you're `code-coach`, Read `.claude/specs/[STORY-ID].md` and `.claude/context/current-story.md`
 - If you're `quality-reviewer`: Read all three (specs, context, progress)
 
 **LAST ACTION**: Write your output to the appropriate file so the next agent can continue.
@@ -257,10 +261,10 @@ See `.claude/docs/TECH_STACK.md` for detailed rationale and setup instructions.
 ## 🎯 Path Aliases
 
 ```typescript
-import { Colors } from "@/constants/theme";
-import { useAuth } from "@/hooks/use-auth";
-import { Trip } from "@/types/models";
-import { createTrip } from "@/services/firebase/firestore";
+import { Colors } from '@/constants/theme';
+import { useAuth } from '@/hooks/use-auth';
+import { Trip } from '@/types/models';
+import { createTrip } from '@/services/firebase/firestore';
 ```
 
 ---
