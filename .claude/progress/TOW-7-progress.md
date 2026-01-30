@@ -2,9 +2,9 @@
 
 ## Story: User Sign Up with Email/Password
 
-**Status**: In Progress
+**Status**: Complete ✅
 **Started**: January 27, 2026
-**Current Step**: Step 7 - Update Navigation to Include Auth Routes
+**Completed**: January 29, 2026
 
 ---
 
@@ -64,21 +64,28 @@
   - Added conditional button text (loading vs ready state)
   - Note: Using inline styles for now; can refactor to StyleSheet later if needed
 
----
+- [x] **Step 7: Update Navigation to Include Auth Routes** ✅
+  - Added `(auth)` route group to root `_layout.tsx`
+  - Changed `anchor` setting to `(auth)` for testing
+  - Created `app/(auth)/index.tsx` with Redirect to signup
+  - Student learned: Expo Router anchor settings, route groups need index files, Redirect component
 
-## Current Step
-- [ ] **Step 7: Update Navigation to Include Auth Routes**
-  - Update `app/_layout.tsx` to add (auth) route group
-  - Configure navigation to show signup screen
-  - Test navigation flow
+- [x] **Step 8: Create an Auth Layout for Future Screens** ✅
+  - Created `app/(auth)/_layout.tsx` with Stack navigator
+  - Configured headerShown: false for auth screens
+  - Student learned: Nested layouts, route group configuration
 
----
+- [x] **Step 9: Update User Type Definition** ✅
+  - Made `name` optional with `?`
+  - Made `phone` optional with `?`
+  - Added `null` to role union type
+  - Student learned: TypeScript optional properties, union types, why data models evolve
 
-## Remaining Steps
-- [ ] Step 7: Update Navigation to Include Auth Routes
-- [ ] Step 8: Create an Auth Layout for Future Screens
-- [ ] Step 9: Update User Type Definition in `types/models.ts`
-- [ ] Step 10: Test the Full Flow
+- [x] **Step 10: Test the Full Flow** ✅
+  - Tested all validation scenarios (empty fields, invalid email, short password, mismatched passwords)
+  - Successfully created user account in Firebase
+  - Verified user appears in Firebase Auth and Firestore
+  - Fixed dark mode styling issue (added backgroundColor and placeholderTextColor to TextInputs)
 
 ---
 

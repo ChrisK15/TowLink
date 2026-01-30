@@ -1,9 +1,9 @@
 export interface User {
 	id: string;
 	email: string;
-	name: string;
-	role: 'commuter' | 'driver' | 'both';
-	phone: string;
+	name?: string;
+	role: 'commuter' | 'driver' | 'both' | null;
+	phone?: string;
 	createdAt: Date;
 	rating?: number; // <- question mark means might not exist
 }
