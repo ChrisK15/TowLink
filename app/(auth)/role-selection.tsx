@@ -12,7 +12,10 @@ export default function RoleSelectionScreen() {
 	const [error, setError] = useState('');
 
 	const handleContinue = async () => {
-		if (!selectedRole) return;
+		if (!selectedRole) {
+			setError('Please select a role.');
+			return;
+		}
 
 		const currentUser = auth.currentUser;
 		if (!currentUser) {
@@ -23,7 +26,7 @@ export default function RoleSelectionScreen() {
 		setLoading(true);
 		try {
 			await updateUserRole(currentUser.uid, selectedRole);
-			console.log('Role selected successfully!');
+			console.log('Role saved successfully!', selectedRole);
 			router.replace('/(tabs)');
 		} catch (error: any) {
 			setError(error.message);
@@ -46,7 +49,7 @@ export default function RoleSelectionScreen() {
 				}}
 				disabled={loading}
 			>
-				<Text style={styles.cardIcon}>🚗</Text>
+				<Text style={styles.cardIcon}>👤</Text>
 				<Text style={styles.cardTitle}>Commuter</Text>
 				<Text style={styles.cardDescription}>I need a tow service</Text>
 			</Pressable>
@@ -58,7 +61,7 @@ export default function RoleSelectionScreen() {
 				}}
 				disabled={loading}
 			>
-				<Text style={styles.cardIcon}>🛻</Text>
+				<Text style={styles.cardIcon}>🚛</Text>
 				<Text style={styles.cardTitle}>Driver</Text>
 				<Text style={styles.cardDescription}>I offer tow services</Text>
 			</Pressable>
