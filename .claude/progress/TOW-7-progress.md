@@ -4,7 +4,7 @@
 
 **Status**: In Progress
 **Started**: January 27, 2026
-**Current Step**: Step 3 - Create the Signup Form UI
+**Current Step**: Step 7 - Update Navigation to Include Auth Routes
 
 ---
 
@@ -28,22 +28,53 @@
   - Included console.error logging for debugging
   - Student learned: Firebase error codes, UX-focused error messages, defensive programming
 
+- [x] **Step 3: Create the Signup Form UI** ✅
+  - Created `app/(auth)/signup.tsx` screen
+  - Built complete form with three TextInput components (email, password, confirm password)
+  - Set up component state with useState (5 state variables)
+  - Implemented conditional error display with ternary operator
+  - Created Pressable button with loading states
+  - Added secureTextEntry for password fields
+  - Student learned: React Native components, useState hook, conditional rendering, event handlers
+
+- [x] **Step 4: Implement Client-Side Validation** ✅
+  - Added validation logic in handleSignup function:
+    - All fields required check
+    - Email format validation (contains '@')
+    - Password length validation (minimum 8 characters)
+    - Password match validation
+  - Each validation shows user-friendly error message
+  - Used early returns to stop execution on validation failure
+  - Student learned: Form validation patterns, user experience considerations, defensive programming
+
+- [x] **Step 5: Connect Form to Service Layer** ✅
+  - Imported signUpWithEmail from authService
+  - Implemented async handleSignup function with try/catch/finally
+  - Set loading state before Firebase call
+  - Handled success with console.log (temporary)
+  - Displayed Firebase errors using error.message
+  - Reset loading state in finally block
+  - Student learned: Async/await patterns, error handling, loading state management, service layer integration
+
+- [x] **Step 6: Style the Signup Form** ✅ (Basic styling complete)
+  - Applied inline styles to all components
+  - Created centered layout with flex: 1 and justifyContent: 'center'
+  - Styled inputs with borders, padding, border radius
+  - Implemented conditional button styling (gray when loading, blue when active)
+  - Added conditional button text (loading vs ready state)
+  - Note: Using inline styles for now; can refactor to StyleSheet later if needed
+
 ---
 
 ## Current Step
-- [ ] **Step 3: Create the Signup Form UI**
-  - Create `app/(auth)/signup.tsx` screen
-  - Build form with email, password, confirm password inputs
-  - Set up component state with useState
-  - Create basic component structure
+- [ ] **Step 7: Update Navigation to Include Auth Routes**
+  - Update `app/_layout.tsx` to add (auth) route group
+  - Configure navigation to show signup screen
+  - Test navigation flow
 
 ---
 
 ## Remaining Steps
-- [ ] Step 3: Create the Signup Form UI (`app/(auth)/signup.tsx`)
-- [ ] Step 4: Implement Client-Side Validation
-- [ ] Step 5: Connect Form to Service Layer
-- [ ] Step 6: Style the Signup Form
 - [ ] Step 7: Update Navigation to Include Auth Routes
 - [ ] Step 8: Create an Auth Layout for Future Screens
 - [ ] Step 9: Update User Type Definition in `types/models.ts`
@@ -64,6 +95,11 @@
 - **Pattern established**: Service layer functions use try/catch, async/await, and return typed promises
 - **Step 2 Decision**: Implemented three primary Firebase error cases plus fallback error for comprehensive coverage
 - **Folder structure**: Created `app/(auth)/` route group for authentication screens (Step 3 prep)
+- **Steps 3-5 Combined**: Student built UI, validation, and service integration together in one flow, which helped connect the concepts
+- **Inline vs StyleSheet**: Used inline styles for rapid prototyping; component is functional and can be refactored later if needed
+- **Validation Pattern**: Established early return pattern for validation checks - clean and readable
+- **Error Handling Discovery**: Student learned about error.message vs error object through debugging (line 39 fix)
+- **Conditional Rendering**: Mastered ternary operator for showing/hiding error messages and changing button states
 
 ---
 
