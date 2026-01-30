@@ -1,11 +1,12 @@
 import { signUpWithEmail } from '@/services/firebase/authService';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
 function validateSignupForm(
 	email: string,
 	password: string,
-	confirmPassword: string
+	confirmPassword: string,
 ): string | null {
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	if (!email || !password || !confirmPassword) {
@@ -35,7 +36,7 @@ export default function SignupScreen() {
 		const validationError = validateSignupForm(
 			email,
 			password,
-			confirmPassword
+			confirmPassword,
 		);
 		if (validationError) {
 			setError(validationError);
@@ -47,6 +48,7 @@ export default function SignupScreen() {
 		try {
 			const result = await signUpWithEmail(email, password);
 			console.log('Account created successfully!', result.userId);
+			router.replace('/role-selection');
 		} catch (error: any) {
 			setError(error.message);
 		} finally {
