@@ -249,7 +249,7 @@ if (!emailRegex.test(email)) {
 function validateSignupForm(
 	email: string,
 	password: string,
-	confirmPassword: string
+	confirmPassword: string,
 ): string | null {
 	if (!email || !password || !confirmPassword) {
 		return 'All fields are required.';
@@ -414,20 +414,17 @@ Based on progress notes, the following tests were conducted:
 ### Implemented Security Measures ✅
 
 1. **Password Security**
-
    - Passwords hidden with `secureTextEntry={true}` ✅
    - Minimum 8 character requirement ✅
    - No password logging in code ✅
    - Firebase handles hashing and encryption ✅
 
 2. **Data Protection**
-
    - No sensitive data in console.log statements ✅
    - Firebase Auth credentials stored securely by Firebase SDK ✅
    - React Native AsyncStorage persistence configured correctly ✅
 
 3. **Input Validation**
-
    - Client-side validation before server calls ✅
    - Firebase provides server-side validation ✅
    - Error messages don't leak sensitive info ✅
@@ -532,7 +529,6 @@ This is exactly the quality expected from a learning project.
 **Minor Optimization Opportunities**:
 
 1. **Inline Styles** (mentioned earlier)
-
    - Impact: Negligible (styles recreated each render)
    - Fix: Convert to StyleSheet
    - Priority: LOW
@@ -651,14 +647,12 @@ These are all minor issues that don't impact functionality.
 ### Before Marking TOW-7 as Done
 
 1. **Optional Improvements** (Student's Choice)
-
    - [ ] Refactor to use StyleSheet for better performance
    - [ ] Add theme colors from `@/constants/theme`
    - [ ] Improve email validation regex
    - [ ] Add success message or navigation after signup
 
 2. **Testing Recommendations**
-
    - [ ] Test on physical device (optional)
    - [ ] Test network failure scenarios
    - [ ] Verify Firestore security rules (future story)
