@@ -22,7 +22,6 @@ This project uses a **specialized agent-based coaching system**. You should unde
 
 ```
 User starts → project-manager → technical-architect → code-coach makes lesson plan → Claude Code coaches student and helps implement → quality-reviewer
-             (What to work on?)  (How to build it?)                         (Guide implementation)                                     (Review & test)
 ```
 
 ### Agent Communication via Files
@@ -30,18 +29,15 @@ User starts → project-manager → technical-architect → code-coach makes les
 Agents pass context through standardized files in `.claude/`:
 
 1. **Current Context**: `.claude/context/current-story.md`
-
    - What Jira story is being worked on
    - Updated by: `project-manager` agent
 
 2. **Technical Specs**: `.claude/specs/[STORY-ID].md`
-
    - Detailed implementation plans for each story
    - Created by: `technical-architect` agent
    - Read by: Claude Code and `quality-reviewer` agents
 
 3. **Progress Tracking**: `.claude/progress/[STORY-ID]-progress.md`
-
    - Step-by-step implementation progress
    - Created by: `code-coach` agent
    - Updated by: Claude Code

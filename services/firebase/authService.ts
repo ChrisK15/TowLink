@@ -1,6 +1,39 @@
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
+import {
+	createUserWithEmailAndPassword,
+	signInWithEmailAndPassword,
+} from 'firebase/auth';
+import { doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { auth, db } from './config';
+
+export async function signInWithEmail(
+	email: string,
+	password: string,
+): Promise<{ userId: string; email: string; role: string | null }> {
+	try {
+		const userCredential = await signInWithEmailAndPassword(
+			auth,
+			email,
+			password,
+		);
+		const user = userCredential.user;
+		const docRef = doc(db, 'users', user.uid);
+		const userDoc = await getDoc(docRef);
+		return {
+			userId: user.uid,
+			email: user.email ?? email,
+			role: userDoc.data()?.role,
+		};
+	} catch (error: any) {
+		console.error('Login error:', error);
+		if (error.code === 'auth/invalid-email') {
+			throw new Error('Email does not exist.');
+		}
+		if (error.code === 'auth/wrong-password') {
+			throw new Error('Incorrect password.');
+		}
+		throw new Error('Failed to sign in to account. Please try again.');
+	}
+}
 
 export async function signUpWithEmail(
 	email: string,
