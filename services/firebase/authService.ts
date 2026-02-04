@@ -21,7 +21,7 @@ export async function signInWithEmail(
 		return {
 			userId: user.uid,
 			email: user.email ?? email,
-			role: userDoc.data()?.role,
+			role: userDoc.data()?.role ?? null,
 		};
 	} catch (error: any) {
 		console.error('Login error:', error);

@@ -32,7 +32,7 @@ export default function LoginScreen() {
 
 		try {
 			const result = await signInWithEmail(email, password);
-			if (result.role) {
+			if (result.role === 'commuter' || result.role === 'driver') {
 				router.replace('/(tabs)');
 			} else {
 				router.replace('/role-selection');
