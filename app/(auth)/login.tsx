@@ -3,23 +3,23 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
+function validateLoginForm(email: string, password: string): string | null {
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	if (!email || !password) {
+		return 'All fields are required.';
+	}
+	if (!emailRegex.test(email)) {
+		return 'Please enter a valid email address';
+	}
+	return null;
+}
+
 export default function LoginScreen() {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(false);
-
-	function validateLoginForm(email: string, password: string): string | null {
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (!email || !password) {
-			return 'All fields are required.';
-		}
-		if (!emailRegex.test(email)) {
-			return 'Please enter a valid email address';
-		}
-		return null;
-	}
 
 	const handleLogin = async () => {
 		const validationError = validateLoginForm(email, password);
@@ -29,7 +29,7 @@ export default function LoginScreen() {
 		}
 
 		setLoading(true);
-
+		setError('');
 		try {
 			const result = await signInWithEmail(email, password);
 			if (result.role === 'commuter' || result.role === 'driver') {
