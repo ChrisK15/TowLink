@@ -33,7 +33,7 @@ export default function LoginScreen() {
 		try {
 			const result = await signInWithEmail(email, password);
 			if (result.role) {
-				router.replace('/(tabs)'); // REPLACE LATER WITH ACTUAL ROUTE
+				router.replace('/(tabs)');
 			} else {
 				router.replace('/role-selection');
 			}
@@ -82,9 +82,9 @@ export default function LoginScreen() {
 				onPress={() => {
 					router.replace('/signup');
 				}}
-				style={styles.signUpButton}
+				style={styles.signUpLink}
 			>
-				<Text style={styles.signUpButtonText}>
+				<Text style={styles.signUpLinkText}>
 					Don't have an account? Sign Up
 				</Text>
 			</Pressable>
@@ -126,10 +126,10 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		fontWeight: '600',
 	},
-	signUpButton: {
+	signUpLink: {
 		marginTop: 20,
 	},
-	signUpButtonText: {
+	signUpLinkText: {
 		color: '#0a7ea4',
 	},
 });

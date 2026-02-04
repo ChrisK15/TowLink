@@ -26,12 +26,20 @@ export async function signInWithEmail(
 	} catch (error: any) {
 		console.error('Login error:', error);
 		if (error.code === 'auth/invalid-email') {
-			throw new Error('Email does not exist.');
+			throw new Error('Invalid email format.');
+		}
+		if (error.code === 'auth/invalid-credential') {
+			throw new Error('Invalid email or password. Please check and try again.');
+		}
+		if (error.code === 'auth/user-not-found') {
+			throw new Error(
+				'No account found with this email. Please sign up first.',
+			);
 		}
 		if (error.code === 'auth/wrong-password') {
-			throw new Error('Incorrect password.');
+			throw new Error('Incorrect password. Please try again.');
 		}
-		throw new Error('Failed to sign in to account. Please try again.');
+		throw new Error('Login failed. Please try again.');
 	}
 }
 

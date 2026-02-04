@@ -1,7 +1,7 @@
 import { signUpWithEmail } from '@/services/firebase/authService';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 function validateSignupForm(
 	email: string,
@@ -57,17 +57,8 @@ export default function SignupScreen() {
 	};
 
 	return (
-		<View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
-			<Text
-				style={{
-					fontSize: 24,
-					fontWeight: 'bold',
-					marginBottom: 20,
-					color: '#fff',
-				}}
-			>
-				Create Account
-			</Text>
+		<View style={styles.container}>
+			<Text style={styles.title}>Create Account</Text>
 			<TextInput
 				placeholder="Email"
 				placeholderTextColor="#888"
@@ -75,13 +66,7 @@ export default function SignupScreen() {
 				onChangeText={setEmail}
 				keyboardType="email-address"
 				autoCapitalize="none"
-				style={{
-					borderWidth: 1,
-					padding: 10,
-					marginBottom: 10,
-					borderRadius: 5,
-					backgroundColor: '#fff',
-				}}
+				style={styles.input}
 			/>
 			<TextInput
 				placeholder="Password"
@@ -90,13 +75,7 @@ export default function SignupScreen() {
 				onChangeText={setPassword}
 				autoCapitalize="none"
 				secureTextEntry={true}
-				style={{
-					borderWidth: 1,
-					padding: 10,
-					marginBottom: 10,
-					borderRadius: 5,
-					backgroundColor: '#fff',
-				}}
+				style={styles.input}
 			/>
 			<TextInput
 				placeholder="Confirm Password"
@@ -105,33 +84,72 @@ export default function SignupScreen() {
 				onChangeText={setConfirmPassword}
 				autoCapitalize="none"
 				secureTextEntry={true}
-				style={{
-					borderWidth: 1,
-					padding: 10,
-					marginBottom: 10,
-					borderRadius: 5,
-					backgroundColor: '#fff',
-				}}
+				style={styles.input}
 			/>
-			{error ? (
-				<Text style={{ color: 'red', marginBottom: 10, textAlign: 'center' }}>
-					{error}
-				</Text>
-			) : null}
+			{error ? <Text style={styles.errorText}>{error}</Text> : null}
 			<Pressable
 				onPress={handleSignup}
 				disabled={loading}
-				style={{
-					backgroundColor: loading ? '#ccc' : '#0a7ea4',
-					padding: 15,
-					borderRadius: 8,
-					alignItems: 'center',
-				}}
+				style={[styles.button, loading ? styles.buttonDisabled : null]}
 			>
-				<Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>
+				<Text style={styles.buttonText}>
 					{loading ? 'Creating Account...' : 'Sign Up'}
 				</Text>
+			</Pressable>
+			<Pressable
+				onPress={() => {
+					router.replace('/login');
+				}}
+				style={styles.loginLink}
+			>
+				<Text style={styles.loginLinkText}>Already have an account? Login</Text>
 			</Pressable>
 		</View>
 	);
 }
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		justifyContent: 'center',
+		padding: 20,
+	},
+	title: {
+		fontSize: 24,
+		fontWeight: 'bold',
+		marginBottom: 20,
+		color: '#fff',
+	},
+	input: {
+		borderWidth: 1,
+		padding: 10,
+		marginBottom: 10,
+		borderRadius: 5,
+		backgroundColor: '#fff',
+	},
+	errorText: {
+		color: 'red',
+		marginBottom: 10,
+		textAlign: 'center',
+	},
+	button: {
+		backgroundColor: '#0a7ea4',
+		padding: 15,
+		borderRadius: 8,
+		alignItems: 'center',
+	},
+	buttonDisabled: {
+		backgroundColor: '#ccc',
+	},
+	buttonText: {
+		color: '#fff',
+		fontSize: 18,
+		fontWeight: '600',
+	},
+	loginLink: {
+		marginTop: 20,
+	},
+	loginLinkText: {
+		color: '#0a7ea4',
+	},
+});

@@ -25,6 +25,7 @@ TOW-9 has four distinct pieces of work. The order below is chosen so that each s
 ## Learning Objectives
 
 By the end of this story, you will understand:
+
 1. How to read a Firestore document with `getDoc()` (vs. writing with `setDoc()`/`updateDoc()` in TOW-7/TOW-8)
 2. How to chain two async operations (Firebase Auth sign-in, then Firestore read) inside a single service function
 3. How to use a return value from a service function to make a navigation decision in the screen component
@@ -36,16 +37,19 @@ By the end of this story, you will understand:
 ## Implementation Steps
 
 ### Step 1: Add `signInWithEmail()` to authService.ts
+
 **File**: `services/firebase/authService.ts`
 **Status**: [x] Done
 **Learning Focus**: Reading from Firestore, two-step async flow, error code mapping
 
 **What to do:**
+
 - Add `signInWithEmailAndPassword` to the existing `firebase/auth` import on line 1
 - Add `getDoc` to the existing `firebase/firestore` import on line 2
 - Write the new exported async function after `updateUserRole()` (after line 55)
 
 **Key concepts to understand before you write:**
+
 - `signUpWithEmail` (lines 5-42) only writes to Firebase. `signInWithEmail` does the opposite for auth (signs in, does not create), but also reads from Firestore. Look at how `signUpWithEmail` uses `userCredential.user` -- you will do the same thing, then take one more step.
 - The return type adds `role: string | null` to what `signUpWithEmail` returns. Why `string | null` and not the full TypeScript union? Because Firestore does not enforce TypeScript types at runtime. The screen checks the actual value.
 - The error codes for login are different from signup. The spec lists five. Map each one to a user-friendly message using the same `if (error.code === ...)` pattern you see on lines 29-40.
@@ -55,11 +59,13 @@ By the end of this story, you will understand:
 ---
 
 ### Step 2: Create the login screen -- structure and inputs
+
 **File**: `app/(auth)/login.tsx` (new file)
-**Status**: [ ] Not started
+**Status**: [x] Done
 **Learning Focus**: Component structure, validation function, controlled inputs, StyleSheet
 
 **What to do:**
+
 - Create the file with four sections: imports, validation function, component with state and handler stub, StyleSheet
 - The validation function (`validateLoginForm`) is simpler than signup's -- only two fields, no password length check. The spec explains why: on login you do not know the password until Firebase checks it, so length validation here would leak information.
 - Set up the four `useState` variables: `email`, `password`, `error`, `loading`
@@ -68,6 +74,7 @@ By the end of this story, you will understand:
 - Add the "Don't have an account? Sign Up" link at the bottom using `router.replace('/signup')`
 
 **Where to look for reference:**
+
 - `signup.tsx` lines 6-25: the validation function pattern (yours is shorter)
 - `signup.tsx` lines 27-57: the component state and handler pattern
 - `role-selection.tsx` lines 87-147: how to write a `StyleSheet.create()` block
@@ -78,11 +85,13 @@ By the end of this story, you will understand:
 ---
 
 ### Step 3: Wire up post-login routing in `handleLogin`
+
 **File**: `app/(auth)/login.tsx` (inside the `handleLogin` function)
-**Status**: [ ] Not started
+**Status**: [x] Done
 **Learning Focus**: Conditional navigation based on async data, try/catch/finally flow
 
 **What to do:**
+
 - Fill in the `try` block of `handleLogin`: call `signInWithEmail(email, password)`, destructure `role` from the result
 - Write the routing decision: if `role` is `'commuter'` or `'driver'`, replace to `/(tabs)`; otherwise replace to `/role-selection`
 - Make sure `setError('')` runs before the `try` (clears any previous error when the user retries)
@@ -96,11 +105,13 @@ By the end of this story, you will understand:
 ---
 
 ### Step 4: Add navigation links between signup and login
+
 **File**: `app/(auth)/signup.tsx`
-**Status**: [ ] Not started
+**Status**: [x] Done
 **Learning Focus**: Bidirectional screen linking, inline styles matching existing file conventions
 
 **What to do:**
+
 - In `signup.tsx`, add a `Pressable` + `Text` after the Sign Up button (after line 134, before the closing `</View>` on line 135)
 - Use `router.replace('/login')` -- `router` is already imported on line 2, no new imports needed
 - Use inline styles to stay consistent with the rest of signup.tsx (which does not use `StyleSheet.create`)
@@ -113,29 +124,30 @@ By the end of this story, you will understand:
 ---
 
 ### Step 5: End-to-end testing
-**Status**: [ ] Not started
+
+**Status**: [x] Done
 **Learning Focus**: Manual test coverage, mapping scenarios to acceptance criteria
 
 **Test scenarios to run (each maps to one acceptance criterion):**
 
-- [ ] **Happy path -- user with role set**: Log in with an account that has a role. Verify you land on tabs.
-- [ ] **Edge case -- user without role**: Log in with an account where role is null. Verify you land on role selection.
-- [ ] **Validation -- empty fields**: Tap "Log In" with nothing entered. Verify "All fields are required." appears. No network request should fire.
-- [ ] **Validation -- bad email format**: Type something that is not an email. Verify "Please enter a valid email address." appears.
-- [ ] **Firebase error -- wrong password**: Enter a real email with the wrong password. Verify a clear error message appears.
-- [ ] **Firebase error -- unknown email**: Enter an email that was never registered. Verify a clear error message appears.
-- [ ] **Loading state**: Tap "Log In" with valid credentials. Verify the button text changes to "Logging In..." and the button is visually disabled while the request is in flight.
-- [ ] **Navigation integrity**: Confirm the back button never takes you back to a screen you have already left in the auth flow.
+- [x] **Happy path -- user with role set**: Log in with an account that has a role. Verify you land on tabs.
+- [x] **Edge case -- user without role**: Log in with an account where role is null. Verify you land on role selection.
+- [x] **Validation -- empty fields**: Tap "Log In" with nothing entered. Verify "All fields are required." appears. No network request should fire.
+- [x] **Validation -- bad email format**: Type something that is not an email. Verify "Please enter a valid email address." appears.
+- [x] **Firebase error -- wrong password**: Enter a real email with the wrong password. Verify a clear error message appears.
+- [x] **Firebase error -- unknown email**: Enter an email that was never registered. Verify a clear error message appears.
+- [x] **Loading state**: Tap "Log In" with valid credentials. Verify the button text changes to "Logging In..." and the button is visually disabled while the request is in flight.
+- [x] **Navigation integrity**: Confirm the back button never takes you back to a screen you have already left in the auth flow.
 
 ---
 
 ## Completed Steps Summary
 
 - [x] Step 1: Add `signInWithEmail()` to authService.ts
-- [ ] Step 2: Create login screen (structure, inputs, validation, StyleSheet)
-- [ ] Step 3: Wire post-login routing in `handleLogin`
-- [ ] Step 4: Add "Log In" link to signup.tsx
-- [ ] Step 5: End-to-end manual testing
+- [x] Step 2: Create login screen (structure, inputs, validation, StyleSheet)
+- [x] Step 3: Wire post-login routing in `handleLogin`
+- [x] Step 4: Add "Log In" link to signup.tsx
+- [x] Step 5: End-to-end manual testing
 
 ---
 
