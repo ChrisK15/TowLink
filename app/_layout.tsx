@@ -7,8 +7,7 @@ import {
 } from '@react-navigation/native';
 import { Redirect, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import 'react-native-reanimated';
 
 export const unstable_settings = {
@@ -16,17 +15,7 @@ export const unstable_settings = {
 };
 
 function RootLayoutNav() {
-	const { user, role, loading, signOut } = useAuth();
-
-	useEffect(() => {
-		if (!loading && user && role === null) {
-			Alert.alert(
-				'Account Error',
-				'Your account role is missing or invalid. Please sign in again and complete role selection.',
-				[{ text: 'OK', onPress: () => signOut() }],
-			);
-		}
-	}, [loading, user, role, signOut]);
+	const { user, role, loading } = useAuth();
 
 	if (loading) {
 		return (
@@ -45,7 +34,7 @@ function RootLayoutNav() {
 		return <Redirect href="/(driver)" />;
 	}
 	if (!loading && user && role === null) {
-		return <Redirect href="/(auth)" />;
+		return <Redirect href="/role-selection" />;
 	}
 }
 
