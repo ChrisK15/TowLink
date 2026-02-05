@@ -100,6 +100,7 @@ export async function signOut() {
 	try {
 		await firebaseSignOut(auth);
 	} catch (error: any) {
-		console.log(error.message);
+		console.error('Sign out error:', error);
+		throw new Error('Error signing out, please try again.');
 	}
 }
