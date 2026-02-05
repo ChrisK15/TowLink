@@ -44,12 +44,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	async function refreshRole() {
 		if (!user) return;
-		const docRef = doc(db, 'users', user.uid);
-		const userDoc = await getDoc(docRef);
-		const data = userDoc.data();
-		if (data?.role === 'commuter' || data?.role === 'driver') {
-			setRole(data?.role);
-		} else {
+		try {
+			const docRef = doc(db, 'users', user.uid);
+			const userDoc = await getDoc(docRef);
+			const data = userDoc.data();
+			if (data?.role === 'commuter' || data?.role === 'driver') {
+				setRole(data?.role);
+			} else {
+				setRole(null);
+			}
+		} catch (error: any) {
+			console.error('Error while refreshing role:', error);
 			setRole(null);
 		}
 	}
