@@ -31,12 +31,7 @@ export default function LoginScreen() {
 		setLoading(true);
 		setError('');
 		try {
-			const result = await signInWithEmail(email, password);
-			if (result.role === 'commuter' || result.role === 'driver') {
-				router.replace('/(tabs)');
-			} else {
-				router.replace('/role-selection');
-			}
+			await signInWithEmail(email, password);
 		} catch (error: any) {
 			setError(error.message);
 		} finally {
