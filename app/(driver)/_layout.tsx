@@ -6,7 +6,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export default function CommuterLayout() {
+export default function DriverLayout() {
 	const colorScheme = useColorScheme();
 
 	return (
