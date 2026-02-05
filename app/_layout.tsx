@@ -35,7 +35,7 @@ function RootLayoutNav() {
 	}
 	if (role === null) {
 		return <Redirect href="/role-selection" />; //role: null is expected during signup so we route to role-selection instead of signing out.
-
+	}
 }
 
 export default function RootLayout() {
