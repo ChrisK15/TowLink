@@ -1,9 +1,6 @@
+import { signOut } from '@/services/firebase/authService';
 import { auth, db } from '@/services/firebase/config';
-import {
-    signOut as firebaseSignOut,
-    User as FirebaseUser,
-    onAuthStateChanged,
-} from 'firebase/auth';
+import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { createContext, useContext, useEffect, useState } from 'react';
 
@@ -44,14 +41,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 		return () => unsubscribe();
 	}, []);
-
-	async function signOut() {
-		try {
-			await firebaseSignOut(auth);
-		} catch (error: any) {
-			console.log(error.message);
-		}
-	}
 
 	async function refreshRole() {
 		if (!user) return;

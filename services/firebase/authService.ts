@@ -1,5 +1,6 @@
 import {
 	createUserWithEmailAndPassword,
+	signOut as firebaseSignOut,
 	signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
@@ -92,5 +93,13 @@ export async function updateUserRole(
 	} catch (error: any) {
 		console.error('Role selection error:', error);
 		throw new Error('Error selecting role. Please try again.');
+	}
+}
+
+export async function signOut() {
+	try {
+		await firebaseSignOut(auth);
+	} catch (error: any) {
+		console.log(error.message);
 	}
 }
