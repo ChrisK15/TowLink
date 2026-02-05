@@ -2,7 +2,7 @@ import { signOut } from '@/services/firebase/authService';
 import { auth, db } from '@/services/firebase/config';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface AuthContextType {
 	user: FirebaseUser | null;
