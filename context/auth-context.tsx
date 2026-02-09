@@ -23,15 +23,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
 			if (firebaseUser) {
 				setUser(firebaseUser);
-				const docRef = doc(db, 'users', firebaseUser.uid);
-				const userDoc = await getDoc(docRef);
-				const data = userDoc.data();
-				if (data?.role === 'commuter' || data?.role === 'driver') {
-					setRole(data?.role);
-				} else {
+				try {
+					const docRef = doc(db, 'users', firebaseUser.uid);
+					const userDoc = await getDoc(docRef);
+					const data = userDoc.data();
+					if (data?.role === 'commuter' || data?.role === 'driver') {
+						setRole(data?.role);
+					} else {
+						setRole(null);
+					}
+				} catch (error: any) {
+					console.error('Error fetching user role', error);
 					setRole(null);
+				} finally {
+					setLoading(false);
 				}
-				setLoading(false);
 			} else {
 				setUser(null);
 				setRole(null);

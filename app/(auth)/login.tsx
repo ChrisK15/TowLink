@@ -80,7 +80,7 @@ export default function LoginScreen() {
 				style={styles.signUpLink}
 			>
 				<Text style={styles.signUpLinkText}>
-					Don't have an account? Sign Up
+					Don&apos;t have an account? Sign Up
 				</Text>
 			</Pressable>
 		</View>
