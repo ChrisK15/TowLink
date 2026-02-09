@@ -1,10 +1,12 @@
 import { createRequest } from '@/services/firebase/firestore';
+import { useAuth } from '@/context/auth-context';
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 export default function CommuterScreen() {
+	const { signOut, user } = useAuth();
 	const [userLocation, setUserLocation] = useState<{
 		latitude: number;
 		longitude: number;
@@ -58,10 +60,15 @@ export default function CommuterScreen() {
 			return;
 		}
 
+		if (!user) {
+			Alert.alert('Error', 'You must be signed in to create a request');
+			return;
+		}
+
 		setIsCreatingRequest(true);
 		try {
 			const requestId = await createRequest(
-				'test-commuter-001',
+				user.uid, // Use the actual authenticated user's ID
 				'My current location',
 				'Destination address',
 			);
@@ -116,6 +123,23 @@ export default function CommuterScreen() {
 						? 'Creating Request...'
 						: 'Request Roadside Assistance'}
 				</Text>
+			</TouchableOpacity>
+
+			{/* Temporary Sign Out Button for Testing */}
+			<TouchableOpacity
+				style={styles.signOutButton}
+				onPress={() => {
+					Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+						{ text: 'Cancel', style: 'cancel' },
+						{
+							text: 'Sign Out',
+							style: 'destructive',
+							onPress: () => signOut(),
+						},
+					]);
+				}}
+			>
+				<Text style={styles.signOutText}>Sign Out</Text>
 			</TouchableOpacity>
 
 			<Text style={styles.title}>Commuter Screen</Text>
@@ -245,5 +269,24 @@ const styles = StyleSheet.create({
 		color: 'white',
 		fontSize: 12,
 		fontWeight: '600',
+	},
+	signOutButton: {
+		position: 'absolute',
+		top: 50,
+		right: 20,
+		backgroundColor: '#FF3B30',
+		paddingHorizontal: 16,
+		paddingVertical: 8,
+		borderRadius: 8,
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.3,
+		shadowRadius: 4,
+		elevation: 5,
+	},
+	signOutText: {
+		color: 'white',
+		fontSize: 14,
+		fontWeight: 'bold',
 	},
 });

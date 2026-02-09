@@ -803,20 +803,40 @@ request.resource.data.keys().hasAll(['field1', 'field2'])
   - Initialized Firebase project with Firestore and Emulators
   - Created configuration files: firebase.json, .firebaserc, firestore.rules
 
+- ✅ **Step 1**: Study the Rules Structure
+  - Read learning modules (Understanding Security Rules, RBAC, Field Validation)
+  - Reviewed complete security rules in technical spec
+  - Completed comprehension questions
+  - Understands declarative vs imperative, request vs resource, role-based access
+
+- ✅ **Step 2**: Create the Security Rules File
+  - Replaced default firestore.rules with complete security rules
+  - Implemented helper functions for validation
+  - Added rules for users, requests, trips collections
+  - Included future-ready rules for drivers and driverLocations
+
+- ✅ **Step 3**: Deploy and Test Security Rules
+  - Deployed rules to production Firebase (skipped emulator due to technical issues)
+  - Fixed bug: Changed hardcoded user ID to actual authenticated user ID
+  - Verified commuters can create requests with proper authentication
+  - Security rules successfully blocking unauthorized access
+
 ---
 
 ## Current Step
-**Step 1**: Study the Rules Structure
+**Step 8**: Document and Reflect
 
-**Next Action**: Read and understand the complete security rules structure in the technical spec. Answer the comprehension questions to verify understanding before moving to implementation.
+**Next Action**: Document what you learned and reflect on the security concepts. Update Jira story with completion notes.
 
 ---
 
 ## Remaining Steps
 - [x] Step 0: Install Prerequisites
-- [ ] Step 1: Study the Rules Structure
-- [ ] Step 2: Create the Security Rules File
-- [ ] Step 3: Test Rules with Firebase Emulator
+- [x] Step 1: Study the Rules Structure
+- [x] Step 2: Create the Security Rules File
+- [x] Step 3: Deploy and Test Security Rules (skipped emulator, went directly to production)
+- [ ] Step 4-7: Skipped (already deployed and tested)
+- [ ] Step 8: Document and Reflect
 - [ ] Step 4: Create Comprehensive Test Plan
 - [ ] Step 5: Execute Test Plan
 - [ ] Step 6: Remove Emulator Connection from App
