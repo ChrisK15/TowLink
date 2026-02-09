@@ -1,0 +1,249 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Check if user owns this resource
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Check if incoming data has required fields
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    // Check if field value is valid string (not empty)
+    function isValidString(field) {
+      return request.resource.data[field] is string
+        && request.resource.data[field].size() > 0;
+    }
+
+    // Check if location object is valid
+    function isValidLocation(location) {
+      return location.keys().hasAll(['latitude', 'longitude'])
+        && location.latitude is number
+        && location.longitude is number
+        && location.latitude >= -90 && location.latitude <= 90
+        && location.longitude >= -180 && location.longitude <= 180;
+    }
+
+    // Check if timestamp is valid (not in the past for creation)
+    function isValidTimestamp(field) {
+      return request.resource.data[field] is timestamp;
+    }
+
+    // Check if user has driver role
+    function isDriver() {
+      return isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['driver', 'both'];
+    }
+
+    // Check if user has commuter role
+    function isCommuter() {
+      return isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['commuter', 'both'];
+    }
+
+    // ============================================
+    // USERS COLLECTION
+    // ============================================
+    match /users/{userId} {
+      // Anyone authenticated can read any user profile
+      // (needed for showing driver info to commuters and vice versa)
+      allow read: if isAuthenticated();
+
+      // Users can only create their own profile during signup
+      allow create: if isAuthenticated()
+        && isOwner(userId)
+        && hasRequiredFields(['email', 'createdAt'])
+        && isValidString('email')
+        && request.resource.data.email == request.auth.token.email
+        && isValidTimestamp('createdAt')
+        // Role must be valid if provided
+        && (request.resource.data.role == null
+            || request.resource.data.role in ['commuter', 'driver', 'both']);
+
+      // Users can only update their own profile
+      allow update: if isAuthenticated()
+        && isOwner(userId)
+        // Cannot change critical fields
+        && request.resource.data.id == resource.data.id
+        && request.resource.data.email == resource.data.email
+        && request.resource.data.createdAt == resource.data.createdAt
+        // Role must remain valid
+        && (request.resource.data.role == null
+            || request.resource.data.role in ['commuter', 'driver', 'both']);
+
+      // Users cannot delete their own profile (use Cloud Function for account deletion)
+      allow delete: if false;
+    }
+
+    // ============================================
+    // REQUESTS COLLECTION
+    // ============================================
+    match /requests/{requestId} {
+      // Any authenticated user can read requests
+      // (drivers need to see all searching requests)
+      allow read: if isAuthenticated();
+
+      // Only commuters can create requests
+      allow create: if isAuthenticated()
+        && isCommuter()
+        && hasRequiredFields([
+          'commuterId',
+          'location',
+          'dropoffLocation',
+          'address',
+          'serviceType',
+          'status',
+          'createdAt',
+          'expiresAt'
+        ])
+        // Must be creating request for themselves
+        && request.resource.data.commuterId == request.auth.uid
+        // Validate location objects
+        && isValidLocation(request.resource.data.location)
+        && isValidLocation(request.resource.data.dropoffLocation)
+        // Address must be valid
+        && isValidString('address')
+        // Service type must be 'tow'
+        && request.resource.data.serviceType == 'tow'
+        // Initial status must be 'searching'
+        && request.resource.data.status == 'searching'
+        // Timestamps must be valid
+        && isValidTimestamp('createdAt')
+        && isValidTimestamp('expiresAt')
+        // matchedDriverId should be null initially
+        && (!request.resource.data.keys().hasAny(['matchedDriverId'])
+            || request.resource.data.matchedDriverId == null);
+
+      // Commuters can update their own requests (for cancellation)
+      // Drivers can update requests to accept them
+      allow update: if isAuthenticated()
+        && (
+          // Commuter cancelling their own request
+          (resource.data.commuterId == request.auth.uid
+            && request.resource.data.status == 'cancelled'
+            && request.resource.data.commuterId == resource.data.commuterId)
+          ||
+          // Driver accepting a request
+          (isDriver()
+            && resource.data.status == 'searching'
+            && request.resource.data.status == 'accepted'
+            && request.resource.data.matchedDriverId == request.auth.uid
+            && request.resource.data.commuterId == resource.data.commuterId)
+        );
+
+      // No one can delete requests (keep for records)
+      allow delete: if false;
+    }
+
+    // ============================================
+    // TRIPS COLLECTION
+    // ============================================
+    match /trips/{tripId} {
+      // Participants can read their own trips
+      allow read: if isAuthenticated()
+        && (resource.data.commuterId == request.auth.uid
+            || resource.data.driverId == request.auth.uid);
+
+      // Only drivers can create trips (when accepting a request)
+      allow create: if isAuthenticated()
+        && isDriver()
+        && hasRequiredFields([
+          'requestId',
+          'commuterId',
+          'driverId',
+          'status',
+          'pickupLocation',
+          'dropoffLocation',
+          'startTime',
+          'estimatedPrice'
+        ])
+        // Trip must be for the driver creating it
+        && request.resource.data.driverId == request.auth.uid
+        // Initial status must be 'en_route'
+        && request.resource.data.status == 'en_route'
+        // Validate locations
+        && isValidLocation(request.resource.data.pickupLocation)
+        && isValidLocation(request.resource.data.dropoffLocation)
+        // Timestamps
+        && isValidTimestamp('startTime')
+        // Price must be positive
+        && request.resource.data.estimatedPrice is number
+        && request.resource.data.estimatedPrice > 0
+        // Distance should be 0 initially
+        && request.resource.data.distance == 0;
+
+      // Drivers can update their trips to change status
+      // Commuters cannot update trips (read-only for them)
+      allow update: if isAuthenticated()
+        && resource.data.driverId == request.auth.uid
+        // Cannot change core fields
+        && request.resource.data.requestId == resource.data.requestId
+        && request.resource.data.commuterId == resource.data.commuterId
+        && request.resource.data.driverId == resource.data.driverId
+        && request.resource.data.startTime == resource.data.startTime
+        // Status must be valid progression
+        && request.resource.data.status in ['en_route', 'arrived', 'in_progress', 'completed', 'cancelled']
+        // If setting to completed, must have completionTime
+        && (request.resource.data.status != 'completed'
+            || isValidTimestamp('completionTime'))
+        // If setting to arrived, must have arrivalTime
+        && (request.resource.data.status != 'arrived'
+            || isValidTimestamp('arrivalTime'));
+
+      // No one can delete trips (keep for records)
+      allow delete: if false;
+    }
+
+    // ============================================
+    // DRIVERS COLLECTION (Future)
+    // ============================================
+    match /drivers/{driverId} {
+      // Any authenticated user can read driver profiles
+      allow read: if isAuthenticated();
+
+      // Only the user can create/update their own driver profile
+      allow create, update: if isAuthenticated()
+        && isOwner(driverId)
+        && isDriver();
+
+      // Cannot delete driver profiles
+      allow delete: if false;
+    }
+
+    // ============================================
+    // DRIVER LOCATIONS COLLECTION (Future)
+    // ============================================
+    match /driverLocations/{driverId} {
+      // Any authenticated user can read driver locations
+      // (commuters need to track their driver)
+      allow read: if isAuthenticated();
+
+      // Only the driver can update their own location
+      allow create, update: if isAuthenticated()
+        && isOwner(driverId)
+        && isDriver();
+
+      // Drivers can delete their location (when going offline)
+      allow delete: if isAuthenticated()
+        && isOwner(driverId);
+    }
+
+    // ============================================
+    // DEFAULT DENY ALL OTHER COLLECTIONS
+    // ============================================
+    // This ensures any new collections are denied by default
+    // Must explicitly add rules for new collections
+  }
+}
