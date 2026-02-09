@@ -1,59 +1,61 @@
-# Current Story: TOW-10
+# Current Story: TOW-11
 
 ## Story Details
-- **ID**: TOW-10
-- **Title**: US-1.4: Role-Based Navigation Routing
+- **ID**: TOW-11
+- **Title**: US-1.7: Persistent Authentication State
 - **Epic**: TOW-1 (EPIC 1: User Authentication & Account Management)
-- **Priority**: Medium (marked CRITICAL in description; 5 story points)
+- **Priority**: HIGH (Medium in Jira, but marked HIGH in description)
 - **Sprint**: TOW Sprint 1 (Week 1-2)
-- **Story Points**: 5
+- **Story Points**: 3
 - **Status**: In Progress
-- **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-10
+- **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-11
 
 ## Description
 
-**As a** logged-in user
-**I want to** be automatically directed to the correct dashboard based on my role
-**So that** I see features relevant to me
-
-After a user authenticates (via signup or login), the app must read their stored role from Firestore and route them to the appropriate experience. Commuters should land on a commuter-specific home screen; drivers on a driver-specific home screen. This routing must survive app restarts (i.e., it is not a one-time post-login redirect -- it is the persistent navigation structure).
+**As a** user
+**I want to** stay logged in when I close and reopen the app
+**So that** I don't have to log in every time
 
 ## Acceptance Criteria
 
-- [ ] Commuters navigate to commuter home screen (map with "Request Assistance" button)
-- [ ] Drivers navigate to driver home screen (map with pending requests)
-- [ ] Role is checked from Firestore user document
-- [ ] Navigation persists across app restarts
-- [ ] If role is missing or invalid, show error and log out
+- [ ] User remains authenticated across app restarts
+- [ ] User is automatically navigated to their dashboard on app open
+- [ ] Auth state is checked on app launch
+- [ ] If token expires, user is logged out gracefully
 
 ## Technical Notes (from Jira)
 
-- Update app navigation structure to use role-based routing
-- Create `/app/(commuter)/_layout.tsx` and `/app/(driver)/_layout.tsx`
-- Use AuthContext to provide user role throughout app
+- Firebase Auth handles token persistence automatically
+- Create `AuthContext` with `useEffect` to listen to auth state changes
 
 ## Dependencies
 
-- **TOW-7** (User Sign Up with Email/Password) -- Done. Established the Firestore user document structure with the `role` field and the `authService.ts` service layer.
-- **TOW-8** (Role Selection During Signup) -- Done. The `role` field is reliably written to Firestore after signup.
-- **TOW-9** (User Login with Email/Password) -- Done. Login reads the role from Firestore post-authentication. The `signInWithEmail()` function and role-check logic already exist in `authService.ts`.
+- **TOW-7** (User Sign Up with Email/Password) -- Completed
+- **TOW-8** (Role Selection During Signup) -- Completed
+- **TOW-9** (User Login with Email/Password) -- Completed
+- **TOW-10** (Role-Based Navigation Routing) -- Completed
 
-## Codebase Context (as of TOW-9 completion)
+## Codebase Context
 
-### What Exists
-- `services/firebase/authService.ts` -- contains `signUpWithEmail()`, `signInWithEmail()`, and `updateUserRole()`. The login flow already reads the user's role from Firestore after sign-in.
-- `services/firebase/config.ts` -- exports `auth` and `db` (Firebase Auth and Firestore instances).
-- `app/(auth)/` -- auth route group with index, signup, login, and role-selection screens. Auth flow is complete.
-- `app/(tabs)/` -- current tab layout (generic, not yet role-split). Contains `index.tsx`, `commuter.tsx`, `driver.tsx`, and `_layout.tsx`.
-- `types/models.ts` -- has the `User` interface with `role: 'commuter' | 'driver' | 'both' | null`.
-- `app/_layout.tsx` -- root layout that orchestrates auth vs. app navigation.
+### What Exists (from TOW-10 completion)
+- `services/firebase/authService.ts` -- contains `signUpWithEmail()`, `signInWithEmail()`, `signOut()`, and `updateUserRole()`
+- `services/firebase/config.ts` -- exports `auth` and `db` (Firebase Auth and Firestore instances)
+- `app/(auth)/` -- auth route group with complete signup, login, and role selection flow
+- `app/(commuter)/` -- commuter-specific route group with tab navigation
+- `app/(driver)/` -- driver-specific route group with tab navigation
+- `app/_layout.tsx` -- root layout that manages auth vs. app navigation
+- `types/models.ts` -- has the `User` interface with `role: 'commuter' | 'driver' | 'both' | null`
 
 ### What Does NOT Exist Yet
-- `/app/(commuter)/` route group and its `_layout.tsx` (commuter-specific tab navigation)
-- `/app/(driver)/` route group and its `_layout.tsx` (driver-specific tab navigation)
-- An `AuthContext` (or equivalent) that exposes the current user's role to the entire app tree
-- Root-level routing logic that branches between `(commuter)` and `(driver)` based on the authenticated role
-- Handling for the "role missing or invalid" edge case at the navigation level (currently handled only at login time)
+- **AuthContext** or AuthProvider that:
+  - Listens to Firebase auth state changes (`onAuthStateChanged`)
+  - Fetches user role from Firestore when authenticated
+  - Exposes current user state and role app-wide
+  - Handles loading states during auth checks
+  - Manages token expiration gracefully
+- Auth state listener that persists across app restarts
+- Automatic navigation based on auth state at app launch
+- Loading screen while auth state is being determined
 
 ### Key Patterns to Follow
 - Service functions live in `services/firebase/authService.ts`, not in components
@@ -61,12 +63,29 @@ After a user authenticates (via signup or login), the app must read their stored
 - Use absolute imports with the `@/` prefix (e.g., `@/services/firebase/authService`)
 - Use `StyleSheet.create()` for styles
 - Firebase errors are caught and translated to user-friendly messages
+- Context providers should handle loading states properly
+
+## Current Branch
+
+TOW-11-us-1-7-persistent-authentication-state (clean working directory)
 
 ## Next Steps
 
-Invoke the `technical-architect` agent to create a detailed implementation specification for TOW-10. The architect should design:
-1. The AuthContext provider -- how user state (including role) is made available app-wide
-2. The root layout routing logic -- how `_layout.tsx` branches to `(commuter)` vs `(driver)` based on role
-3. The `(commuter)` and `(driver)` route groups and their layout files
-4. The placeholder commuter and driver home screens that satisfy the acceptance criteria
-5. The fallback path: what happens when role is missing or invalid (error screen + logout)
+Invoke the **technical-architect** agent to create a detailed implementation specification at `.claude/specs/TOW-11.md`.
+
+The technical architect should design:
+1. **AuthContext/AuthProvider** structure and API
+   - User state management (authenticated user + role)
+   - Loading state during auth checks
+   - Firebase auth state listener setup
+2. **Integration with existing code**
+   - How AuthProvider wraps the app in `_layout.tsx`
+   - How existing auth screens (login/signup) interact with AuthContext
+   - How role-based routing uses AuthContext
+3. **Auth persistence flow**
+   - App launch sequence (loading -> auth check -> navigate)
+   - Token expiration handling (graceful logout)
+   - Error states (network issues, invalid role, etc.)
+4. **Testing approach**
+   - How to test auth persistence manually
+   - Edge cases to verify (token expiration, role changes, etc.)
