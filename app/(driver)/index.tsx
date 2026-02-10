@@ -1,9 +1,11 @@
+import { useAuth } from '@/context/auth-context';
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 export default function DriverScreen() {
+	const { signOut, user } = useAuth();
 	const [driverLocation, setDriverLocation] = useState<{
 		latitude: number;
 		longitude: number;
@@ -79,6 +81,23 @@ export default function DriverScreen() {
 					<Text>📍</Text>
 				</TouchableOpacity>
 			)}
+
+			{/* Temporary Sign Out Button for Testing */}
+			<TouchableOpacity
+				style={styles.signOutButton}
+				onPress={() => {
+					Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+						{ text: 'Cancel', style: 'cancel' },
+						{
+							text: 'Sign Out',
+							style: 'destructive',
+							onPress: () => signOut(),
+						},
+					]);
+				}}
+			>
+				<Text style={styles.signOutText}>Sign Out</Text>
+			</TouchableOpacity>
 		</View>
 	);
 }
@@ -108,5 +127,24 @@ const styles = StyleSheet.create({
 	},
 	locationIcon: {
 		fontSize: 24,
+	},
+	signOutButton: {
+		position: 'absolute',
+		top: 50,
+		right: 20,
+		backgroundColor: '#FF3B30',
+		paddingHorizontal: 16,
+		paddingVertical: 8,
+		borderRadius: 8,
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.3,
+		shadowRadius: 4,
+		elevation: 5,
+	},
+	signOutText: {
+		color: 'white',
+		fontSize: 14,
+		fontWeight: 'bold',
 	},
 });
