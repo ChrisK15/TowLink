@@ -1,3 +1,4 @@
+import { Location } from '@/types/models';
 import {
 	addDoc,
 	collection,
@@ -18,6 +19,25 @@ export async function createRequest(
 	pickupAddress: string,
 	dropoffAddress: string,
 ) {
+	if (pickupLocation.latitude === 0 && pickupLocation.longitude === 0) {
+		throw new Error('Invalid pickup location.');
+	}
+	if (dropoffLocation.latitude === 0 && dropoffLocation.longitude === 0) {
+		throw new Error('Invalid dropoff location.');
+	}
+	if (Math.abs(pickupLocation.latitude) > 90) {
+		throw new Error('Invalid pickup latitude range.');
+	}
+	if (Math.abs(pickupLocation.longitude) > 180) {
+		throw new Error('Invalid pickup longitude range.');
+	}
+	if (Math.abs(dropoffLocation.latitude) > 90) {
+		throw new Error('Invalid dropoff latitude range.');
+	}
+	if (Math.abs(dropoffLocation.longitude) > 180) {
+		throw new Error('Invalid dropoff longitude range.');
+	}
+
 	const requestData = {
 		commuterId: commuterId,
 		location: pickupLocation,
