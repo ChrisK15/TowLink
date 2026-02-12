@@ -1,5 +1,5 @@
-import { createRequest } from '@/services/firebase/firestore';
 import { useAuth } from '@/context/auth-context';
+import { createRequest } from '@/services/firebase/firestore';
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -60,6 +60,11 @@ export default function CommuterScreen() {
 			return;
 		}
 
+		if (userLocation.latitude === 0 && userLocation.longitude === 0) {
+			Alert.alert('GPS Not Ready', 'Waiting for GPS Signal...');
+			return;
+		}
+
 		if (!user) {
 			Alert.alert('Error', 'You must be signed in to create a request');
 			return;
@@ -69,8 +74,10 @@ export default function CommuterScreen() {
 		try {
 			const requestId = await createRequest(
 				user.uid, // Use the actual authenticated user's ID
-				'My current location',
-				'Destination address',
+				userLocation,
+				{ latitude: 34.2407, longitude: -118.53 }, //CSUN coordinates, temporary will change later
+				'Test pickup address',
+				'Test dropoff address',
 			);
 			Alert.alert('Request sent, searching for nearby drivers...');
 

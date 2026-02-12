@@ -45,7 +45,8 @@ export interface Request {
 	commuterId: string;
 	location: Location;
 	dropoffLocation: Location;
-	address: string;
+	pickupAddress: string;
+	dropoffAddress: string;
 	serviceType: 'tow';
 	status: 'searching' | 'matched' | 'accepted' | 'cancelled';
 	matchedDriverId?: string; // only exists after being matched

@@ -1,96 +1,98 @@
-# Current Story: TOW-12
+# Current Story: TOW-14
 
 ## Story Details
-- **ID**: TOW-12
-- **Title**: US-6.1: Firebase Security Rules
-- **Epic**: TOW-6 (EPIC 6: System Reliability & Security)
+- **ID**: TOW-14
+- **Title**: US-2.2: Create Towing Request (FIX LOCATION BUG)
+- **Epic**: TOW-2 (EPIC 2: Commuter Request Flow)
 - **Priority**: Medium (marked CRITICAL in description)
-- **Sprint**: TOW Sprint 1 (ends 2026-02-09)
+- **Sprint**: TOW Sprint 2 (ends 2026-02-24)
 - **Story Points**: 5
 - **Status**: In Progress
-- **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-12
+- **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-14
 
 ## Description
 
-**As a** system
-**I want to** implement Firestore security rules
-**So that** users can only access their own data
+**As a** commuter
+**I want to** create a towing request with my current location
+**So that** nearby drivers can see and accept my request
 
-This is a critical security story to ensure data privacy and access control in the Firebase Firestore database. Without proper security rules, any authenticated user could potentially access or modify any data in the database.
+## CRITICAL BUG TO FIX
+
+Currently in `services/firebase/firestore.ts` line 11-12:
+
+```typescript
+location: { latitude: 0, longitude: 0 },  // ❌ HARDCODED
+dropoffLocation: { latitude: 0, longitude: 0 },  // ❌ HARDCODED
+```
+
+The request creation is working BUT it's using hardcoded coordinates (0,0) instead of real GPS location data. This needs to be fixed so that:
+1. Real pickup location coordinates are passed to `createRequest()`
+2. Real dropoff location coordinates are passed to `createRequest()`
+3. Address strings are also included for both locations
 
 ## Acceptance Criteria
 
-- [ ] Users can only read/write their own user document
-- [ ] Commuters can create requests
-- [ ] Drivers can read pending requests
-- [ ] Drivers can update trips they're assigned to
-- [ ] Only authenticated users can access the database
-- [ ] Rules tested using Firebase emulator
+- [x] "Request Roadside Assistance" button is visible
+- [x] Clicking button creates request in Firestore
+- [ ] **FIX: Request must use REAL location coordinates (currently hardcoded to 0,0)**
+- [ ] Request includes: commuterId, pickup location, dropoff location, timestamp, status: 'searching'
+- [ ] User sees confirmation message: "Searching for drivers..."
+- [ ] Button is disabled while creating request
+- [ ] Error handling if request creation fails
 
-## Technical Notes (from Jira)
+## Technical Fix Required
 
-Create `firestore.rules` file with these key rules:
+**Update `createRequest()` function signature in `services/firebase/firestore.ts`:**
 
-```javascript
-// Users can only access their own data
-match /users/{userId} {
-  allow read, write: if request.auth != null && request.auth.uid == userId;
-}
-
-// Anyone authenticated can read pending requests
-match /requests/{requestId} {
-  allow read: if request.auth != null;
-  allow create: if request.auth != null && request.resource.data.commuterId == request.auth.uid;
-}
-
-// Trips can be read by commuter or driver, updated by driver
-match /trips/{tripId} {
-  allow read: if request.auth != null &&
-    (resource.data.commuterId == request.auth.uid ||
-     resource.data.driverId == request.auth.uid);
-  allow update: if request.auth != null &&
-    resource.data.driverId == request.auth.uid;
-}
+```typescript
+export async function createRequest(
+  commuterId: string,
+  pickupLocation: { latitude: number; longitude: number },
+  dropoffLocation: { latitude: number; longitude: number },
+  pickupAddress: string,
+  dropoffAddress: string
+)
 ```
+
+**Update `app/(tabs)/commuter.tsx`:**
+- Pass real location from state (the component already has GPS location tracking)
+- Pass both pickup and dropoff locations with their addresses
+- The component uses `expo-location` and already has access to real coordinates
+
+## Current Implementation Status
+
+The commuter screen (TOW-39) was recently completed with:
+- GPS location tracking working
+- Google Maps displaying user's current location
+- Location state management in place
+
+This story builds on that work by connecting the real location data to the request creation function.
 
 ## Dependencies
 
-- Firebase project must be properly configured
-- Firebase CLI must be installed for testing with emulator
-- Existing Firebase authentication setup (from previous stories)
-- Understanding of Firestore data model (users, requests, trips collections)
-
-## Security Considerations
-
-This story is foundational for the entire app's security model. The rules must be:
-1. **Restrictive by default** - Deny access unless explicitly allowed
-2. **Properly authenticated** - All access requires valid authentication
-3. **User data isolation** - Users can only access their own data
-4. **Role-based access** - Commuters and drivers have different permissions
-5. **Field validation** - Ensure required fields are present and valid
-
-## Current Branch
-
-TOW-12-us-6-1-firebase-security-rules (clean working directory)
+- TOW-39 (Commuter Request Screen) - ✅ COMPLETE
+- GPS location tracking is already implemented
+- Firebase Firestore integration is already working
+- Just need to wire up the real data instead of hardcoded values
 
 ## Next Steps
 
-Invoke the **technical-architect** agent to create a detailed implementation specification at `.claude/specs/TOW-12.md`.
+Invoke the **technical-architect** agent to create a detailed implementation specification at `.claude/specs/TOW-14.md`.
 
 The technical architect should design:
-1. **Complete Firestore security rules structure**
-   - Rules for `/users/{userId}` collection
-   - Rules for `/requests/{requestId}` collection
-   - Rules for `/trips/{tripId}` collection
-   - Default deny rules
-2. **Field-level validation rules**
-   - Required fields for each document type
-   - Data type validation
-   - Business logic validation (e.g., commuterId matches auth.uid)
-3. **Testing strategy**
-   - Firebase emulator setup
-   - Test cases for each acceptance criterion
-   - Negative test cases (unauthorized access attempts)
-4. **Deployment process**
-   - How to deploy rules to Firebase
-   - Verification steps after deployment
+1. **Updated `createRequest()` function signature**
+   - Accept pickup/dropoff locations as parameters
+   - Accept pickup/dropoff address strings
+   - Maintain backward compatibility if needed
+2. **Changes to `commuter.tsx` component**
+   - How to extract location from current state
+   - How to handle dropoff location (destination selection UI may not exist yet)
+   - Error handling if location is not available
+3. **Validation logic**
+   - Ensure coordinates are valid (not 0,0)
+   - Ensure location permission is granted
+   - Handle edge cases (no GPS signal, etc.)
+4. **Testing strategy**
+   - Verify real coordinates are saved to Firestore
+   - Test on physical device (emulator GPS may be simulated)
+   - Verify request appears correctly to drivers
