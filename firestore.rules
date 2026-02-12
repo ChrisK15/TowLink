@@ -102,7 +102,8 @@ service cloud.firestore {
           'commuterId',
           'location',
           'dropoffLocation',
-          'address',
+          'pickupAddress',
+		  'dropoffAddress',
           'serviceType',
           'status',
           'createdAt',
@@ -114,7 +115,8 @@ service cloud.firestore {
         && isValidLocation(request.resource.data.location)
         && isValidLocation(request.resource.data.dropoffLocation)
         // Address must be valid
-        && isValidString('address')
+        && isValidString('pickupAddress')
+		&& isValidString('dropoffAddress')
         // Service type must be 'tow'
         && request.resource.data.serviceType == 'tow'
         // Initial status must be 'searching'
