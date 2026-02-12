@@ -13,14 +13,14 @@ import { db } from './config';
 
 export async function createRequest(
 	commuterId: string,
-	pickupAddress: string,
-	dropoffAddress: string,
 	pickupLocation: Location,
 	dropoffLocation: Location,
+	pickupAddress: string,
+	dropoffAddress: string,
 ) {
 	const requestData = {
 		commuterId: commuterId,
-		pickupLocation: pickupLocation,
+		location: pickupLocation,
 		dropoffLocation: dropoffLocation,
 		pickupAddress: pickupAddress,
 		dropoffAddress: dropoffAddress,
