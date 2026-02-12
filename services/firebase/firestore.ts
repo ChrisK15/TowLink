@@ -18,7 +18,7 @@ export async function createRequest(
 	dropoffLocation: Location,
 	pickupAddress: string,
 	dropoffAddress: string,
-) {
+): Promise<string> {
 	if (pickupLocation.latitude === 0 && pickupLocation.longitude === 0) {
 		throw new Error('Invalid pickup location.');
 	}
