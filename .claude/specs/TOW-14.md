@@ -1,15 +1,18 @@
 # Technical Specification: TOW-14
 
 ## Story Reference
+
 **Story**: TOW-14 - US-2.2: Create Towing Request (FIX LOCATION BUG)
 **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-14
 **Sprint**: TOW Sprint 2 (ends 2026-02-24)
 **Priority**: CRITICAL BUG FIX
 
 ### Problem Statement
+
 The request creation flow is working BUT the coordinates are hardcoded to `(0,0)` in `services/firebase/firestore.ts`. The commuter screen already has GPS location tracking working (from TOW-39), but this real data is not being passed to the `createRequest()` function.
 
 **Current Issue:**
+
 ```typescript
 // services/firebase/firestore.ts lines 11-12
 location: { latitude: 0, longitude: 0 },  // ❌ HARDCODED
@@ -69,39 +72,43 @@ This is a **data flow fix** that connects existing UI state to the backend servi
 **File**: `services/firebase/firestore.ts`
 
 **Current Function Signature** (lines 4-8):
+
 ```typescript
 export async function createRequest(
 	commuterId: string,
 	pickupAddress: string,
-	dropoffAddress: string
-)
+	dropoffAddress: string,
+);
 ```
 
 **New Function Signature**:
+
 ```typescript
 export async function createRequest(
 	commuterId: string,
 	pickupLocation: { latitude: number; longitude: number },
 	dropoffLocation: { latitude: number; longitude: number },
 	pickupAddress: string,
-	dropoffAddress: string
-): Promise<string>
+	dropoffAddress: string,
+): Promise<string>;
 ```
 
 **Changes Required**:
+
 1. Add `pickupLocation` parameter (before addresses)
 2. Add `dropoffLocation` parameter (before addresses)
 3. Replace hardcoded coordinates on lines 11-12 with the parameters
 4. Add validation to ensure coordinates are not `(0,0)` or invalid
 
 **Updated Implementation**:
+
 ```typescript
 export async function createRequest(
 	commuterId: string,
 	pickupLocation: { latitude: number; longitude: number },
 	dropoffLocation: { latitude: number; longitude: number },
 	pickupAddress: string,
-	dropoffAddress: string
+	dropoffAddress: string,
 ): Promise<string> {
 	// Validate coordinates are not zero
 	if (pickupLocation.latitude === 0 && pickupLocation.longitude === 0) {
@@ -113,30 +120,33 @@ export async function createRequest(
 	}
 
 	// Validate coordinates are in valid range
-	if (Math.abs(pickupLocation.latitude) > 90 || Math.abs(pickupLocation.longitude) > 180) {
+	if (
+		Math.abs(pickupLocation.latitude) > 90 ||
+		Math.abs(pickupLocation.longitude) > 180
+	) {
 		throw new Error('Invalid pickup coordinates: out of range');
 	}
 
-	if (Math.abs(dropoffLocation.latitude) > 90 || Math.abs(dropoffLocation.longitude) > 180) {
+	if (
+		Math.abs(dropoffLocation.latitude) > 90 ||
+		Math.abs(dropoffLocation.longitude) > 180
+	) {
 		throw new Error('Invalid dropoff coordinates: out of range');
 	}
 
 	const requestData = {
 		commuterId: commuterId,
-		location: pickupLocation,  // ✅ Use real coordinates
-		dropoffLocation: dropoffLocation,  // ✅ Use real coordinates
+		location: pickupLocation, // ✅ Use real coordinates
+		dropoffLocation: dropoffLocation, // ✅ Use real coordinates
 		address: pickupAddress,
 		serviceType: 'tow',
 		status: 'searching',
 		matchedDriverId: null,
 		createdAt: Timestamp.now(),
-		expiresAt: Timestamp.fromDate(new Date(Date.now() + 10 * 60 * 1000))
+		expiresAt: Timestamp.fromDate(new Date(Date.now() + 10 * 60 * 1000)),
 	};
 
-	const docRef = await addDoc(
-		collection(db, 'requests'),
-		requestData
-	);
+	const docRef = await addDoc(collection(db, 'requests'), requestData);
 
 	return docRef.id;
 }
@@ -149,6 +159,7 @@ export async function createRequest(
 **File**: `app/(commuter)/index.tsx`
 
 **Current State** (lines 10-16):
+
 ```typescript
 const [userLocation, setUserLocation] = useState<{
 	latitude: number;
@@ -160,6 +171,7 @@ const [isCreatingRequest, setIsCreatingRequest] = useState(false);
 ```
 
 **Add New State for Dropoff Location**:
+
 ```typescript
 const [dropoffLocation, setDropoffLocation] = useState<{
 	latitude: number;
@@ -168,6 +180,7 @@ const [dropoffLocation, setDropoffLocation] = useState<{
 ```
 
 **Current `handleRequestAssistance()` Function** (lines 57-84):
+
 ```typescript
 async function handleRequestAssistance() {
 	if (!userLocation) {
@@ -184,8 +197,8 @@ async function handleRequestAssistance() {
 	try {
 		const requestId = await createRequest(
 			user.uid,
-			'My current location',  // ❌ Placeholder
-			'Destination address',  // ❌ Placeholder
+			'My current location', // ❌ Placeholder
+			'Destination address', // ❌ Placeholder
 		);
 		Alert.alert('Request sent, searching for nearby drivers...');
 		console.log('Request created:', requestId);
@@ -199,14 +212,12 @@ async function handleRequestAssistance() {
 ```
 
 **Updated `handleRequestAssistance()` Function**:
+
 ```typescript
 async function handleRequestAssistance() {
 	// Validate pickup location exists
 	if (!userLocation) {
-		Alert.alert(
-			'Location Required',
-			'Please wait for your location to load'
-		);
+		Alert.alert('Location Required', 'Please wait for your location to load');
 		return;
 	}
 
@@ -232,30 +243,26 @@ async function handleRequestAssistance() {
 
 		const requestId = await createRequest(
 			user.uid,
-			userLocation,  // ✅ Real pickup coordinates
-			dropoff,  // ✅ Real dropoff coordinates
+			userLocation, // ✅ Real pickup coordinates
+			dropoff, // ✅ Real dropoff coordinates
 			pickupAddress,
-			dropoffAddress
+			dropoffAddress,
 		);
 
-		Alert.alert(
-			'Request Sent',
-			'Searching for nearby drivers...'
-		);
+		Alert.alert('Request Sent', 'Searching for nearby drivers...');
 		console.log('Request created with ID:', requestId);
 		console.log('Pickup location:', userLocation);
 		console.log('Dropoff location:', dropoff);
-
 	} catch (error) {
 		console.error('Error creating request:', error);
 
 		// Show specific error message if available
-		const errorMessage = error instanceof Error
-			? error.message
-			: 'Failed to create request. Please try again.';
+		const errorMessage =
+			error instanceof Error
+				? error.message
+				: 'Failed to create request. Please try again.';
 
 		Alert.alert('Error', errorMessage);
-
 	} finally {
 		setIsCreatingRequest(false);
 	}
@@ -269,6 +276,7 @@ async function handleRequestAssistance() {
 **File**: `types/models.ts`
 
 **Current Location Interface** (lines 38-41):
+
 ```typescript
 export interface Location {
 	latitude: number;
@@ -283,11 +291,13 @@ This interface is already correct and matches our needs. No changes required.
 ## Implementation Steps
 
 ### Step 1: Update the Service Function
+
 **File**: `services/firebase/firestore.ts`
 
 **Action**: Modify the `createRequest()` function signature and implementation
 
 **Changes**:
+
 1. Add two new parameters: `pickupLocation` and `dropoffLocation` (both type `{ latitude: number; longitude: number }`)
 2. Add validation logic to ensure coordinates are valid
 3. Replace hardcoded `{ latitude: 0, longitude: 0 }` with the parameter values
@@ -298,11 +308,13 @@ This interface is already correct and matches our needs. No changes required.
 ---
 
 ### Step 2: Update the Component Function Call
+
 **File**: `app/(commuter)/index.tsx`
 
 **Action**: Update the `handleRequestAssistance()` function to pass real coordinates
 
 **Changes**:
+
 1. Check that `userLocation` is not null (already done)
 2. Use `userLocation` as pickup coordinates
 3. For MVP, use `userLocation` as dropoff coordinates (temporary solution)
@@ -315,22 +327,25 @@ This interface is already correct and matches our needs. No changes required.
 ---
 
 ### Step 3: Add Validation Pre-Flight Checks
+
 **File**: `app/(commuter)/index.tsx`
 
 **Action**: Add additional validation in the UI layer
 
 **Changes**:
+
 1. Check if userLocation is `(0, 0)` and show warning
 2. Optionally add a visual indicator showing GPS accuracy
 3. Consider disabling button if location is not yet loaded
 
 **Code Hint**:
+
 ```typescript
 // Additional check before calling createRequest
 if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 	Alert.alert(
 		'Invalid Location',
-		'Waiting for GPS signal. Please ensure location services are enabled.'
+		'Waiting for GPS signal. Please ensure location services are enabled.',
 	);
 	return;
 }
@@ -339,9 +354,11 @@ if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 ---
 
 ### Step 4: Test and Verify
+
 **Action**: Manual testing on physical device or simulator
 
 **Test Cases**:
+
 1. Grant location permission → Verify GPS coordinates load on map
 2. Press "Request Roadside Assistance" → Verify request is created
 3. Check Firestore console → Verify `location` and `dropoffLocation` have real coordinates (not 0,0)
@@ -350,6 +367,7 @@ if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 6. Test with GPS signal weak/unavailable → Verify graceful degradation
 
 **Expected Results**:
+
 - Request document in Firestore has real latitude/longitude values
 - Console logs show non-zero coordinates
 - User sees confirmation message
@@ -358,9 +376,11 @@ if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 ---
 
 ### Step 5: Future Enhancement Hook
+
 **Action**: Add TODO comments for future destination picker
 
 **Add Comments**:
+
 ```typescript
 // TODO: TOW-XX - Add destination picker UI
 // Currently using current location as dropoff for MVP
@@ -376,9 +396,11 @@ if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 ## Edge Cases & Error Handling
 
 ### Edge Case 1: Location Permission Denied
+
 **Scenario**: User denies location permission or revokes it
 
 **Current Handling**:
+
 - `getUserLocation()` shows alert: "Permission denied, location access needed"
 - `userLocation` remains `null`
 - Button press shows: "Location required, please wait for your location to load"
@@ -388,13 +410,16 @@ if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 ---
 
 ### Edge Case 2: GPS Signal Not Available
+
 **Scenario**: User is indoors, GPS takes time to lock, or device has poor GPS
 
 **Current Handling**:
+
 - `userLocation` may be `null` or stale
 - User can still attempt to create request
 
 **New Handling**:
+
 - Add validation to check if coordinates are valid
 - Service layer rejects `(0, 0)` coordinates
 - Show specific error message to user
@@ -404,6 +429,7 @@ if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 ---
 
 ### Edge Case 3: Location Updates During Request Creation
+
 **Scenario**: User's location updates while request is being created
 
 **Current Handling**: Uses location at time of button press
@@ -413,9 +439,11 @@ if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 ---
 
 ### Edge Case 4: Dropoff Location Not Set (MVP)
+
 **Scenario**: No destination picker UI exists yet
 
 **Handling**:
+
 - Use current location as temporary dropoff
 - Add TODO comments for future enhancement
 - This is acceptable for MVP testing
@@ -425,9 +453,11 @@ if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 ---
 
 ### Edge Case 5: Invalid Coordinates from expo-location
+
 **Scenario**: expo-location returns invalid coordinates (rare but possible)
 
 **Handling**:
+
 - Service layer validates coordinates are in valid range
 - Latitude: -90 to 90
 - Longitude: -180 to 180
@@ -442,12 +472,14 @@ if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 ### Manual Testing Checklist
 
 **Pre-requisites**:
+
 - Device with GPS capability (physical device preferred)
 - Location services enabled
 - TowLink app installed
 - User logged in as commuter
 
 **Test Case 1: Happy Path**
+
 1. Open commuter screen
 2. Wait for GPS location to load (blue marker appears)
 3. Press "Request Roadside Assistance"
@@ -461,6 +493,7 @@ if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 ---
 
 **Test Case 2: No Location Permission**
+
 1. Revoke location permission in device settings
 2. Open commuter screen
 3. Alert should show: "Permission denied, location access needed"
@@ -473,6 +506,7 @@ if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 ---
 
 **Test Case 3: Location Loads Slowly**
+
 1. Open commuter screen immediately after app launch
 2. Press button before GPS location loads
 3. Verify: Alert shows location required message
@@ -485,6 +519,7 @@ if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 ---
 
 **Test Case 4: Multiple Requests**
+
 1. Create first request → succeeds
 2. Immediately create second request → succeeds
 3. Verify both documents in Firestore have real coordinates
@@ -495,6 +530,7 @@ if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 ---
 
 **Test Case 5: Simulator Testing (Limited)**
+
 1. Use iOS Simulator or Android Emulator
 2. Set custom location (e.g., San Francisco: 37.7749, -122.4194)
 3. Create request
@@ -507,6 +543,7 @@ if (userLocation.latitude === 0 && userLocation.longitude === 0) {
 ### Verification Commands
 
 **Check Firestore Data**:
+
 ```bash
 # Open Firebase Console
 open https://console.firebase.google.com/u/2/project/towlink-71a59/firestore/databases/-default-/data/~2Frequests
@@ -519,6 +556,7 @@ open https://console.firebase.google.com/u/2/project/towlink-71a59/firestore/dat
 ```
 
 **Check Console Logs**:
+
 ```bash
 # When running in Expo Go:
 npx expo start
@@ -534,12 +572,14 @@ npx expo start
 ## Dependencies
 
 ### Completed Dependencies
+
 - ✅ TOW-39: Commuter Request Screen with GPS tracking
 - ✅ Firebase Firestore integration
 - ✅ expo-location permission handling
 - ✅ TypeScript Location interface
 
 ### Future Dependencies (Not Blocking)
+
 - ⏳ TOW-XX: Destination picker UI (future enhancement)
 - ⏳ TOW-XX: Reverse geocoding for address strings (future enhancement)
 - ⏳ TOW-XX: Google Places autocomplete (future enhancement)
@@ -594,17 +634,20 @@ Before marking this story as complete, verify:
 ## Success Metrics
 
 **Functional Success**:
+
 - Request documents in Firestore have real, valid GPS coordinates
 - No more hardcoded `(0,0)` values
 - Error handling prevents invalid requests
 
 **Learning Success**:
+
 - Student understands how to pass data from UI to service layer
 - Student understands validation patterns (UI + service layer)
 - Student understands GPS location state management
 - Student can verify data in Firebase Console
 
 **Code Quality**:
+
 - Function signatures are clear and well-typed
 - Validation logic is comprehensive
 - Error messages are user-friendly
@@ -645,6 +688,6 @@ After this story is complete and verified:
 
 ---
 
-*Specification created: 2026-02-12*
-*Agent: technical-architect*
-*Next agent: code-coach (to create lesson plan and guide implementation)*
+_Specification created: 2026-02-12_
+_Agent: technical-architect_
+_Next agent: code-coach (to create lesson plan and guide implementation)_
