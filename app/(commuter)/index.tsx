@@ -75,7 +75,7 @@ export default function CommuterScreen() {
 			const requestId = await createRequest(
 				user.uid, // Use the actual authenticated user's ID
 				userLocation,
-				{ latitude: 34.2407, longitude: -118.53 }, //CSUN coordinates
+				{ latitude: 34.2407, longitude: -118.53 }, //CSUN coordinates, temporary will change later
 				'Test pickup address',
 				'Test dropoff address',
 			);
