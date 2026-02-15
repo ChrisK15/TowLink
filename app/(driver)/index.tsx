@@ -1,4 +1,6 @@
 import { useAuth } from '@/context/auth-context';
+import { updateDriverAvailability } from '@/services/firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -11,11 +13,29 @@ export default function DriverScreen() {
 		longitude: number;
 	} | null>(null);
 	const [mapRef, setMapRef] = useState<MapView | null>(null);
+	const [isOnline, setIsOnline] = useState(false);
+	const [isToggling, setIsToggling] = useState(false); // prevents double tapping while firestore is updating
 
 	// Get location
 	useEffect(() => {
 		getUserLocation();
 	}, []);
+
+	useEffect(() => {
+		loadSavedState();
+	}, []);
+
+	async function loadSavedState() {
+		try {
+			const saved = await AsyncStorage.getItem('driver_is_online');
+			if (saved && user?.uid) {
+				await updateDriverAvailability(user.uid, false, undefined);
+				await AsyncStorage.setItem('driver_is_online', JSON.stringify(false));
+			}
+		} catch (error) {
+			console.error('Error loading saved state:', error);
+		}
+	}
 
 	async function getUserLocation() {
 		try {

@@ -40,7 +40,7 @@ This screen is the foundation for the entire driver experience. Every future dri
 
 ## Current Step
 
-**Step 3: Add State Variables to Driver Screen**
+**Step 5: Create the Toggle Handler Function**
 
 ---
 
@@ -145,7 +145,7 @@ You'll test these in Step 5 when you wire them up to the UI. For now, focus on g
 
 ### Step 3: Add State Variables to Driver Screen
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Understand the different types of state needed for this feature and when to use each type.
@@ -184,7 +184,7 @@ const [isOnline, setIsOnline] = useState<boolean>(false);
 
 ### Step 4: Load Persisted State on Mount
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Learn how to load saved data from AsyncStorage and sync it with Firestore when the app starts.
@@ -1104,9 +1104,7 @@ Example:
 
 ### Questions for Coach
 
-(Write down questions as they come up)
-
-1. [Your questions here]
+1. Look into creating a story for `expo-task-manager` background location tracking (Phase 3) — driver should stay online when app is backgrounded but go offline on force-quit
 
 ---
 
