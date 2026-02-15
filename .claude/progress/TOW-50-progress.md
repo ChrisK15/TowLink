@@ -40,7 +40,7 @@ This screen is the foundation for the entire driver experience. Every future dri
 
 ## Current Step
 
-**Step 2: Add Firestore Service Functions**
+**Step 3: Add State Variables to Driver Screen**
 
 ---
 
@@ -84,7 +84,7 @@ npx expo install @react-native-async-storage/async-storage
 
 ### Step 2: Add Firestore Service Functions
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Learn to create reusable service functions for Firestore operations, including error handling and document creation patterns.
