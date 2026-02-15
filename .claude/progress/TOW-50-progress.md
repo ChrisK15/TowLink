@@ -40,7 +40,7 @@ This screen is the foundation for the entire driver experience. Every future dri
 
 ## Current Step
 
-**Step 1: Install AsyncStorage for State Persistence**
+**Step 2: Add Firestore Service Functions**
 
 ---
 
@@ -48,7 +48,7 @@ This screen is the foundation for the entire driver experience. Every future dri
 
 ### Step 1: Install AsyncStorage for State Persistence
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Understand why we need persistent storage and how AsyncStorage provides key-value storage that survives app restarts.
