@@ -56,6 +56,25 @@ export async function createRequest(
 	return docRef.id;
 }
 
+export async function updateDriverAvailability(
+	driverId: string,
+	isAvailable: boolean,
+	currentLocation?: Location,
+): Promise<void> {
+	try {
+		await updateDoc(doc(db, 'drivers', driverId), {
+			isAvailable: isAvailable,
+			updatedAt: Timestamp.now(),
+			currentLocation: currentLocation ? currentLocation : null,
+		});
+
+		console.log('Driver status updated: ', isAvailable);
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
+}
+
 export async function acceptRequest(
 	requestId: string,
 	driverId: string,

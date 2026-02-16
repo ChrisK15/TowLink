@@ -1,7 +1,19 @@
 import { useAuth } from '@/context/auth-context';
+import { db } from '@/services/firebase/config';
+import { updateDriverAvailability } from '@/services/firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
+import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+	Alert,
+	Linking,
+	StyleSheet,
+	Switch,
+	Text,
+	TouchableOpacity,
+	View,
+} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 export default function DriverScreen() {
@@ -11,18 +23,125 @@ export default function DriverScreen() {
 		longitude: number;
 	} | null>(null);
 	const [mapRef, setMapRef] = useState<MapView | null>(null);
+	const [isOnline, setIsOnline] = useState(false);
+	const [isToggling, setIsToggling] = useState(false); // prevents double tapping while firestore is updating
+	const [showBanner, setShowbanner] = useState(false);
 
 	// Get location
 	useEffect(() => {
 		getUserLocation();
 	}, []);
 
+	useEffect(() => {
+		if (user?.uid) {
+			loadSavedState();
+		}
+	}, [user]);
+
+	useEffect(() => {
+		if (user?.uid) {
+			initializeDriverDocument();
+		}
+	}, [user]);
+
+	// make banner disappear after 2 seconds
+	useEffect(() => {
+		if (isOnline) {
+			setShowbanner(true);
+			const timer = setTimeout(() => setShowbanner(false), 2000);
+			return () => clearTimeout(timer);
+		} else {
+			setShowbanner(false);
+		}
+	}, [isOnline]);
+
+	async function initializeDriverDocument() {
+		if (!user?.uid) {
+			return;
+		}
+		try {
+			const driverSnap = await getDoc(doc(db, 'drivers', user.uid));
+			if (!driverSnap.exists()) {
+				await setDoc(doc(db, 'drivers', user.uid), {
+					userId: user.uid,
+					isAvailable: false,
+					isVerified: false,
+					vehicleInfo: {
+						make: 'Unknown',
+						model: 'Unknown',
+						year: 2020,
+						licensePlate: 'N/A',
+						towingCapacity: 'Unknown',
+					},
+					currentLocation: { latitude: 0, longitude: 0 },
+					serviceRadius: 10, // miles
+					totalTrips: 0,
+					createdAt: Timestamp.now(),
+				});
+			}
+		} catch (error) {
+			console.error('Error initializing driver document:', error);
+		}
+	}
+
+	async function handleToggleOnline(value: boolean) {
+		if (!user?.uid) {
+			Alert.alert('Error', 'You must be signed in');
+			return;
+		}
+		if (value && !driverLocation) {
+			Alert.alert('Location Required', 'Please enable location to go online');
+			return;
+		}
+
+		try {
+			setIsToggling(true);
+			await updateDriverAvailability(
+				user.uid,
+				value,
+				value ? driverLocation! : undefined,
+			);
+			setIsOnline(value);
+			await AsyncStorage.setItem('driver_is_online', JSON.stringify(value));
+			Alert.alert(value ? 'You are now online!' : 'You are now offline!');
+		} catch (error: any) {
+			Alert.alert(
+				'Error toggling: ',
+				'failed to update status, please try again.',
+			);
+		} finally {
+			setIsToggling(false);
+		}
+	}
+
+	// Always start offline on app launch for safety/privacy.
+	// If driver was online before a force-quit, this cleans up stale Firestore state.
+	// Background persistence (staying online when app is backgrounded) is planned for Phase 3.
+	async function loadSavedState() {
+		try {
+			const saved = await AsyncStorage.getItem('driver_is_online');
+			if (saved && user?.uid) {
+				await updateDriverAvailability(user.uid, false, undefined);
+				await AsyncStorage.setItem('driver_is_online', JSON.stringify(false));
+			}
+		} catch (error) {
+			console.error('Error loading saved state:', error);
+		}
+	}
+
 	async function getUserLocation() {
 		try {
 			const { status } = await Location.requestForegroundPermissionsAsync();
 
 			if (status !== 'granted') {
-				Alert.alert('Permission denied, location access needed');
+				Alert.alert(
+					'Location Permission Required',
+					'TowLink needs location access to show your position. Please enable it in Settings.',
+					[
+						{ text: 'Cancel', style: 'cancel' },
+						{ text: 'Open Settings', onPress: () => Linking.openSettings() },
+					],
+				);
 				return;
 			}
 
@@ -72,15 +191,26 @@ export default function DriverScreen() {
 				)}
 			</MapView>
 
-			{/*Location Button bottom right*/}
-			{driverLocation && (
-				<TouchableOpacity
-					style={styles.locationButton}
-					onPress={centerOnDriver}
-				>
-					<Text>📍</Text>
-				</TouchableOpacity>
-			)}
+			{/* Status Card (top) */}
+			<View style={styles.statusCard}>
+				<View style={styles.statusRow}>
+					<View
+						style={[styles.statusDot, isOnline && styles.statusDotOnline]}
+					/>
+					<Text style={styles.statusText}>
+						{isOnline ? 'Online' : 'Offline'}
+					</Text>
+				</View>
+
+				<Switch
+					style={{ alignSelf: 'center' }}
+					value={isOnline}
+					onValueChange={handleToggleOnline}
+					disabled={isToggling}
+					trackColor={{ false: '#D1D1D6', true: '#007AFF' }}
+					thumbColor="#fff"
+				/>
+			</View>
 
 			{/* Temporary Sign Out Button for Testing */}
 			<TouchableOpacity
@@ -91,13 +221,65 @@ export default function DriverScreen() {
 						{
 							text: 'Sign Out',
 							style: 'destructive',
-							onPress: () => signOut(),
+							onPress: async () => {
+								if (isOnline && user?.uid) {
+									await updateDriverAvailability(user.uid, false, undefined);
+									await AsyncStorage.setItem(
+										'driver_is_online',
+										JSON.stringify(false),
+									);
+								}
+								signOut();
+							},
 						},
 					]);
 				}}
 			>
 				<Text style={styles.signOutText}>Sign Out</Text>
 			</TouchableOpacity>
+
+			{/* Info Banner */}
+			{showBanner && (
+				<View style={styles.infoBanner}>
+					<Text style={styles.infoBannerTitle}>
+						You're now online and broadcasting location
+					</Text>
+					<Text style={styles.infoBannerSubtitle}>
+						Ready to receive service requests
+					</Text>
+				</View>
+			)}
+
+			{!isOnline ? (
+				<View style={styles.bottomContainer}>
+					<Text style={styles.bottomText}>
+						Go online to start receiving requests
+					</Text>
+					<TouchableOpacity
+						style={styles.goOnlineButton}
+						onPress={() => handleToggleOnline(true)}
+						disabled={isToggling}
+					>
+						<Text style={styles.goOnlineButtonText}>
+							{isToggling ? 'Connecting...' : 'Go Online'}
+						</Text>
+					</TouchableOpacity>
+				</View>
+			) : (
+				<View style={styles.bottomContainer}>
+					<Text style={styles.waitingText}>Waiting for requests...</Text>
+				</View>
+			)}
+
+			{/*Location Button bottom right*/}
+			{driverLocation && (
+				<TouchableOpacity
+					style={styles.locationButton}
+					onPress={centerOnDriver}
+				>
+					<Text>📍</Text>
+				</TouchableOpacity>
+			)}
 		</View>
 	);
 }
@@ -109,6 +291,119 @@ const styles = StyleSheet.create({
 	map: {
 		flex: 1,
 	},
+
+	// Status Card (top)
+	statusCard: {
+		position: 'absolute',
+		top: 50,
+		left: 20,
+		right: 20,
+		backgroundColor: 'white',
+		borderRadius: 16,
+		padding: 16,
+		alignItems: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.1,
+		shadowRadius: 8,
+		elevation: 5,
+	},
+	statusRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+		marginBottom: 8,
+	},
+	statusDot: {
+		width: 12,
+		height: 12,
+		borderRadius: 6,
+		backgroundColor: '#8E8E93',
+	},
+	statusDotOnline: {
+		backgroundColor: '#34C759',
+	},
+	statusText: {
+		fontSize: 16,
+		fontWeight: '600',
+		color: '#000',
+	},
+
+	// Temporary Sign Out Button
+	signOutButton: {
+		position: 'absolute',
+		top: 145,
+		left: 20,
+		backgroundColor: '#FF3B30',
+		paddingHorizontal: 12,
+		paddingVertical: 6,
+		borderRadius: 8,
+	},
+	signOutText: {
+		color: 'white',
+		fontSize: 12,
+		fontWeight: 'bold',
+	},
+
+	// Info Banner (online only)
+	infoBanner: {
+		position: 'absolute',
+		top: 145,
+		left: 20,
+		right: 20,
+		backgroundColor: '#D1ECFF',
+		borderRadius: 12,
+		padding: 12,
+	},
+	infoBannerTitle: {
+		fontSize: 14,
+		fontWeight: '600',
+		color: '#000',
+		marginBottom: 2,
+	},
+	infoBannerSubtitle: {
+		fontSize: 12,
+		color: '#666',
+	},
+
+	// Bottom Container
+	bottomContainer: {
+		position: 'absolute',
+		bottom: 40,
+		left: 20,
+		right: 20,
+		alignItems: 'center',
+	},
+	bottomText: {
+		fontSize: 14,
+		color: '#666',
+		marginBottom: 12,
+		textAlign: 'center',
+	},
+	goOnlineButton: {
+		backgroundColor: '#007AFF',
+		paddingVertical: 16,
+		borderRadius: 12,
+		width: '100%',
+		alignItems: 'center',
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 4 },
+		shadowOpacity: 0.2,
+		shadowRadius: 8,
+		elevation: 5,
+	},
+	goOnlineButtonText: {
+		color: 'white',
+		fontSize: 16,
+		fontWeight: 'bold',
+	},
+	waitingText: {
+		fontSize: 14,
+		color: '#666',
+		textAlign: 'center',
+	},
+
+	// Location Button
 	locationButton: {
 		position: 'absolute',
 		bottom: 180,
@@ -124,27 +419,5 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.3,
 		shadowRadius: 4,
 		elevation: 5,
-	},
-	locationIcon: {
-		fontSize: 24,
-	},
-	signOutButton: {
-		position: 'absolute',
-		top: 50,
-		right: 20,
-		backgroundColor: '#FF3B30',
-		paddingHorizontal: 16,
-		paddingVertical: 8,
-		borderRadius: 8,
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.3,
-		shadowRadius: 4,
-		elevation: 5,
-	},
-	signOutText: {
-		color: 'white',
-		fontSize: 14,
-		fontWeight: 'bold',
 	},
 });
