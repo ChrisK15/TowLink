@@ -1,5 +1,6 @@
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import {
 	DarkTheme,
 	DefaultTheme,
@@ -8,6 +9,7 @@ import {
 import { Redirect, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
 export const unstable_settings = {
@@ -42,17 +44,26 @@ export default function RootLayout() {
 	const colorScheme = useColorScheme();
 
 	return (
-		<AuthProvider>
-			<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-				<RootLayoutNav />
-				<Stack>
-					<Stack.Screen name="(auth)" options={{ headerShown: false }} />
-					<Stack.Screen name="(commuter)" options={{ headerShown: false }} />
-					<Stack.Screen name="(driver)" options={{ headerShown: false }} />
-				</Stack>
-				<StatusBar style="auto" />
-			</ThemeProvider>
-		</AuthProvider>
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<BottomSheetModalProvider>
+				<AuthProvider>
+					<ThemeProvider
+						value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+					>
+						<RootLayoutNav />
+						<Stack>
+							<Stack.Screen name="(auth)" options={{ headerShown: false }} />
+							<Stack.Screen
+								name="(commuter)"
+								options={{ headerShown: false }}
+							/>
+							<Stack.Screen name="(driver)" options={{ headerShown: false }} />
+						</Stack>
+						<StatusBar style="auto" />
+					</ThemeProvider>
+				</AuthProvider>
+			</BottomSheetModalProvider>
+		</GestureHandlerRootView>
 	);
 }
 
