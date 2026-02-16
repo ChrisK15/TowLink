@@ -32,8 +32,10 @@ export default function DriverScreen() {
 	}, []);
 
 	useEffect(() => {
-		loadSavedState();
-	}, []);
+		if (user?.uid) {
+			loadSavedState();
+		}
+	}, [user]);
 
 	useEffect(() => {
 		if (user?.uid) {
