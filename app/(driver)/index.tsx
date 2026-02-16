@@ -90,7 +90,10 @@ export default function DriverScreen() {
 			await AsyncStorage.setItem('driver_is_online', JSON.stringify(value));
 			Alert.alert(value ? 'You are now online!' : 'You are now offline!');
 		} catch (error: any) {
-			Alert.alert('Error toggling:', error);
+			Alert.alert(
+				'Error toggling: ',
+				'failed to update status, please try again.',
+			);
 		} finally {
 			setIsToggling(false);
 		}
@@ -184,6 +187,32 @@ export default function DriverScreen() {
 				/>
 			</View>
 
+			{/* Temporary Sign Out Button for Testing */}
+			<TouchableOpacity
+				style={styles.signOutButton}
+				onPress={() => {
+					Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+						{ text: 'Cancel', style: 'cancel' },
+						{
+							text: 'Sign Out',
+							style: 'destructive',
+							onPress: async () => {
+								if (isOnline && user?.uid) {
+									await updateDriverAvailability(user.uid, false, undefined);
+									await AsyncStorage.setItem(
+										'driver_is_online',
+										JSON.stringify(false),
+									);
+								}
+								signOut();
+							},
+						},
+					]);
+				}}
+			>
+				<Text style={styles.signOutText}>Sign Out</Text>
+			</TouchableOpacity>
+
 			{/* Info Banner */}
 			{isOnline && (
 				<View style={styles.infoBanner}>
@@ -273,6 +302,22 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: '600',
 		color: '#000',
+	},
+
+	// Temporary Sign Out Button
+	signOutButton: {
+		position: 'absolute',
+		top: 145,
+		left: 20,
+		backgroundColor: '#FF3B30',
+		paddingHorizontal: 12,
+		paddingVertical: 6,
+		borderRadius: 8,
+	},
+	signOutText: {
+		color: 'white',
+		fontSize: 12,
+		fontWeight: 'bold',
 	},
 
 	// Info Banner (online only)

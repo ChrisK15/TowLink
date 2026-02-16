@@ -40,7 +40,7 @@ This screen is the foundation for the entire driver experience. Every future dri
 
 ## Current Step
 
-**Step 10: Test Location Permission Flow**
+**Step 13: Code Review and Cleanup**
 
 ---
 
@@ -634,7 +634,7 @@ import { db } from '@/services/firebase/config';
 
 ### Step 10: Test Location Permission Flow
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Learn to handle mobile permissions gracefully, including denied permissions and deep linking to Settings.
@@ -717,7 +717,7 @@ async function getUserLocation() {
 
 ### Step 11: Manual Testing - Basic Toggle Flow
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Learn to manually test a feature end-to-end, verifying both UI and database state.
@@ -801,7 +801,7 @@ npx expo start
 
 ### Step 12: Manual Testing - Edge Cases
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Learn to think like a QA engineer and test edge cases that might break your feature.
