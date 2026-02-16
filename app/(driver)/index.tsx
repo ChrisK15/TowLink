@@ -7,6 +7,7 @@ import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import {
 	Alert,
+	Linking,
 	StyleSheet,
 	Switch,
 	Text,
@@ -113,6 +114,9 @@ export default function DriverScreen() {
 		}
 	}
 
+	// Always start offline on app launch for safety/privacy.
+	// If driver was online before a force-quit, this cleans up stale Firestore state.
+	// Background persistence (staying online when app is backgrounded) is planned for Phase 3.
 	async function loadSavedState() {
 		try {
 			const saved = await AsyncStorage.getItem('driver_is_online');
@@ -130,7 +134,14 @@ export default function DriverScreen() {
 			const { status } = await Location.requestForegroundPermissionsAsync();
 
 			if (status !== 'granted') {
-				Alert.alert('Permission denied, location access needed');
+				Alert.alert(
+					'Location Permission Required',
+					'TowLink needs location access to show your position. Please enable it in Settings.',
+					[
+						{ text: 'Cancel', style: 'cancel' },
+						{ text: 'Open Settings', onPress: () => Linking.openSettings() },
+					],
+				);
 				return;
 			}
 
