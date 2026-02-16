@@ -31,7 +31,7 @@ This story teaches you how to build **bottom sheet UI components** - a common mo
 - [x] Step 3: Extend TypeScript Types
 
 ### Phase 2: Data Layer (Learning: Mock Data Patterns)
-- [ ] Step 4: Create Mock Request Data
+- [x] Step 4: Create Mock Request Data
 
 ### Phase 3: Component Building (Learning: Complex UI Components)
 - [ ] Step 5: Build RequestPopup Component (Part A: Structure)
