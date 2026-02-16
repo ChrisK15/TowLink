@@ -28,7 +28,7 @@ This story teaches you how to build **bottom sheet UI components** - a common mo
 ### Phase 1: Setup & Configuration (Learning: Library Integration)
 - [x] Step 1: Install Bottom Sheet Library
 - [x] Step 2: Configure Root Layout for Gestures
-- [ ] Step 3: Extend TypeScript Types
+- [x] Step 3: Extend TypeScript Types
 
 ### Phase 2: Data Layer (Learning: Mock Data Patterns)
 - [ ] Step 4: Create Mock Request Data

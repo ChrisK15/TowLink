@@ -52,6 +52,9 @@ export interface Request {
 	matchedDriverId?: string; // only exists after being matched
 	createdAt: Date;
 	expiresAt: Date;
+	commuterName?: string;
+	commuterPhone?: string;
+	vehicleInfo?: VehicleInfo;
 }
 
 export interface Trip {
