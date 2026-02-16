@@ -1,61 +1,37 @@
-# Current Story: TOW-50
+# Current Story: TOW-51
 
 ## Story Details
-- **ID**: TOW-50
-- **Title**: Driver Home Screen Online/Offline Toggle
-- **Epic**: Phase 2 - Driver Experience
+- **ID**: TOW-51
+- **Title**: Basic Request Pop-Up UI
+- **Epic**: EPIC 3: Driver Job Management
 - **Priority**: Medium
-- **Sprint**: Current Sprint (Active)
-- **Story Points**: Not specified
+- **Sprint**: TOW Sprint 2 (2026-02-12 to 2026-02-24)
+- **Story Points**: 3
 - **Status**: In Progress
-- **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-50
+- **Jira Link**: https://chriskelamyan115.atlassian.net/jira/software/projects/TOW/board?selectedIssue=TOW-51
 
 ## Description
-
 **As a** driver
-**I want to** toggle myself online/offline and see my location on a map
-**So that** I can control when I'm available for requests
+**I want to** see a request slide up from the bottom of my screen
+**So that** I can view the details before deciding to accept
 
 ## Acceptance Criteria
-
-- [ ] Driver home screen (`/app/(driver)/home.tsx`) created
-- [ ] Map displays driver's current location
-- [ ] Online/Offline toggle updates driver status in Firestore (`drivers/{id}.isAvailable`)
-- [ ] Toggle persists across app restarts
-- [ ] Map updates location in real-time when online
+- Bottom sheet component created (slides up from bottom, Uber-style)
+- Displays commuter info: name, pickup address, service type, car details
+- "Accept" and "Decline" buttons present
+- Smooth animation when appearing/disappearing
+- Pop-ups can only shows when driver is online
 
 ## Technical Notes
-
-- Use `expo-location` for GPS
-- Use `react-native-maps` for map display
-- Update `drivers/{driverId}` document: `isAvailable: true/false`
-- Simple UI - no request handling yet
+- Use `@gorhom/bottom-sheet` or similar library
+- For now, manually trigger pop-up (hardcoded request for testing)
+- Buttons don't need to work yet - just UI
+- Focus on smooth UX
 
 ## Dependencies
-
-**Follows:**
-- Commuter screen is complete (TOW-14 done)
-- Firebase Firestore integration is working
-- Map integration patterns established
-
-**Blocks:**
-- TOW-51: Basic Request Pop-Up UI (needs online/offline state)
-- TOW-52: Request Assignment & Claiming Logic (needs driver availability)
-- TOW-53: Integrate Real-Time Request Listening (needs online/offline state)
-
-## Context
-
-This is the first story in the driver experience flow. It establishes the foundation for the driver side of the app by:
-
-1. Creating the driver home screen structure
-2. Implementing GPS location tracking
-3. Setting up online/offline availability toggle
-4. Updating driver status in Firestore
-
-This screen will later be enhanced with request pop-ups (TOW-51) and real-time request listening (TOW-53), but for now the focus is on the basic map view and availability toggle.
-
-The implementation should mirror the patterns used in the commuter screen (`app/(tabs)/commuter.tsx`) which already has working map integration and location handling.
+- Requires driver to be in online state (from TOW-50)
+- Will need connection to Firebase for real requests in future stories
+- This is UI-only for now - no actual job acceptance logic
 
 ## Next Steps
-
-Invoke the `technical-architect` agent to create a detailed implementation specification for this story.
+Invoke the **technical-architect** agent to create a detailed implementation specification.
