@@ -40,7 +40,7 @@ This screen is the foundation for the entire driver experience. Every future dri
 
 ## Current Step
 
-**Step 5: Create the Toggle Handler Function**
+**Step 6: Add UI Components for Status Card**
 
 ---
 
@@ -242,7 +242,7 @@ Discuss this with your coach before implementing!
 
 ### Step 5: Create the Toggle Handler Function
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Learn to handle async operations with proper loading states, error handling, and user feedback.

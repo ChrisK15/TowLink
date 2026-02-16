@@ -25,6 +25,33 @@ export default function DriverScreen() {
 		loadSavedState();
 	}, []);
 
+	async function handleToggleOnline(value: boolean) {
+		if (!user?.uid) {
+			Alert.alert('Error', 'You must be signed in');
+			return;
+		}
+		if (value && !driverLocation) {
+			Alert.alert('Location Required', 'Please enable location to go online');
+			return;
+		}
+
+		try {
+			setIsToggling(true);
+			await updateDriverAvailability(
+				user.uid,
+				value,
+				value ? driverLocation! : undefined,
+			);
+			setIsOnline(value);
+			await AsyncStorage.setItem('driver_is_online', JSON.stringify(value));
+			Alert.alert(value ? 'You are now online!' : 'You are now offline!');
+		} catch (error: any) {
+			Alert.alert('Error toggling:', error);
+		} finally {
+			setIsToggling(false);
+		}
+	}
+
 	async function loadSavedState() {
 		try {
 			const saved = await AsyncStorage.getItem('driver_is_online');
