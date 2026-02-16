@@ -40,7 +40,7 @@ This screen is the foundation for the entire driver experience. Every future dri
 
 ## Current Step
 
-**Step 6: Add UI Components for Status Card**
+**Step 10: Test Location Permission Flow**
 
 ---
 
@@ -324,7 +324,7 @@ async function handleToggleOnline(value: boolean) {
 
 ### Step 6: Add UI Components for Status Card
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Learn to build conditional UI that changes based on state, using absolute positioning for overlays.
@@ -403,7 +403,7 @@ Learn to build conditional UI that changes based on state, using absolute positi
 
 ### Step 7: Add Bottom Section (Action Button or Status Text)
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Learn to create mutually exclusive UI components using conditional rendering.
@@ -463,7 +463,7 @@ Learn to create mutually exclusive UI components using conditional rendering.
 
 ### Step 8: Style All Components to Match Design
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Learn to translate design mockups into React Native StyleSheet code with proper spacing, colors, and shadows.
@@ -552,7 +552,7 @@ const styles = StyleSheet.create({
 
 ### Step 9: Initialize Driver Document if Missing
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Learn to handle the "new user" case where a driver document doesn't exist yet in Firestore.
