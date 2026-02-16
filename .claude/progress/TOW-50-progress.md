@@ -40,7 +40,7 @@ This screen is the foundation for the entire driver experience. Every future dri
 
 ## Current Step
 
-**Step 13: Code Review and Cleanup**
+**All Steps Complete!**
 
 ---
 
@@ -877,7 +877,7 @@ If you find bugs during testing, note them below and discuss with your coach:
 
 ### Step 13: Code Review and Cleanup
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Learn to review your own code with a critical eye, looking for improvements before submitting.
@@ -949,7 +949,7 @@ Go through your code and check for common issues, following the project's conven
 
 ### Step 14: Compare with Design Mockups
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Learn to compare your implementation with design mockups pixel by pixel, ensuring the UI matches the intended design.
@@ -1016,7 +1016,7 @@ These should be fixed:
 
 ### Step 15: Final Testing and Documentation
 
-**Status**: [ ] Not Started
+**Status**: [x] Complete
 
 **Learning Objective**:
 Learn to document your work and prepare it for code review.

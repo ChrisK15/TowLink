@@ -24,6 +24,7 @@ export default function DriverScreen() {
 	const [mapRef, setMapRef] = useState<MapView | null>(null);
 	const [isOnline, setIsOnline] = useState(false);
 	const [isToggling, setIsToggling] = useState(false); // prevents double tapping while firestore is updating
+	const [showBanner, setShowbanner] = useState(false);
 
 	// Get location
 	useEffect(() => {
@@ -39,6 +40,17 @@ export default function DriverScreen() {
 			initializeDriverDocument();
 		}
 	}, [user]);
+
+	// make banner disappear after 2 seconds
+	useEffect(() => {
+		if (isOnline) {
+			setShowbanner(true);
+			const timer = setTimeout(() => setShowbanner(false), 2000);
+			return () => clearTimeout(timer);
+		} else {
+			setShowbanner(false);
+		}
+	}, [isOnline]);
 
 	async function initializeDriverDocument() {
 		if (!user?.uid) {
@@ -214,7 +226,7 @@ export default function DriverScreen() {
 			</TouchableOpacity>
 
 			{/* Info Banner */}
-			{isOnline && (
+			{showBanner && (
 				<View style={styles.infoBanner}>
 					<Text style={styles.infoBannerTitle}>
 						You're now online and broadcasting location
