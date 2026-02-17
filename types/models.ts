@@ -55,6 +55,11 @@ export interface Request {
 	commuterName?: string;
 	commuterPhone?: string;
 	vehicleInfo?: VehicleInfo;
+	estimatedPickupDistance?: number;
+	totalTripDistance?: number;
+	estimatedETA?: number;
+	customerNotes?: string;
+	estimatedPrice?: string;
 }
 
 export interface Trip {
