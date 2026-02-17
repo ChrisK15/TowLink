@@ -1,12 +1,12 @@
 import { Request } from '@/types/models';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
 	Modal,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
-	ScrollView,
 } from 'react-native';
 
 interface RequestPopupProps {
@@ -22,12 +22,12 @@ export function RequestPopup({
 	onAccept,
 	onDecline,
 }: RequestPopupProps) {
-	const [timeLeft, setTimeLeft] = useState(15);
+	const [timeLeft, setTimeLeft] = useState(30);
 
 	// Timer countdown
 	useEffect(() => {
 		if (!visible || !request) {
-			setTimeLeft(15);
+			setTimeLeft(30);
 			return;
 		}
 
@@ -63,7 +63,7 @@ export function RequestPopup({
 	};
 
 	// Progress bar percentage and color
-	const progress = (timeLeft / 15) * 100;
+	const progress = (timeLeft / 30) * 100;
 	const isExpiringSoon = timeLeft <= 5;
 	const progressColor = isExpiringSoon ? '#FF3B30' : '#007AFF';
 	const timerColor = isExpiringSoon ? '#FF3B30' : '#007AFF';
@@ -84,7 +84,9 @@ export function RequestPopup({
 							⏱️ {timeLeft}s
 						</Text>
 						<Text style={styles.subtitle}>
-							{isExpiringSoon ? 'Request expiring soon!' : 'Auto-rejects in 15 seconds'}
+							{isExpiringSoon
+								? 'Request expiring soon!'
+								: 'Auto-rejects in 30 seconds'}
 						</Text>
 
 						{/* Progress Bar */}
