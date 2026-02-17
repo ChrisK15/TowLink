@@ -45,8 +45,8 @@ export default function RootLayout() {
 
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
-			<BottomSheetModalProvider>
-				<AuthProvider>
+			<AuthProvider>
+				<BottomSheetModalProvider>
 					<ThemeProvider
 						value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
 					>
@@ -61,8 +61,8 @@ export default function RootLayout() {
 						</Stack>
 						<StatusBar style="auto" />
 					</ThemeProvider>
-				</AuthProvider>
-			</BottomSheetModalProvider>
+				</BottomSheetModalProvider>
+			</AuthProvider>
 		</GestureHandlerRootView>
 	);
 }

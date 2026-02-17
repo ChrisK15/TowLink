@@ -32,7 +32,7 @@ export default function DriverScreen() {
 	const [currentRequest, setCurrentRequest] = useState<Request | undefined>(
 		undefined,
 	);
-	const [showPopup, setShowPopup] = useState(false); // request pop up
+	const [showPopup, setShowPopup] = useState(false);
 
 	// Get location
 	useEffect(() => {
@@ -181,17 +181,14 @@ export default function DriverScreen() {
 		const mockRequest = getRandomMockRequest();
 		setCurrentRequest(mockRequest);
 		setShowPopup(true);
-		console.log('Showing request:', mockRequest.id);
 	}
 
 	function handleAcceptRequest() {
-		console.log('Accepted Request:', currentRequest?.id);
 		Alert.alert('Request Accepted', 'This will work in Phase 3!');
 		setShowPopup(false);
 	}
 
 	function handleDeclineRequest() {
-		console.log('Declined request:', currentRequest?.id);
 		Alert.alert('Request Declined', 'Looking for another request...');
 		setShowPopup(false);
 	}
