@@ -1,6 +1,9 @@
+import { RequestPopup } from '@/components/RequestPopup';
 import { useAuth } from '@/context/auth-context';
 import { db } from '@/services/firebase/config';
 import { updateDriverAvailability } from '@/services/firebase/firestore';
+import { getRandomMockRequest } from '@/services/mockData/request';
+import { Request } from '@/types/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
@@ -26,6 +29,10 @@ export default function DriverScreen() {
 	const [isOnline, setIsOnline] = useState(false);
 	const [isToggling, setIsToggling] = useState(false); // prevents double tapping while firestore is updating
 	const [showBanner, setShowbanner] = useState(false);
+	const [currentRequest, setCurrentRequest] = useState<Request | undefined>(
+		undefined,
+	);
+	const [showPopup, setShowPopup] = useState(false);
 
 	// Get location
 	useEffect(() => {
@@ -170,6 +177,22 @@ export default function DriverScreen() {
 		}
 	}
 
+	function handleTestPopup() {
+		const mockRequest = getRandomMockRequest();
+		setCurrentRequest(mockRequest);
+		setShowPopup(true);
+	}
+
+	function handleAcceptRequest() {
+		Alert.alert('Request Accepted', 'This will work in Phase 3!');
+		setShowPopup(false);
+	}
+
+	function handleDeclineRequest() {
+		Alert.alert('Request Declined', 'Looking for another request...');
+		setShowPopup(false);
+	}
+
 	return (
 		<View style={styles.container}>
 			<MapView
@@ -268,6 +291,9 @@ export default function DriverScreen() {
 			) : (
 				<View style={styles.bottomContainer}>
 					<Text style={styles.waitingText}>Waiting for requests...</Text>
+					<TouchableOpacity style={styles.testButton} onPress={handleTestPopup}>
+						<Text style={styles.testButtonText}>🧪 Test Popup</Text>
+					</TouchableOpacity>
 				</View>
 			)}
 
@@ -280,6 +306,12 @@ export default function DriverScreen() {
 					<Text>📍</Text>
 				</TouchableOpacity>
 			)}
+			<RequestPopup
+				request={currentRequest}
+				visible={showPopup}
+				onAccept={handleAcceptRequest}
+				onDecline={handleDeclineRequest}
+			/>
 		</View>
 	);
 }
@@ -419,5 +451,18 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.3,
 		shadowRadius: 4,
 		elevation: 5,
+	},
+
+	testButton: {
+		marginTop: 16,
+		backgroundColor: '#34C759',
+		paddingVertical: 12,
+		paddingHorizontal: 24,
+		borderRadius: 8,
+	},
+	testButtonText: {
+		color: 'white',
+		fontSize: 14,
+		fontWeight: '600',
 	},
 });
