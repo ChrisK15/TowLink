@@ -5,46 +5,67 @@
 **Sprint**: TOW Sprint 2 (2026-02-12 to 2026-02-24)
 **Story Points**: 3
 **Started**: 2026-02-16
+**Completed**: 2026-02-16
+**Status**: ✅ COMPLETE
+
+---
+
+## 🎯 Technical Approach Change
+
+**Original Plan**: Use `@gorhom/bottom-sheet` library for a slide-up bottom sheet UI.
+
+**What Actually Happened**: After troubleshooting library compatibility issues with Expo Router and React Native Reanimated configuration, we pivoted to using **React Native's built-in Modal component** with a full-screen presentation. This turned out to be:
+- ✅ Simpler and more reliable
+- ✅ No third-party dependencies needed
+- ✅ Better learning experience (understanding when to pivot vs. debug)
+
+**Key Learning**: Sometimes the simpler solution is the better solution. Knowing when to pivot is an important engineering skill!
 
 ---
 
 ## Learning Overview
 
-This story teaches you how to build **bottom sheet UI components** - a common mobile pattern where content slides up from the bottom of the screen (like Uber, Lyft, DoorDash, etc). You'll learn about gesture handling, animation libraries, component composition, and mock data patterns.
+This story taught you how to build **modal popup UI components** for displaying time-sensitive information to users. You learned about React Native's Modal component, countdown timers, mock data patterns, and conditional rendering.
 
-### Key Learning Objectives
+### Key Learning Objectives ✅
 
-1. **Third-Party UI Libraries** - Installing and configuring `@gorhom/bottom-sheet`
-2. **Advanced React Patterns** - useRef, useCallback, useMemo for performance
-3. **Component Communication** - Parent-child callbacks and prop drilling
-4. **Mock Data Systems** - Creating realistic test data separate from production code
-5. **Gesture Handling** - Understanding swipe interactions and dismissal patterns
-6. **UI/UX Polish** - Smooth animations, accessibility, professional styling
+1. **React Native Modal Component** - Using the built-in Modal for full-screen overlays
+2. **Timer & State Management** - Implementing countdown timers with useEffect and useState
+3. **Component Communication** - Parent-child callbacks (onAccept, onDecline) and prop drilling
+4. **Mock Data Systems** - Creating realistic test data with varied scenarios
+5. **Conditional Rendering** - Handling optional fields gracefully with fallbacks
+6. **UI/UX Polish** - Progress bars, color changes, smooth animations, professional styling
+7. **Problem-Solving** - Learning when to pivot technical approaches vs. debugging
 
 ---
 
 ## Implementation Roadmap
 
-### Phase 1: Setup & Configuration (Learning: Library Integration)
-- [x] Step 1: Install Bottom Sheet Library
-- [x] Step 2: Configure Root Layout for Gestures
-- [x] Step 3: Extend TypeScript Types
+### Phase 1: Setup & Data Model
+- [x] Step 1: Extend TypeScript Types (Request interface)
+- [x] Step 2: Add optional fields for UI enhancements (distances, ETA, notes, price)
 
-### Phase 2: Data Layer (Learning: Mock Data Patterns)
-- [x] Step 4: Create Mock Request Data
+### Phase 2: Data Layer (Mock Data)
+- [x] Step 3: Create Mock Request Data (3 diverse scenarios)
+- [x] Step 4: Add realistic values for distances, ETA, and customer notes
 
-### Phase 3: Component Building (Learning: Complex UI Components)
-- [ ] Step 5: Build RequestPopup Component (Part A: Structure)
-- [ ] Step 6: Build RequestPopup Component (Part B: Styling)
+### Phase 3: Component Building (Modal UI)
+- [x] Step 5: Build RequestPopup Component with React Native Modal
+- [x] Step 6: Implement countdown timer with auto-decline
+- [x] Step 7: Add progress bar with color changes
+- [x] Step 8: Build all UI sections (commuter info, locations, service, vehicle, notes, ETA cards)
+- [x] Step 9: Add Accept/Decline action buttons
 
-### Phase 4: Integration (Learning: State Management)
-- [ ] Step 7: Integrate RequestPopup into Driver Screen
-- [ ] Step 8: Add Test Trigger Mechanism
+### Phase 4: Integration
+- [x] Step 10: Integrate RequestPopup into Driver Screen
+- [x] Step 11: Add Test Trigger Button
+- [x] Connect state management (visible, currentRequest, handlers)
 
-### Phase 5: Testing & Polish (Learning: QA Best Practices)
-- [ ] Step 9: Manual Testing of Interactions
-- [ ] Step 10: Style Refinement and Edge Cases
-- [ ] Step 11: Code Review and Cleanup
+### Phase 5: Testing & Polish
+- [x] Step 12: Manual testing with mock data
+- [x] Step 13: Style refinement to match design mockup
+- [x] Step 14: Handle optional fields gracefully
+- [x] Step 15: Clean up debugging code
 
 ---
 
@@ -1078,3 +1099,88 @@ The RequestPopup component you built here will be reused - you're building for t
 ---
 
 _Good luck! Remember: learning is more important than speed. Take your time, ask questions, and understand each concept before moving on._
+
+---
+
+## 🎉 Story Completion Summary
+
+**Date Completed**: 2026-02-16
+**Total Time**: ~4 hours (including troubleshooting and pivoting)
+
+### What We Built
+
+✅ **RequestPopup Component** (`components/RequestPopup.tsx`)
+- Full-screen modal using React Native's built-in Modal component
+- 30-second countdown timer with auto-decline
+- Progress bar that turns red when expiring soon (≤5 seconds)
+- Displays all request details: commuter info, locations, service type, vehicle, customer notes
+- ETA and distance info cards
+- Professional styling matching design mockup
+- Accept and Decline action buttons
+
+✅ **Extended Request Interface** (`types/models.ts`)
+- Added optional UI fields: `commuterName`, `commuterPhone`, `vehicleInfo`
+- Added calculation fields: `estimatedPickupDistance`, `totalTripDistance`, `estimatedETA`, `estimatedPrice`, `customerNotes`
+- All fields properly typed and optional for backward compatibility
+
+✅ **Enhanced Mock Data** (`services/mockData/request.ts`)
+- 3 diverse mock requests with realistic data
+- Different scenarios: distances, ETAs, prices, customer notes
+- Random selection function for testing variety
+
+✅ **Driver Screen Integration** (`app/(driver)/index.tsx`)
+- State management for popup visibility and current request
+- Test trigger button (only shows when online)
+- Accept/Decline handlers with alerts
+- Clean integration with existing online/offline toggle
+
+### Key Technical Decisions
+
+1. **Pivoted from @gorhom/bottom-sheet to React Native Modal**
+   - Reason: Library compatibility issues with Expo Router setup
+   - Outcome: Simpler, more reliable solution with no dependencies
+
+2. **30-second timer instead of 15**
+   - Student's decision for better UX
+
+3. **Optional fields for calculated data**
+   - Allows for graceful degradation
+   - Prepared for Phase 3 when real calculations happen in TOW-18
+
+### Files Created/Modified
+
+**Created:**
+- `components/RequestPopup.tsx` (335 lines)
+- `babel.config.js` (Reanimated plugin - not used but good to have)
+
+**Modified:**
+- `types/models.ts` - Extended Request interface
+- `services/mockData/request.ts` - Enhanced with new fields
+- `app/(driver)/index.tsx` - Integrated popup
+- `app/_layout.tsx` - Added gesture handler support (not used but ready)
+
+### Acceptance Criteria: ✅ ALL MET
+
+- ✅ Modal popup component created
+- ✅ Displays all required information
+- ✅ Accept and Decline buttons functional
+- ✅ Smooth animations
+- ✅ Only shows when driver is online
+- ✅ Test button triggers popup
+- ✅ Mock data works correctly
+- ✅ Auto-decline after timeout
+- ✅ Professional styling
+- ✅ TypeScript compiles without errors
+- ✅ Clean code organization
+
+### What's Next (TOW-18)
+
+In TOW-18 "View Request Details", we'll replace the hardcoded mock values with real calculations:
+- Calculate actual distance from driver to pickup location
+- Calculate total trip distance using Google Maps Distance Matrix API
+- Calculate realistic ETA based on current traffic
+- Display real customer notes from Firebase
+
+---
+
+**Story Status**: ✅ **READY FOR QUALITY REVIEW**

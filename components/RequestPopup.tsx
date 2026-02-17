@@ -123,7 +123,11 @@ export function RequestPopup({
 						<View style={styles.locationInfo}>
 							<Text style={styles.locationLabel}>Pickup Location</Text>
 							<Text style={styles.address}>{request.pickupAddress}</Text>
-							<Text style={styles.distance}>2.5 miles away</Text>
+							<Text style={styles.distance}>
+								{request.estimatedPickupDistance
+									? `${request.estimatedPickupDistance} miles away`
+									: 'Distance Calculating...'}
+							</Text>
 						</View>
 					</View>
 
@@ -135,7 +139,6 @@ export function RequestPopup({
 						<View style={styles.locationInfo}>
 							<Text style={styles.locationLabel}>Drop-off Location</Text>
 							<Text style={styles.address}>{request.dropoffAddress}</Text>
-							<Text style={styles.distance}>6.2 miles total trip</Text>
 						</View>
 					</View>
 
@@ -147,7 +150,11 @@ export function RequestPopup({
 						</View>
 						<View style={styles.fareContainer}>
 							<Text style={styles.fareLabel}>Estimated Fare</Text>
-							<Text style={styles.fare}>$95</Text>
+							<Text style={styles.fare}>
+								{request.estimatedPrice
+									? `$${request.estimatedPrice}`
+									: 'Price Calculating...'}
+							</Text>
 						</View>
 					</View>
 
@@ -169,8 +176,9 @@ export function RequestPopup({
 						<View style={styles.sectionContent}>
 							<Text style={styles.sectionLabel}>Customer Notes</Text>
 							<Text style={styles.notesText}>
-								"Won't start. Battery seems dead. Located in parking lot near
-								building entrance."
+								{request.customerNotes
+									? `${request.customerNotes}`
+									: 'No additional notes provided.'}
 							</Text>
 						</View>
 					</View>
@@ -180,12 +188,18 @@ export function RequestPopup({
 						<View style={styles.infoCard}>
 							<Text style={styles.infoIcon}>🕐</Text>
 							<Text style={styles.infoLabel}>ETA to Pickup</Text>
-							<Text style={styles.infoValue}>8 min</Text>
+							<Text style={styles.infoValue}>
+								{request.estimatedETA ? `${request.estimatedETA} min` : '--'}
+							</Text>
 						</View>
 						<View style={styles.infoCard}>
 							<Text style={styles.infoIcon}>✈️</Text>
 							<Text style={styles.infoLabel}>Total Distance</Text>
-							<Text style={styles.infoValue}>8.7 mi</Text>
+							<Text style={styles.infoValue}>
+								{request.totalTripDistance
+									? `${request.totalTripDistance} mi`
+									: '--'}
+							</Text>
 						</View>
 					</View>
 				</ScrollView>
