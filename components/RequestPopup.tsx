@@ -111,7 +111,7 @@ export function RequestPopup({
 							<Text style={styles.commuterName}>
 								{request.commuterName || 'Unknown'}
 							</Text>
-							<Text style={styles.rating}>⭐ 4.8 (32 rides)</Text>
+							{/* <Text style={styles.rating}>⭐ 4.8 (32 rides)</Text> */}
 						</View>
 					</View>
 
@@ -141,7 +141,7 @@ export function RequestPopup({
 
 					{/* Service Type & Fare */}
 					<View style={[styles.card, styles.serviceCard]}>
-						<View>
+						<View style={styles.serviceTypeContainer}>
 							<Text style={styles.serviceLabel}>Service Type</Text>
 							<Text style={styles.serviceType}>🚚 Towing</Text>
 						</View>
@@ -312,6 +312,8 @@ const styles = StyleSheet.create({
 		color: '#666',
 	},
 	serviceCard: {
+		flexDirection: 'row',
+		alignItems: 'center',
 		justifyContent: 'space-between',
 	},
 	serviceLabel: {
@@ -412,5 +414,10 @@ const styles = StyleSheet.create({
 		color: '#333',
 		fontSize: 18,
 		fontWeight: '600',
+	},
+	serviceTypeContainer: {
+		flex: 1,
+		flexDirection: 'column',
+		justifyContent: 'center',
 	},
 });
