@@ -111,7 +111,6 @@ export function RequestPopup({
 							<Text style={styles.commuterName}>
 								{request.commuterName || 'Unknown'}
 							</Text>
-							{/* <Text style={styles.rating}>⭐ 4.8 (32 rides)</Text> */}
 						</View>
 					</View>
 
@@ -291,10 +290,6 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		fontWeight: '600',
 		marginBottom: 4,
-	},
-	rating: {
-		fontSize: 14,
-		color: '#666',
 	},
 	iconCircle: {
 		width: 50,
