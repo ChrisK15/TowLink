@@ -59,7 +59,7 @@ export interface Request {
 	totalTripDistance?: number;
 	estimatedETA?: number;
 	customerNotes?: string;
-	estimatedPrice?: string;
+	estimatedPrice?: number;
 }
 
 export interface Trip {

@@ -28,6 +28,12 @@ export const MOCK_REQUESTS: Request[] = [
 			licensePlate: '0XXX000',
 			towingCapacity: '',
 		},
+		estimatedPickupDistance: 2.5,
+		totalTripDistance: 6.2,
+		estimatedETA: 8,
+		estimatedPrice: 95,
+		customerNotes:
+			"Won't start. Battery seems dead. Located in parking lot near building entrance.",
 	},
 	{
 		id: 'mock_req_2',
@@ -49,6 +55,12 @@ export const MOCK_REQUESTS: Request[] = [
 			licensePlate: '7ABC123',
 			towingCapacity: '',
 		},
+		estimatedPickupDistance: 4.1,
+		totalTripDistance: 12.8,
+		estimatedETA: 12,
+		estimatedPrice: 145,
+		customerNotes:
+			'Flat tire on the 405. Car is on the shoulder near the Wilshire exit.',
 	},
 	{
 		id: 'mock_req_3',
@@ -70,6 +82,12 @@ export const MOCK_REQUESTS: Request[] = [
 			licensePlate: '5XYZ789',
 			towingCapacity: '',
 		},
+		estimatedPickupDistance: 1.8,
+		totalTripDistance: 8.7,
+		estimatedETA: 6,
+		estimatedPrice: 110,
+		customerNotes:
+			'Engine overheated. Parked on street in front of Chinese Theatre.',
 	},
 ];
 
