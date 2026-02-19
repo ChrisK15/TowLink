@@ -16,6 +16,7 @@ export interface Driver {
 	vehicleInfo: VehicleInfo;
 	documents?: DriverDocuments;
 	currentLocation: Location;
+	geohash: string;
 	serviceRadius: number;
 	rating?: number;
 	totalTrips: number;
@@ -48,8 +49,11 @@ export interface Request {
 	pickupAddress: string;
 	dropoffAddress: string;
 	serviceType: 'tow';
-	status: 'searching' | 'matched' | 'accepted' | 'cancelled';
+	status: 'searching' | 'claimed' | 'matched' | 'accepted' | 'cancelled';
 	matchedDriverId?: string; // only exists after being matched
+	claimedByDriverId?: string;
+	claimExpiresAt?: Date;
+	notifiedDriverIds?: string[];
 	createdAt: Date;
 	expiresAt: Date;
 	commuterName?: string;
