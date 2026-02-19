@@ -1,11 +1,13 @@
 import { Location } from '@/types/models';
 import {
 	addDoc,
+	arrayUnion,
 	collection,
 	doc,
 	getDoc,
 	onSnapshot,
 	query,
+	runTransaction,
 	Timestamp,
 	updateDoc,
 	where,
@@ -152,5 +154,28 @@ export function listenForRequests(callback: (requests: any[]) => void) {
 		}));
 
 		callback(requests);
+	});
+}
+
+export async function claimRequest(
+	requestId: string,
+	driverId: string,
+): Promise<void> {
+	await runTransaction(db, async (transaction) => {
+		const docRef = doc(db, 'requests', requestId);
+		const docSnapshot = await transaction.get(docRef);
+		const data = docSnapshot.data();
+		if (!data) {
+			throw new Error(`Request ${requestId} not found`);
+		}
+		if (data.status !== 'searching') {
+			throw new Error(`Request ${requestId} already ${data.status}`);
+		}
+		transaction.update(docRef, {
+			status: 'claimed',
+			claimedByDriverId: driverId,
+			claimExpiresAt: Timestamp.fromDate(new Date(Date.now() + 30 * 1000)),
+			notifiedDriverIds: arrayUnion(driverId),
+		});
 	});
 }
