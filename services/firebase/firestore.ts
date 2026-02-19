@@ -229,3 +229,28 @@ export async function acceptClaimedRequest(
 	console.log('trip created: ', tripRef.id);
 	return tripRef.id;
 }
+
+export async function declineClaimedRequest(
+	requestId: string,
+	driverId: string,
+): Promise<void> {
+	await runTransaction(db, async (transaction) => {
+		const docRef = doc(db, 'requests', requestId);
+		const docSnapshot = await transaction.get(docRef);
+		const data = docSnapshot.data();
+		if (!data) {
+			throw new Error(`Request ${requestId} not found`);
+		}
+		if (data.status !== 'claimed') {
+			throw new Error(`Request ${requestId} already ${data.status}.`);
+		}
+		if (data.claimedByDriverId !== driverId) {
+			throw new Error(`Request ${requestId} claimed by another driver.`);
+		}
+		transaction.update(docRef, {
+			status: 'searching',
+			claimedByDriverId: null,
+			claimExpiresAt: null,
+		});
+	});
+}
