@@ -179,3 +179,53 @@ export async function claimRequest(
 		});
 	});
 }
+
+export async function acceptClaimedRequest(
+	requestId: string,
+	driverId: string,
+): Promise<string> {
+	await runTransaction(db, async (transaction) => {
+		const docRef = doc(db, 'requests', requestId);
+		const docSnapshot = await transaction.get(docRef);
+		const data = docSnapshot.data();
+		if (!data) {
+			throw new Error(`Request ${requestId} not found`);
+		}
+		if (data.status !== 'claimed') {
+			throw new Error(`Request ${requestId} already ${data.status}.`);
+		}
+		if (data.claimedByDriverId !== driverId) {
+			throw new Error(`Request ${requestId} claimed by another driver.`);
+		}
+		if (data.claimExpiresAt.toDate() < new Date()) {
+			throw new Error(`Request ${requestId} expired.`);
+		}
+		transaction.update(docRef, {
+			status: 'accepted',
+			matchedDriverId: driverId,
+		});
+	});
+
+	const requestDoc = await getDoc(doc(db, 'requests', requestId));
+	const requestData = requestDoc.data();
+
+	const tripData = {
+		requestId: requestId,
+		commuterId: requestData?.commuterId,
+		driverId: driverId,
+		status: 'en_route',
+		pickupLocation: requestData?.location,
+		dropoffLocation: requestData?.dropoffLocation,
+		startTime: Timestamp.now(),
+		arrivalTime: null,
+		completionTime: null,
+		distance: 0,
+		estimatedPrice: 75,
+		finalPrice: null,
+		driverPath: [],
+	};
+
+	const tripRef = await addDoc(collection(db, 'trips'), tripData);
+	console.log('trip created: ', tripRef.id);
+	return tripRef.id;
+}
