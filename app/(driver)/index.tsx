@@ -1,18 +1,16 @@
 import { RequestPopup } from '@/components/RequestPopup';
 import { useAuth } from '@/context/auth-context';
+import { useClaimedRequest } from '@/hooks/use-claimed-request';
 import { db } from '@/services/firebase/config';
 import {
 	acceptClaimedRequest,
 	declineClaimedRequest,
-	listenForClaimedRequests,
 	updateDriverAvailability,
 } from '@/services/firebase/firestore';
-import { getRandomMockRequest } from '@/services/mockData/request';
-import { Request } from '@/types/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
 	Alert,
 	Linking,
@@ -34,10 +32,10 @@ export default function DriverScreen() {
 	const [isOnline, setIsOnline] = useState(false);
 	const [isToggling, setIsToggling] = useState(false); // prevents double tapping while firestore is updating
 	const [showBanner, setShowbanner] = useState(false);
-	const [currentRequest, setCurrentRequest] = useState<Request | undefined>(
-		undefined,
-	);
-	const [showPopup, setShowPopup] = useState(false);
+	const [isActioning, setIsActioning] = useState(false);
+
+	const { claimedRequest } = useClaimedRequest(user?.uid ?? null, isOnline);
+	const showPopup = claimedRequest !== null;
 
 	// Get location
 	useEffect(() => {
@@ -66,23 +64,6 @@ export default function DriverScreen() {
 			setShowbanner(false);
 		}
 	}, [isOnline]);
-
-	useEffect(() => {
-		if (!user?.uid || !isOnline) {
-			return;
-		}
-
-		const unsubscribe = listenForClaimedRequests(user.uid, (request) => {
-			if (request) {
-				setCurrentRequest(request);
-				setShowPopup(true);
-			} else {
-				setShowPopup(false);
-			}
-		});
-
-		return () => unsubscribe();
-	}, [user?.uid, isOnline]);
 
 	async function initializeDriverDocument() {
 		if (!user?.uid) {
@@ -200,35 +181,40 @@ export default function DriverScreen() {
 		}
 	}
 
-	function handleTestPopup() {
-		const mockRequest = getRandomMockRequest();
-		setCurrentRequest(mockRequest);
-		setShowPopup(true);
-	}
+	// function handleTestPopup() {
+	// 	const mockRequest = getRandomMockRequest();
+	// 	claimedRequest(mockRequest);
+	// 	setShowPopup(true);
+	// }
 
-	async function handleAcceptRequest() {
-		if (!currentRequest || !user?.uid) return;
+	const handleAcceptRequest = useCallback(async () => {
+		if (!claimedRequest || !user?.uid || isActioning) return;
 
+		setIsActioning(true);
 		try {
-			await acceptClaimedRequest(currentRequest.id, user.uid);
+			await acceptClaimedRequest(claimedRequest.id, user.uid);
 			Alert.alert('Request Accepted!', 'Starting trip...');
-			setShowPopup(false);
 		} catch (error: any) {
 			Alert.alert('Error', error.message);
+		} finally {
+			setIsActioning(false);
 		}
-	}
+	}, [claimedRequest, user?.uid, isActioning]);
 
-	async function handleDeclineRequest() {
-		if (!currentRequest || !user?.uid) return;
+	const handleDeclineRequest = useCallback(async () => {
+		if (!claimedRequest || !user?.uid || isActioning) return;
+		if (claimedRequest?.status !== 'claimed') return;
 
+		setIsActioning(true);
 		try {
-			await declineClaimedRequest(currentRequest.id, user.uid);
+			await declineClaimedRequest(claimedRequest.id, user.uid);
 			Alert.alert('Request Declined', 'Looking for another driver...');
-			setShowPopup(false);
 		} catch (error: any) {
 			Alert.alert('Error', error.message);
+		} finally {
+			setIsActioning(false);
 		}
-	}
+	}, [claimedRequest, user?.uid, isActioning]);
 
 	return (
 		<View style={styles.container}>
@@ -328,9 +314,10 @@ export default function DriverScreen() {
 			) : (
 				<View style={styles.bottomContainer}>
 					<Text style={styles.waitingText}>Waiting for requests...</Text>
-					<TouchableOpacity style={styles.testButton} onPress={handleTestPopup}>
+					{/* Test Popup code. Leaving just incase */}
+					{/* <TouchableOpacity style={styles.testButton} onPress={handleTestPopup}>
 						<Text style={styles.testButtonText}>🧪 Test Popup</Text>
-					</TouchableOpacity>
+					</TouchableOpacity> */}
 				</View>
 			)}
 
@@ -344,10 +331,11 @@ export default function DriverScreen() {
 				</TouchableOpacity>
 			)}
 			<RequestPopup
-				request={currentRequest}
+				request={claimedRequest ?? undefined}
 				visible={showPopup}
 				onAccept={handleAcceptRequest}
 				onDecline={handleDeclineRequest}
+				isLoading={isActioning}
 			/>
 		</View>
 	);
@@ -488,18 +476,5 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.3,
 		shadowRadius: 4,
 		elevation: 5,
-	},
-
-	testButton: {
-		marginTop: 16,
-		backgroundColor: '#34C759',
-		paddingVertical: 12,
-		paddingHorizontal: 24,
-		borderRadius: 8,
-	},
-	testButtonText: {
-		color: 'white',
-		fontSize: 14,
-		fontWeight: '600',
 	},
 });

@@ -1,5 +1,5 @@
 import { Request } from '@/types/models';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
 	Modal,
 	ScrollView,
@@ -12,6 +12,7 @@ import {
 interface RequestPopupProps {
 	request?: Request;
 	visible: boolean;
+	isLoading?: boolean;
 	onAccept: () => void;
 	onDecline: () => void;
 }
@@ -19,36 +20,39 @@ interface RequestPopupProps {
 export function RequestPopup({
 	request,
 	visible,
+	isLoading,
 	onAccept,
 	onDecline,
 }: RequestPopupProps) {
 	const [timeLeft, setTimeLeft] = useState(30);
+	const initialTimeRef = useRef<number | null>(null);
 
 	// Timer countdown
 	useEffect(() => {
-		if (!visible || !request) {
+		if (!visible || !request?.claimExpiresAt) {
 			setTimeLeft(30);
 			return;
 		}
+		const startingSeconds = Math.floor(
+			(request.claimExpiresAt.getTime() - Date.now()) / 1000,
+		);
+		initialTimeRef.current = startingSeconds;
+		setTimeLeft(startingSeconds);
 
 		const interval = setInterval(() => {
-			setTimeLeft((prev) => {
-				if (prev <= 1) {
-					return 0; // Just set to 0, don't call onDecline here
-				}
-				return prev - 1;
-			});
+			const secondsLeft = Math.floor(
+				(request.claimExpiresAt!.getTime() - Date.now()) / 1000,
+			);
+			setTimeLeft(secondsLeft);
+
+			if (secondsLeft <= 0) {
+				clearInterval(interval);
+				onDecline();
+			}
 		}, 1000);
 
 		return () => clearInterval(interval);
-	}, [visible, request]);
-
-	// Auto-decline when timer reaches 0
-	useEffect(() => {
-		if (timeLeft === 0 && visible && request) {
-			onDecline();
-		}
-	}, [timeLeft, visible, request, onDecline]);
+	}, [visible, request, onDecline]);
 
 	if (!request) return null;
 
@@ -63,7 +67,7 @@ export function RequestPopup({
 	};
 
 	// Progress bar percentage and color
-	const progress = (timeLeft / 30) * 100;
+	const progress = (timeLeft / (initialTimeRef.current ?? 30)) * 100;
 	const isExpiringSoon = timeLeft <= 5;
 	const progressColor = isExpiringSoon ? '#FF3B30' : '#007AFF';
 	const timerColor = isExpiringSoon ? '#FF3B30' : '#007AFF';
@@ -205,10 +209,20 @@ export function RequestPopup({
 
 				{/* Action Buttons */}
 				<View style={styles.buttonContainer}>
-					<TouchableOpacity style={styles.acceptButton} onPress={onAccept}>
-						<Text style={styles.acceptButtonText}>Accept Request</Text>
+					<TouchableOpacity
+						style={[styles.acceptButton, isLoading && { opacity: 0.5 }]}
+						onPress={onAccept}
+						disabled={isLoading}
+					>
+						<Text style={styles.acceptButtonText}>
+							{isLoading ? 'Processing...' : 'Accept Request'}
+						</Text>
 					</TouchableOpacity>
-					<TouchableOpacity style={styles.declineButton} onPress={onDecline}>
+					<TouchableOpacity
+						style={styles.declineButton}
+						onPress={onDecline}
+						disabled={isLoading}
+					>
 						<Text style={styles.declineButtonText}>Decline</Text>
 					</TouchableOpacity>
 				</View>

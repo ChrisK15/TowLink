@@ -176,9 +176,13 @@ export function listenForClaimedRequests(
 			callback(null); // No claimed requests
 		} else {
 			// Get the first (and should be only) claimed request
+			const data = snapshot.docs[0].data();
 			const request = {
 				id: snapshot.docs[0].id,
-				...snapshot.docs[0].data(),
+				...data,
+				claimExpiresAt: data.claimExpiresAt.toDate() ?? undefined,
+				createdAt: data.createdAt.toDate(),
+				expiresAt: data.expiresAt.toDate(),
 			};
 			callback(request);
 		}
