@@ -161,6 +161,30 @@ export function listenForRequests(callback: (requests: any[]) => void) {
 	});
 }
 
+export function listenForClaimedRequests(
+	driverId: string,
+	callback: (request: any | null) => void,
+) {
+	const q = query(
+		collection(db, 'requests'),
+		where('status', '==', 'claimed'),
+		where('claimedByDriverId', '==', driverId),
+	);
+
+	return onSnapshot(q, (snapshot) => {
+		if (snapshot.empty) {
+			callback(null); // No claimed requests
+		} else {
+			// Get the first (and should be only) claimed request
+			const request = {
+				id: snapshot.docs[0].id,
+				...snapshot.docs[0].data(),
+			};
+			callback(request);
+		}
+	});
+}
+
 export async function claimRequest(
 	requestId: string,
 	driverId: string,
