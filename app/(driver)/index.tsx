@@ -10,7 +10,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
 	Alert,
 	Linking,
@@ -187,7 +187,7 @@ export default function DriverScreen() {
 	// 	setShowPopup(true);
 	// }
 
-	async function handleAcceptRequest() {
+	const handleAcceptRequest = useCallback(async () => {
 		if (!claimedRequest || !user?.uid || isActioning) return;
 
 		setIsActioning(true);
@@ -199,9 +199,9 @@ export default function DriverScreen() {
 		} finally {
 			setIsActioning(false);
 		}
-	}
+	}, [claimedRequest, user?.uid, isActioning]);
 
-	async function handleDeclineRequest() {
+	const handleDeclineRequest = useCallback(async () => {
 		if (!claimedRequest || !user?.uid || isActioning) return;
 		if (claimedRequest?.status !== 'claimed') return;
 
@@ -214,7 +214,7 @@ export default function DriverScreen() {
 		} finally {
 			setIsActioning(false);
 		}
-	}
+	}, [claimedRequest, user?.uid, isActioning]);
 
 	return (
 		<View style={styles.container}>
