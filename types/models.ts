@@ -16,10 +16,12 @@ export interface Driver {
 	vehicleInfo: VehicleInfo;
 	documents?: DriverDocuments;
 	currentLocation: Location;
-	geohash: string;
+	geohash?: string;
 	serviceRadius: number;
 	rating?: number;
 	totalTrips: number;
+	lastLocationUpdate?: Date;
+	isActivelyDriving?: boolean;
 }
 
 export interface VehicleInfo {
