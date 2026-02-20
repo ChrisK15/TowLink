@@ -12,6 +12,7 @@ import {
 	updateDoc,
 	where,
 } from 'firebase/firestore';
+import { getGeohash } from '../geoLocationUtils';
 import { db } from './config';
 
 export async function createRequest(
@@ -68,6 +69,9 @@ export async function updateDriverAvailability(
 			isAvailable: isAvailable,
 			updatedAt: Timestamp.now(),
 			currentLocation: currentLocation ? currentLocation : null,
+			geohash: currentLocation
+				? getGeohash(currentLocation.latitude, currentLocation.longitude)
+				: null,
 		});
 
 		console.log('Driver status updated: ', isAvailable);
