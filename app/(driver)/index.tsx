@@ -95,6 +95,7 @@ export default function DriverScreen() {
 					userId: user.uid,
 					isAvailable: false,
 					isVerified: false,
+					isActivelyDriving: false,
 					vehicleInfo: {
 						make: 'Unknown',
 						model: 'Unknown',

@@ -31,6 +31,7 @@ async function findClosestDriver(
 		const q = db
 			.collection('drivers')
 			.where('isAvailable', '==', true)
+			.where('isActivelyDriving', '==', false)
 			.where('geohash', '>=', bound[0])
 			.where('geohash', '<=', bound[1]);
 

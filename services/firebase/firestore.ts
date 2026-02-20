@@ -255,6 +255,12 @@ export async function acceptClaimedRequest(
 
 	const tripRef = await addDoc(collection(db, 'trips'), tripData);
 	console.log('trip created: ', tripRef.id);
+
+	// Mark driver as busy so they don't receive more requests
+	await updateDoc(doc(db, 'drivers', driverId), {
+		isActivelyDriving: true,
+	});
+
 	return tripRef.id;
 }
 
