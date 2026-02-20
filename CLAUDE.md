@@ -67,6 +67,7 @@ Detailed information lives in dedicated files. **Read these before starting work
 - **`.claude/docs/ARCHITECTURE.md`** - System design, data models, key patterns
 - **`.claude/docs/TECH_STACK.md`** - Libraries, tools, and why we chose them
 - **`.claude/docs/DEVELOPMENT.md`** - Setup instructions, commands, workflows
+- **`.claude/docs/COMMANDS.md`** - Complete terminal command reference (Firebase, npm, Git, etc.)
 
 ### Project Management
 

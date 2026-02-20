@@ -1,7 +1,12 @@
 import { RequestPopup } from '@/components/RequestPopup';
 import { useAuth } from '@/context/auth-context';
 import { db } from '@/services/firebase/config';
-import { updateDriverAvailability } from '@/services/firebase/firestore';
+import {
+	acceptClaimedRequest,
+	declineClaimedRequest,
+	listenForClaimedRequests,
+	updateDriverAvailability,
+} from '@/services/firebase/firestore';
 import { getRandomMockRequest } from '@/services/mockData/request';
 import { Request } from '@/types/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -62,6 +67,23 @@ export default function DriverScreen() {
 		}
 	}, [isOnline]);
 
+	useEffect(() => {
+		if (!user?.uid || !isOnline) {
+			return;
+		}
+
+		const unsubscribe = listenForClaimedRequests(user.uid, (request) => {
+			if (request) {
+				setCurrentRequest(request);
+				setShowPopup(true);
+			} else {
+				setShowPopup(false);
+			}
+		});
+
+		return () => unsubscribe();
+	}, [user?.uid, isOnline]);
+
 	async function initializeDriverDocument() {
 		if (!user?.uid) {
 			return;
@@ -73,6 +95,7 @@ export default function DriverScreen() {
 					userId: user.uid,
 					isAvailable: false,
 					isVerified: false,
+					isActivelyDriving: false,
 					vehicleInfo: {
 						make: 'Unknown',
 						model: 'Unknown',
@@ -183,14 +206,28 @@ export default function DriverScreen() {
 		setShowPopup(true);
 	}
 
-	function handleAcceptRequest() {
-		Alert.alert('Request Accepted', 'This will work in Phase 3!');
-		setShowPopup(false);
+	async function handleAcceptRequest() {
+		if (!currentRequest || !user?.uid) return;
+
+		try {
+			await acceptClaimedRequest(currentRequest.id, user.uid);
+			Alert.alert('Request Accepted!', 'Starting trip...');
+			setShowPopup(false);
+		} catch (error: any) {
+			Alert.alert('Error', error.message);
+		}
 	}
 
-	function handleDeclineRequest() {
-		Alert.alert('Request Declined', 'Looking for another request...');
-		setShowPopup(false);
+	async function handleDeclineRequest() {
+		if (!currentRequest || !user?.uid) return;
+
+		try {
+			await declineClaimedRequest(currentRequest.id, user.uid);
+			Alert.alert('Request Declined', 'Looking for another driver...');
+			setShowPopup(false);
+		} catch (error: any) {
+			Alert.alert('Error', error.message);
+		}
 	}
 
 	return (

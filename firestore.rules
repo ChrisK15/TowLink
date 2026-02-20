@@ -128,22 +128,29 @@ service cloud.firestore {
         && (!request.resource.data.keys().hasAny(['matchedDriverId'])
             || request.resource.data.matchedDriverId == null);
 
-      // Commuters can update their own requests (for cancellation)
-      // Drivers can update requests to accept them
-      allow update: if isAuthenticated()
-        && (
-          // Commuter cancelling their own request
-          (resource.data.commuterId == request.auth.uid
-            && request.resource.data.status == 'cancelled'
-            && request.resource.data.commuterId == resource.data.commuterId)
-          ||
-          // Driver accepting a request
-          (isDriver()
-            && resource.data.status == 'searching'
-            && request.resource.data.status == 'accepted'
-            && request.resource.data.matchedDriverId == request.auth.uid
-            && request.resource.data.commuterId == resource.data.commuterId)
-        );
+    // Commuters can update their own requests (for cancellation)
+  	// Drivers can accept or decline claimed requests
+	allow update: if isAuthenticated()
+		&& (
+		// Commuter cancelling their own request
+		(resource.data.commuterId == request.auth.uid
+			&& request.resource.data.status == 'cancelled'
+			&& request.resource.data.commuterId == resource.data.commuterId)
+		||
+		// Driver accepting a claimed request
+		(isDriver()
+			&& resource.data.status == 'claimed'
+			&& resource.data.claimedByDriverId == request.auth.uid
+			&& request.resource.data.status == 'accepted'
+			&& request.resource.data.matchedDriverId == request.auth.uid)
+		||
+		// Driver declining a claimed request
+		(isDriver()
+			&& resource.data.status == 'claimed'
+			&& resource.data.claimedByDriverId == request.auth.uid
+			&& request.resource.data.status == 'searching'
+			&& request.resource.data.claimedByDriverId == null)
+		);
 
       // No one can delete requests (keep for records)
       allow delete: if false;

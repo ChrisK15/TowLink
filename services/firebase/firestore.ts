@@ -1,15 +1,18 @@
 import { Location } from '@/types/models';
 import {
 	addDoc,
+	arrayUnion,
 	collection,
 	doc,
 	getDoc,
 	onSnapshot,
 	query,
+	runTransaction,
 	Timestamp,
 	updateDoc,
 	where,
 } from 'firebase/firestore';
+import { getGeohash } from '../geoLocationUtils';
 import { db } from './config';
 
 export async function createRequest(
@@ -66,6 +69,9 @@ export async function updateDriverAvailability(
 			isAvailable: isAvailable,
 			updatedAt: Timestamp.now(),
 			currentLocation: currentLocation ? currentLocation : null,
+			geohash: currentLocation
+				? getGeohash(currentLocation.latitude, currentLocation.longitude)
+				: null,
 		});
 
 		console.log('Driver status updated: ', isAvailable);
@@ -152,5 +158,133 @@ export function listenForRequests(callback: (requests: any[]) => void) {
 		}));
 
 		callback(requests);
+	});
+}
+
+export function listenForClaimedRequests(
+	driverId: string,
+	callback: (request: any | null) => void,
+) {
+	const q = query(
+		collection(db, 'requests'),
+		where('status', '==', 'claimed'),
+		where('claimedByDriverId', '==', driverId),
+	);
+
+	return onSnapshot(q, (snapshot) => {
+		if (snapshot.empty) {
+			callback(null); // No claimed requests
+		} else {
+			// Get the first (and should be only) claimed request
+			const request = {
+				id: snapshot.docs[0].id,
+				...snapshot.docs[0].data(),
+			};
+			callback(request);
+		}
+	});
+}
+
+export async function claimRequest(
+	requestId: string,
+	driverId: string,
+): Promise<void> {
+	await runTransaction(db, async (transaction) => {
+		const docRef = doc(db, 'requests', requestId);
+		const docSnapshot = await transaction.get(docRef);
+		const data = docSnapshot.data();
+		if (!data) {
+			throw new Error(`Request ${requestId} not found`);
+		}
+		if (data.status !== 'searching') {
+			throw new Error(`Request ${requestId} already ${data.status}`);
+		}
+		transaction.update(docRef, {
+			status: 'claimed',
+			claimedByDriverId: driverId,
+			claimExpiresAt: Timestamp.fromDate(new Date(Date.now() + 30 * 1000)),
+			notifiedDriverIds: arrayUnion(driverId),
+		});
+	});
+}
+
+export async function acceptClaimedRequest(
+	requestId: string,
+	driverId: string,
+): Promise<string> {
+	await runTransaction(db, async (transaction) => {
+		const docRef = doc(db, 'requests', requestId);
+		const docSnapshot = await transaction.get(docRef);
+		const data = docSnapshot.data();
+		if (!data) {
+			throw new Error(`Request ${requestId} not found`);
+		}
+		if (data.status !== 'claimed') {
+			throw new Error(`Request ${requestId} already ${data.status}.`);
+		}
+		if (data.claimedByDriverId !== driverId) {
+			throw new Error(`Request ${requestId} claimed by another driver.`);
+		}
+		if (data.claimExpiresAt.toDate() < new Date()) {
+			throw new Error(`Request ${requestId} expired.`);
+		}
+		transaction.update(docRef, {
+			status: 'accepted',
+			matchedDriverId: driverId,
+		});
+	});
+
+	const requestDoc = await getDoc(doc(db, 'requests', requestId));
+	const requestData = requestDoc.data();
+
+	const tripData = {
+		requestId: requestId,
+		commuterId: requestData?.commuterId,
+		driverId: driverId,
+		status: 'en_route',
+		pickupLocation: requestData?.location,
+		dropoffLocation: requestData?.dropoffLocation,
+		startTime: Timestamp.now(),
+		arrivalTime: null,
+		completionTime: null,
+		distance: 0,
+		estimatedPrice: 75,
+		finalPrice: null,
+		driverPath: [],
+	};
+
+	const tripRef = await addDoc(collection(db, 'trips'), tripData);
+	console.log('trip created: ', tripRef.id);
+
+	// Mark driver as busy so they don't receive more requests
+	await updateDoc(doc(db, 'drivers', driverId), {
+		isActivelyDriving: true,
+	});
+
+	return tripRef.id;
+}
+
+export async function declineClaimedRequest(
+	requestId: string,
+	driverId: string,
+): Promise<void> {
+	await runTransaction(db, async (transaction) => {
+		const docRef = doc(db, 'requests', requestId);
+		const docSnapshot = await transaction.get(docRef);
+		const data = docSnapshot.data();
+		if (!data) {
+			throw new Error(`Request ${requestId} not found`);
+		}
+		if (data.status !== 'claimed') {
+			throw new Error(`Request ${requestId} already ${data.status}.`);
+		}
+		if (data.claimedByDriverId !== driverId) {
+			throw new Error(`Request ${requestId} claimed by another driver.`);
+		}
+		transaction.update(docRef, {
+			status: 'searching',
+			claimedByDriverId: null,
+			claimExpiresAt: null,
+		});
 	});
 }
