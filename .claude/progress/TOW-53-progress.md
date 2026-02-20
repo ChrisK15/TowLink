@@ -280,7 +280,7 @@ Run through all four test scenarios manually before marking this story complete.
 
 ## Completed Steps
 - [x] Step 1: Fix timestamp conversion in `listenForClaimedRequests`
-- [ ] Step 2: Create `useClaimedRequest` custom hook
+- [x] Step 2: Create `useClaimedRequest` custom hook
 - [ ] Step 3: Refactor driver screen to use the hook
 - [ ] Step 4: Update `RequestPopup` timer to use `claimExpiresAt`
 - [ ] Step 5: Pass `isLoading` from driver screen to popup
