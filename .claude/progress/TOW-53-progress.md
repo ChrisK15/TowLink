@@ -279,7 +279,7 @@ Run through all four test scenarios manually before marking this story complete.
 ---
 
 ## Completed Steps
-- [ ] Step 1: Fix timestamp conversion in `listenForClaimedRequests`
+- [x] Step 1: Fix timestamp conversion in `listenForClaimedRequests`
 - [ ] Step 2: Create `useClaimedRequest` custom hook
 - [ ] Step 3: Refactor driver screen to use the hook
 - [ ] Step 4: Update `RequestPopup` timer to use `claimExpiresAt`
@@ -288,7 +288,7 @@ Run through all four test scenarios manually before marking this story complete.
 - [ ] Step 7: End-to-end integration test
 
 ## Current Step
-Starting at Step 1.
+Step 2: Create `useClaimedRequest` custom hook
 
 ## Notes
 _Add your notes, questions, and observations here as you work through each step._
