@@ -1,5 +1,5 @@
 import { Request } from '@/types/models';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
 	Modal,
 	ScrollView,
@@ -25,6 +25,7 @@ export function RequestPopup({
 	onDecline,
 }: RequestPopupProps) {
 	const [timeLeft, setTimeLeft] = useState(30);
+	const initialTimeRef = useRef<number | null>(null);
 
 	// Timer countdown
 	useEffect(() => {
@@ -32,6 +33,12 @@ export function RequestPopup({
 			setTimeLeft(30);
 			return;
 		}
+		const startingSeconds = Math.floor(
+			(request.claimExpiresAt.getTime() - Date.now()) / 1000,
+		);
+		initialTimeRef.current = startingSeconds;
+		setTimeLeft(startingSeconds);
+
 		const interval = setInterval(() => {
 			const secondsLeft = Math.floor(
 				(request.claimExpiresAt!.getTime() - Date.now()) / 1000,
@@ -60,7 +67,7 @@ export function RequestPopup({
 	};
 
 	// Progress bar percentage and color
-	const progress = (timeLeft / 30) * 100;
+	const progress = (timeLeft / (initialTimeRef.current ?? 30)) * 100;
 	const isExpiringSoon = timeLeft <= 5;
 	const progressColor = isExpiringSoon ? '#FF3B30' : '#007AFF';
 	const timerColor = isExpiringSoon ? '#FF3B30' : '#007AFF';
