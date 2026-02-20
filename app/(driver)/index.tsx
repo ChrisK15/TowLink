@@ -335,6 +335,7 @@ export default function DriverScreen() {
 				visible={showPopup}
 				onAccept={handleAcceptRequest}
 				onDecline={handleDeclineRequest}
+				isLoading={isActioning}
 			/>
 		</View>
 	);
