@@ -285,10 +285,10 @@ Run through all four test scenarios manually before marking this story complete.
 - [x] Step 4: Update `RequestPopup` timer to use `claimExpiresAt`
 - [x] Step 5: Pass `isLoading` from driver screen to popup
 - [x] Step 6: Wrap handlers in `useCallback`
-- [ ] Step 7: End-to-end integration test
+- [x] Step 7: End-to-end integration test
 
 ## Current Step
-Step 2: Create `useClaimedRequest` custom hook
+All steps complete. Awaiting quality review.
 
 ## Notes
 _Add your notes, questions, and observations here as you work through each step._

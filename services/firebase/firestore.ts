@@ -180,7 +180,7 @@ export function listenForClaimedRequests(
 			const request = {
 				id: snapshot.docs[0].id,
 				...data,
-				claimExpiresAt: data.claimExpiresAt.toDate(),
+				claimExpiresAt: data.claimExpiresAt.toDate() ?? undefined,
 				createdAt: data.createdAt.toDate(),
 				expiresAt: data.expiresAt.toDate(),
 			};
