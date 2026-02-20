@@ -1,11 +1,11 @@
 import * as admin from 'firebase-admin';
 import * as logger from 'firebase-functions/logger';
+import { setGlobalOptions } from 'firebase-functions/options';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
-import {
-	distanceBetween,
-	geohashQueryBounds
-} from 'geofire-common';
+import { distanceBetween, geohashQueryBounds } from 'geofire-common';
+
+setGlobalOptions({ region: 'us-west2' });
 
 // Initialize Firebase Admin SDK
 admin.initializeApp();
@@ -166,10 +166,10 @@ export const matchDriverOnRequestCreate = onDocumentCreated(
 	},
 );
 
-// Runs every 10 seconds to handle expired claims
+// Runs every 1 minute to handle expired claims
 export const handleClaimTimeouts = onSchedule(
 	{
-		schedule: 'every 10 seconds',
+		schedule: 'every 1 minutes',
 		timeZone: 'America/Los_Angeles', // Change to your timezone
 	},
 	async (event) => {
