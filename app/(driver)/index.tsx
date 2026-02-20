@@ -477,17 +477,4 @@ const styles = StyleSheet.create({
 		shadowRadius: 4,
 		elevation: 5,
 	},
-
-	testButton: {
-		marginTop: 16,
-		backgroundColor: '#34C759',
-		paddingVertical: 12,
-		paddingHorizontal: 24,
-		borderRadius: 8,
-	},
-	testButtonText: {
-		color: 'white',
-		fontSize: 14,
-		fontWeight: '600',
-	},
 });
