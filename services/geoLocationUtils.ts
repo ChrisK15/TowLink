@@ -16,6 +16,10 @@ export function getDistanceInKm(point1: Location, point2: Location): number {
 	);
 }
 
+export function kmToMiles(km: number) {
+	return km * 0.621371;
+}
+
 export function getGeohashQueryBounds(center: Location, radiusInKm: number) {
 	return geohashQueryBounds(
 		[center.latitude, center.longitude],
