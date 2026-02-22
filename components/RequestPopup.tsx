@@ -144,7 +144,7 @@ export function RequestPopup({
 							<Text style={styles.address}>{request.dropoffAddress}</Text>
 							<Text style={styles.distance}>
 								{request.totalTripDistance
-									? `${request.totalTripDistance} total trip`
+									? `${request.totalTripDistance} miles total trip`
 									: 'Distance Calculating...'}
 							</Text>
 						</View>

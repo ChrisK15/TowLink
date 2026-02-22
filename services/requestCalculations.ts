@@ -10,7 +10,7 @@ export function calculateETA(distanceMiles: number) {
 }
 
 export function calculateFare(tripDistanceMiles: number) {
-	return Math.max(65, Math.round(50 + 5 * tripDistanceMiles * 100) / 100);
+	return Math.max(65, Math.round(50 + 5 * tripDistanceMiles));
 }
 
 export function enrichRequestWithCalculations(
