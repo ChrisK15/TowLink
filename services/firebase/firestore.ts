@@ -292,3 +292,24 @@ export async function declineClaimedRequest(
 		});
 	});
 }
+
+export function listenToTrip(
+	tripId: string,
+	callback: (trip: any | null) => void,
+) {
+	return onSnapshot(doc(db, 'trips', tripId), (snapshot) => {
+		if (!snapshot.exists()) {
+			callback(null);
+			return;
+		}
+		const data = snapshot.data();
+		const trip = {
+			id: snapshot.id,
+			...data,
+			startTime: data.startTime.toDate(),
+			arrivalTime: data.arrivalTime?.toDate(),
+			completionTime: data.completionTime?.toDate(),
+		};
+		callback(trip);
+	});
+}

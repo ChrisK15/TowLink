@@ -80,13 +80,16 @@ Active Trip Screen with Expandable Modal
 ---
 
 ## Completed Steps
-_(none yet)_
+- [x] Step 1: Add `listenToTrip` and `getRequestById` to `services/firebase/firestore.ts`
+  - Used `onSnapshot` on a single `doc()` reference (not a query)
+  - Learned why `snapshot.exists()` needs `()` — it's a method, not a property
+  - Learned why early return is needed here but not in `listenForClaimedRequests`
+  - Proper Timestamp conversions: `startTime.toDate()`, optional chaining for nullable fields
 
 ## Current Step
-- [ ] Step 1: Add `listenToTrip` and `getRequestById` to `services/firebase/firestore.ts`
+- [ ] Step 2: Create `useActiveTrip` hook
 
 ## Remaining Steps
-- [ ] Step 1: Add `listenToTrip` and `getRequestById` to firestore service
 - [ ] Step 2: Create `useActiveTrip` hook
 - [ ] Step 3: Create `active-trip.tsx` screen skeleton (map + location)
 - [ ] Step 4: Update `_layout.tsx` to use Stack navigator
