@@ -63,6 +63,7 @@ export interface Request {
 	vehicleInfo?: VehicleInfo;
 	estimatedPickupDistance?: number;
 	totalTripDistance?: number;
+	totalJobDistance?: number;
 	estimatedETA?: number;
 	customerNotes?: string;
 	estimatedPrice?: number;
