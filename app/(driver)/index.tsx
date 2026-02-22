@@ -7,10 +7,11 @@ import {
 	declineClaimedRequest,
 	updateDriverAvailability,
 } from '@/services/firebase/firestore';
+import { enrichRequestWithCalculations } from '@/services/requestCalculations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
 	Alert,
 	Linking,
@@ -64,6 +65,11 @@ export default function DriverScreen() {
 			setShowbanner(false);
 		}
 	}, [isOnline]);
+
+	const enrichedRequest = useMemo(() => {
+		if (!claimedRequest || !driverLocation) return claimedRequest;
+		return enrichRequestWithCalculations(claimedRequest, driverLocation);
+	}, [claimedRequest, driverLocation]);
 
 	async function initializeDriverDocument() {
 		if (!user?.uid) {
@@ -331,7 +337,7 @@ export default function DriverScreen() {
 				</TouchableOpacity>
 			)}
 			<RequestPopup
-				request={claimedRequest ?? undefined}
+				request={enrichedRequest ?? undefined}
 				visible={showPopup}
 				onAccept={handleAcceptRequest}
 				onDecline={handleDeclineRequest}
