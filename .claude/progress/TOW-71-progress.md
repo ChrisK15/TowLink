@@ -52,7 +52,7 @@ This mirrors how professional React Native development works. You design the dat
 
 ## Current Step
 
-**Step 8 - Build the Role Selection Screen (Screen 4)**
+**Step 9 - Modify the Auth Index to Check AsyncStorage**
 
 ---
 
@@ -464,7 +464,7 @@ if (activeIndex >= SLIDES.length - 1) {
 
 ### Step 8: Build the Role Selection Screen (Screen 4)
 
-**Status**: [ ] Pending
+**Status**: [x] Complete
 
 **Learning Objective:**
 Learn to use AsyncStorage for persisting small pieces of data that survive app restarts. You'll also understand the difference between `router.push` (user can press back) and `router.replace` (removes current screen from the back-stack, user cannot go back).
