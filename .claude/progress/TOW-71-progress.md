@@ -52,7 +52,7 @@ This mirrors how professional React Native development works. You design the dat
 
 ## Current Step
 
-**Step 5 - Create the `RoleCard` Component**
+**Step 6 - Create the Onboarding Sub-Group Layout**
 
 ---
 
@@ -263,7 +263,7 @@ What would happen if you used `width: '100%'` instead of `width: screenWidth`? T
 
 ### Step 5: Create the `RoleCard` Component
 
-**Status**: [ ] Pending
+**Status**: [x] Complete
 
 **Learning Objective:**
 Practice `flexDirection: 'row'` layout - putting content side by side. This is one of the layouts you'll use constantly in React Native. You'll also learn the difference between a "container" Pressable (the whole card taps) vs an inner Pressable (just a button inside taps).
