@@ -2,6 +2,7 @@ import { signUpWithEmail } from '@/services/firebase/authService';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function validateSignupForm(
 	email: string,
@@ -56,8 +57,18 @@ export default function SignupScreen() {
 		}
 	};
 
+	const handleBackToOnboarding = async () => {
+		await AsyncStorage.removeItem('onboarding_complete');
+		router.replace('/(auth)/onboarding' as any);
+	};
+
 	return (
 		<View style={styles.container}>
+			{__DEV__ && (
+				<Pressable onPress={handleBackToOnboarding} style={styles.backButton}>
+					<Text style={styles.backButtonText}>← Back to Onboarding</Text>
+				</Pressable>
+			)}
 			<Text style={styles.title}>Create Account</Text>
 			<TextInput
 				placeholder="Email"
@@ -151,5 +162,14 @@ const styles = StyleSheet.create({
 	},
 	loginLinkText: {
 		color: '#0a7ea4',
+	},
+	backButton: {
+		position: 'absolute',
+		top: 60,
+		left: 20,
+	},
+	backButtonText: {
+		color: '#0a7ea4',
+		fontSize: 14,
 	},
 });
