@@ -52,7 +52,7 @@ This mirrors how professional React Native development works. You design the dat
 
 ## Current Step
 
-**Step 1 - Create TypeScript Types**
+**Step 2 - Create the `OnboardingHeader` Component**
 
 ---
 
@@ -62,7 +62,7 @@ This mirrors how professional React Native development works. You design the dat
 
 ### Step 1: Create TypeScript Types
 
-**Status**: [ ] Pending
+**Status**: [x] Complete
 
 **Learning Objective:**
 Understand why we define data shapes (types) before writing any UI code. Types act like a contract between your components. When you define what a "slide" looks like as a type, every file that uses slide data is forced to follow the same structure. This prevents bugs.
