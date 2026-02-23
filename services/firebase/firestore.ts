@@ -1,4 +1,4 @@
-import { Location } from '@/types/models';
+import { Location, Request } from '@/types/models';
 import {
 	addDoc,
 	arrayUnion,
@@ -314,7 +314,11 @@ export function listenToTrip(
 	});
 }
 
-export async function getRequestById(requestId: string) {
+export async function getRequestById(
+	requestId: string,
+): Promise<Request | null> {
 	const request = await getDoc(doc(db, 'requests', requestId));
-	return request.exists() ? { id: request.id, ...request.data() } : null;
+	return request.exists()
+		? ({ id: request.id, ...request.data() } as Request)
+		: null;
 }
