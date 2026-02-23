@@ -52,7 +52,7 @@ This mirrors how professional React Native development works. You design the dat
 
 ## Current Step
 
-**Step 9 - Modify the Auth Index to Check AsyncStorage**
+**Step 10 - Visual Polish - Match the Design Files**
 
 ---
 
@@ -513,7 +513,7 @@ Open `/Users/loris/TowLink/.claude/design/screens/onboarding_flow/Role Selection
 
 ### Step 9: Modify the Auth Index to Check AsyncStorage
 
-**Status**: [ ] Pending
+**Status**: [x] Complete
 
 **Learning Objective:**
 Learn to implement a "gate check" at the start of a navigation flow. This is the pattern used by virtually every app that has an onboarding flow: check persistent storage on mount, then redirect to the right place.
