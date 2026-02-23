@@ -64,9 +64,11 @@ export default function SignupScreen() {
 
 	return (
 		<View style={styles.container}>
-			<Pressable onPress={handleBackToOnboarding} style={styles.backButton}>
-				<Text style={styles.backButtonText}>← Back to Onboarding</Text>
-			</Pressable>
+			{__DEV__ && (
+				<Pressable onPress={handleBackToOnboarding} style={styles.backButton}>
+					<Text style={styles.backButtonText}>← Back to Onboarding</Text>
+				</Pressable>
+			)}
 			<Text style={styles.title}>Create Account</Text>
 			<TextInput
 				placeholder="Email"

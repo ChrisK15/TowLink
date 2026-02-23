@@ -1,8 +1,9 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import type React from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 interface RoleCardProps {
-	iconName: string;
+	iconName: React.ComponentProps<typeof Ionicons>['name'];
 	title: string;
 	description: string;
 	ctaLabel: string;
@@ -13,7 +14,7 @@ export default function RoleCard({ iconName, title, description, ctaLabel, onPre
 	return (
 		<Pressable style={styles.card} onPress={onPress}>
 			<View style={styles.iconBox}>
-				<Ionicons name={iconName as any} size={28} color="#1E6FD9" />
+				<Ionicons name={iconName} size={28} color="#1E6FD9" />
 			</View>
 			<View style={styles.textArea}>
 				<Text style={styles.title}>{title}</Text>

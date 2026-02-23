@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import type React from 'react';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 interface OnboardingSlideProps {
-	iconName: string;
+	iconName: React.ComponentProps<typeof Ionicons>['name'];
 	heading: string;
 	subtext: string;
 }
@@ -17,7 +18,7 @@ export default function OnboardingSlide({
 	return (
 		<View style={styles.root}>
 			<View style={styles.iconCircle}>
-				<Ionicons name={iconName as any} size={72} color="#1E6FD9" />
+				<Ionicons name={iconName} size={72} color="#1E6FD9" />
 			</View>
 			<Text style={styles.heading}>{heading}</Text>
 			<Text style={styles.subtext}>{subtext}</Text>
