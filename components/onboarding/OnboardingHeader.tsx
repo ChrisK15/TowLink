@@ -1,5 +1,5 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface OnboardingHeaderProps {
 	tagline: string;
@@ -18,7 +18,7 @@ export default function OnboardingHeader({
 					<Text style={styles.emoji}>🚛</Text>
 					<Text style={styles.logoText}>TowLink</Text>
 				</View>
-				<Pressable onPress={() => onDarkModeToggle?.()}>
+				<Pressable onPress={() => onDarkModeToggle?.()} style={styles.moonButton}>
 					<Ionicons name="moon-outline" size={24} color="#333" />
 				</Pressable>
 			</View>
@@ -31,7 +31,7 @@ export default function OnboardingHeader({
 const styles = StyleSheet.create({
 	topRow: {
 		flexDirection: 'row',
-		justifyContent: 'space-between',
+		justifyContent: 'center',
 		alignItems: 'center',
 		paddingHorizontal: 20,
 		paddingTop: 16,
@@ -41,6 +41,10 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 8,
+	},
+	moonButton: {
+		position: 'absolute',
+		right: 20,
 	},
 	emoji: {
 		fontSize: 24,
