@@ -313,3 +313,8 @@ export function listenToTrip(
 		callback(trip);
 	});
 }
+
+export async function getRequestById(requestId: string) {
+	const request = await getDoc(doc(db, 'requests', requestId));
+	return request.exists() ? { id: request.id, ...request.data() } : null;
+}
