@@ -52,7 +52,7 @@ This mirrors how professional React Native development works. You design the dat
 
 ## Current Step
 
-**Step 2 - Create the `OnboardingHeader` Component**
+**Step 3 - Create the `PaginationDots` Component**
 
 ---
 
@@ -100,7 +100,7 @@ In TypeScript, `interface` and `type` both describe the shape of data. In this p
 
 ### Step 2: Create the `OnboardingHeader` Component
 
-**Status**: [ ] Pending
+**Status**: [x] Complete
 
 **Learning Objective:**
 Build your first reusable component for this story. A "reusable component" means it accepts props to customize its appearance and behaviour, so the same component can be used on multiple screens without duplicating code.
