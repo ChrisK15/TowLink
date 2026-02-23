@@ -52,7 +52,7 @@ This mirrors how professional React Native development works. You design the dat
 
 ## Current Step
 
-**Step 4 - Create the `OnboardingSlide` Component**
+**Step 5 - Create the `RoleCard` Component**
 
 ---
 
@@ -211,7 +211,7 @@ You can't test this in isolation yet, but you can create a quick test by importi
 
 ### Step 4: Create the `OnboardingSlide` Component
 
-**Status**: [ ] Pending
+**Status**: [x] Complete
 
 **Learning Objective:**
 Learn to use `Dimensions` for screen-width-aware layout. You'll also practice centering content both vertically and horizontally - a fundamental mobile layout skill.
