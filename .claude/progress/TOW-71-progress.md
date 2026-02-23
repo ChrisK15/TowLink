@@ -52,7 +52,7 @@ This mirrors how professional React Native development works. You design the dat
 
 ## Current Step
 
-**Step 6 - Create the Onboarding Sub-Group Layout**
+**Step 7 - Build the Onboarding Pager Screen (Screens 1-3)**
 
 ---
 
@@ -319,7 +319,7 @@ Open `/Users/loris/TowLink/.claude/design/screens/onboarding_flow/Role Selection
 
 ### Step 6: Create the Onboarding Sub-Group Layout
 
-**Status**: [ ] Pending
+**Status**: [x] Complete
 
 **Learning Objective:**
 Understand how Expo Router uses the filesystem to define navigation. A `_layout.tsx` file inside a folder tells Expo Router "this is a group of screens, wrap them in this navigator." Nested groups let you have different navigation behavior in different parts of the app.
