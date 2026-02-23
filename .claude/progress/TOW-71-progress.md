@@ -52,7 +52,7 @@ This mirrors how professional React Native development works. You design the dat
 
 ## Current Step
 
-**Step 7 - Build the Onboarding Pager Screen (Screens 1-3)**
+**Step 8 - Build the Role Selection Screen (Screen 4)**
 
 ---
 
@@ -354,7 +354,7 @@ Look at `app/(auth)/_layout.tsx` - this file should look nearly identical. The o
 
 ### Step 7: Build the Onboarding Pager Screen (Screens 1-3)
 
-**Status**: [ ] Pending
+**Status**: [x] Complete
 
 **Learning Objective:**
 This is the most technically involved step. You'll learn:
