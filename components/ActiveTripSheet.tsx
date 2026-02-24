@@ -1,7 +1,7 @@
 import { updateTripStatus } from '@/services/firebase/firestore';
 import { Trip } from '@/types/models';
 import { Ionicons } from '@expo/vector-icons';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
 	Alert,
@@ -51,10 +51,25 @@ function ProgressStep({
 	active: boolean;
 	subtitle?: string;
 }) {
+	const scaleAnim = useRef(new Animated.Value(done ? 1 : 0)).current;
+
+	useEffect(() => {
+		if (done) {
+			Animated.spring(scaleAnim, {
+				toValue: 1,
+				useNativeDriver: true,
+				tension: 200,
+				friction: 8,
+			}).start();
+		}
+	}, [done]);
+
 	return (
 		<View style={stepStyles.row}>
 			{done ? (
-				<Ionicons name="checkmark-circle" size={20} color="#34C759" />
+				<Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+					<Ionicons name="checkmark-circle" size={20} color="#34C759" />
+				</Animated.View>
 			) : (
 				<View style={[stepStyles.dot, active && stepStyles.dotActive]} />
 			)}
