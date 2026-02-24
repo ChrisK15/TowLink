@@ -77,6 +77,8 @@ export interface Trip {
 	status: 'en_route' | 'arrived' | 'in_progress' | 'completed' | 'cancelled';
 	pickupLocation: Location;
 	dropoffLocation: Location;
+	pickupAddress: string;
+	dropoffAddress: string;
 	startTime: Date;
 	arrivalTime?: Date;
 	completionTime?: Date;

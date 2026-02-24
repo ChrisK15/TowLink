@@ -1,4 +1,4 @@
-import { Location } from '@/types/models';
+import { Location, Request, Trip } from '@/types/models';
 import {
 	addDoc,
 	arrayUnion,
@@ -67,6 +67,7 @@ export async function updateDriverAvailability(
 	try {
 		await updateDoc(doc(db, 'drivers', driverId), {
 			isAvailable: isAvailable,
+			isActivelyDriving: false,
 			updatedAt: Timestamp.now(),
 			currentLocation: currentLocation ? currentLocation : null,
 			geohash: currentLocation
@@ -248,6 +249,8 @@ export async function acceptClaimedRequest(
 		status: 'en_route',
 		pickupLocation: requestData?.location,
 		dropoffLocation: requestData?.dropoffLocation,
+		pickupAddress: requestData?.pickupAddress,
+		dropoffAddress: requestData?.dropoffAddress,
 		startTime: Timestamp.now(),
 		arrivalTime: null,
 		completionTime: null,
@@ -291,4 +294,34 @@ export async function declineClaimedRequest(
 			claimExpiresAt: null,
 		});
 	});
+}
+
+export function listenToTrip(
+	tripId: string,
+	callback: (trip: Trip | null) => void,
+) {
+	return onSnapshot(doc(db, 'trips', tripId), (snapshot) => {
+		if (!snapshot.exists()) {
+			callback(null);
+			return;
+		}
+		const data = snapshot.data();
+		const trip = {
+			id: snapshot.id,
+			...data,
+			startTime: data.startTime.toDate() ?? new Date(),
+			arrivalTime: data.arrivalTime?.toDate(),
+			completionTime: data.completionTime?.toDate(),
+		} as Trip;
+		callback(trip);
+	});
+}
+
+export async function getRequestById(
+	requestId: string,
+): Promise<Request | null> {
+	const request = await getDoc(doc(db, 'requests', requestId));
+	return request.exists()
+		? ({ id: request.id, ...request.data() } as Request)
+		: null;
 }

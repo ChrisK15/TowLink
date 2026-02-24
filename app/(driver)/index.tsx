@@ -1,5 +1,7 @@
+import { ActiveTripSheet } from '@/components/ActiveTripSheet';
 import { RequestPopup } from '@/components/RequestPopup';
 import { useAuth } from '@/context/auth-context';
+import { useActiveTrip } from '@/hooks/use-active-trip';
 import { useClaimedRequest } from '@/hooks/use-claimed-request';
 import { db } from '@/services/firebase/config';
 import {
@@ -34,11 +36,12 @@ export default function DriverScreen() {
 	const [isToggling, setIsToggling] = useState(false); // prevents double tapping while firestore is updating
 	const [showBanner, setShowbanner] = useState(false);
 	const [isActioning, setIsActioning] = useState(false);
+	const [activeTripId, setActiveTripId] = useState<string | null>(null);
 
 	const { claimedRequest } = useClaimedRequest(user?.uid ?? null, isOnline);
+	const { trip, commuterName, commuterPhone } = useActiveTrip(activeTripId);
 	const showPopup = claimedRequest !== null;
 
-	// Get location
 	useEffect(() => {
 		getUserLocation();
 	}, []);
@@ -54,6 +57,25 @@ export default function DriverScreen() {
 			initializeDriverDocument();
 		}
 	}, [user]);
+
+	useEffect(() => {
+		if (trip?.status === 'completed' || trip?.status === 'cancelled') {
+			setActiveTripId(null);
+			if (user?.uid) {
+				updateDriverAvailability(user.uid, true, driverLocation ?? undefined);
+			}
+		}
+	}, [trip?.status]);
+
+	// Zoom map to show both pickup and dropoff markers when trip starts
+	useEffect(() => {
+		if (!trip || !mapRef) return;
+		if (trip.status !== 'en_route') return;
+		mapRef.fitToCoordinates([trip.pickupLocation, trip.dropoffLocation], {
+			edgePadding: { top: 80, right: 60, bottom: 300, left: 60 },
+			animated: true,
+		});
+	}, [trip?.id]);
 
 	// make banner disappear after 2 seconds
 	useEffect(() => {
@@ -198,8 +220,8 @@ export default function DriverScreen() {
 
 		setIsActioning(true);
 		try {
-			await acceptClaimedRequest(claimedRequest.id, user.uid);
-			Alert.alert('Request Accepted!', 'Starting trip...');
+			const tripId = await acceptClaimedRequest(claimedRequest.id, user.uid);
+			setActiveTripId(tripId);
 		} catch (error: any) {
 			Alert.alert('Error', error.message);
 		} finally {
@@ -241,90 +263,113 @@ export default function DriverScreen() {
 				{driverLocation && (
 					<Marker coordinate={driverLocation} pinColor="red" />
 				)}
+				{activeTripId && trip?.pickupLocation && (
+					<Marker
+						coordinate={trip.pickupLocation}
+						title="Pickup"
+						pinColor="blue"
+					/>
+				)}
+				{activeTripId && trip?.dropoffLocation && (
+					<Marker
+						coordinate={trip.dropoffLocation}
+						title="Dropoff"
+						pinColor="green"
+					/>
+				)}
 			</MapView>
 
-			{/* Status Card (top) */}
-			<View style={styles.statusCard}>
-				<View style={styles.statusRow}>
-					<View
-						style={[styles.statusDot, isOnline && styles.statusDotOnline]}
-					/>
-					<Text style={styles.statusText}>
-						{isOnline ? 'Online' : 'Offline'}
-					</Text>
-				</View>
+			{/* Hide all driver UI during an active trip */}
+			{!activeTripId && (
+				<>
+					{/* Status Card (top) */}
+					<View style={styles.statusCard}>
+						<View style={styles.statusRow}>
+							<View
+								style={[styles.statusDot, isOnline && styles.statusDotOnline]}
+							/>
+							<Text style={styles.statusText}>
+								{isOnline ? 'Online' : 'Offline'}
+							</Text>
+						</View>
 
-				<Switch
-					style={{ alignSelf: 'center' }}
-					value={isOnline}
-					onValueChange={handleToggleOnline}
-					disabled={isToggling}
-					trackColor={{ false: '#D1D1D6', true: '#007AFF' }}
-					thumbColor="#fff"
-				/>
-			</View>
+						<Switch
+							style={{ alignSelf: 'center' }}
+							value={isOnline}
+							onValueChange={handleToggleOnline}
+							disabled={isToggling}
+							trackColor={{ false: '#D1D1D6', true: '#007AFF' }}
+							thumbColor="#fff"
+						/>
+					</View>
 
-			{/* Temporary Sign Out Button for Testing */}
-			<TouchableOpacity
-				style={styles.signOutButton}
-				onPress={() => {
-					Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
-						{ text: 'Cancel', style: 'cancel' },
-						{
-							text: 'Sign Out',
-							style: 'destructive',
-							onPress: async () => {
-								if (isOnline && user?.uid) {
-									await updateDriverAvailability(user.uid, false, undefined);
-									await AsyncStorage.setItem(
-										'driver_is_online',
-										JSON.stringify(false),
-									);
-								}
-								signOut();
-							},
-						},
-					]);
-				}}
-			>
-				<Text style={styles.signOutText}>Sign Out</Text>
-			</TouchableOpacity>
-
-			{/* Info Banner */}
-			{showBanner && (
-				<View style={styles.infoBanner}>
-					<Text style={styles.infoBannerTitle}>
-						You're now online and broadcasting location
-					</Text>
-					<Text style={styles.infoBannerSubtitle}>
-						Ready to receive service requests
-					</Text>
-				</View>
-			)}
-
-			{!isOnline ? (
-				<View style={styles.bottomContainer}>
-					<Text style={styles.bottomText}>
-						Go online to start receiving requests
-					</Text>
+					{/* Temporary Sign Out Button for Testing */}
 					<TouchableOpacity
-						style={styles.goOnlineButton}
-						onPress={() => handleToggleOnline(true)}
-						disabled={isToggling}
+						style={styles.signOutButton}
+						onPress={() => {
+							Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+								{ text: 'Cancel', style: 'cancel' },
+								{
+									text: 'Sign Out',
+									style: 'destructive',
+									onPress: async () => {
+										if (isOnline && user?.uid) {
+											await updateDriverAvailability(
+												user.uid,
+												false,
+												undefined,
+											);
+											await AsyncStorage.setItem(
+												'driver_is_online',
+												JSON.stringify(false),
+											);
+										}
+										signOut();
+									},
+								},
+							]);
+						}}
 					>
-						<Text style={styles.goOnlineButtonText}>
-							{isToggling ? 'Connecting...' : 'Go Online'}
-						</Text>
+						<Text style={styles.signOutText}>Sign Out</Text>
 					</TouchableOpacity>
-				</View>
-			) : (
-				<View style={styles.bottomContainer}>
-					<Text style={styles.waitingText}>Waiting for requests...</Text>
-					{/* Test Popup code. Leaving just incase */}
-					{/* <TouchableOpacity style={styles.testButton} onPress={handleTestPopup}>
-						<Text style={styles.testButtonText}>🧪 Test Popup</Text>
-					</TouchableOpacity> */}
-				</View>
+
+					{/* Info Banner */}
+					{showBanner && (
+						<View style={styles.infoBanner}>
+							<Text style={styles.infoBannerTitle}>
+								You're now online and broadcasting location
+							</Text>
+							<Text style={styles.infoBannerSubtitle}>
+								Ready to receive service requests
+							</Text>
+						</View>
+					)}
+
+					{!isOnline ? (
+						<View style={styles.bottomContainer}>
+							<Text style={styles.bottomText}>
+								Go online to start receiving requests
+							</Text>
+							<TouchableOpacity
+								style={styles.goOnlineButton}
+								onPress={() => handleToggleOnline(true)}
+								disabled={isToggling}
+							>
+								<Text style={styles.goOnlineButtonText}>
+									{isToggling ? 'Connecting...' : 'Go Online'}
+								</Text>
+							</TouchableOpacity>
+						</View>
+					) : (
+						<View style={styles.bottomContainer}>
+							<Text style={styles.waitingText}>Waiting for requests...</Text>
+							{/* Test Popup code. Leaving just incase */}
+							{/* <TouchableOpacity style={styles.testButton} onPress={handleTestPopup}>
+								<Text style={styles.testButtonText}>🧪 Test Popup</Text>
+							</TouchableOpacity> */}
+						</View>
+					)}
+				</>
 			)}
 
 			{/*Location Button bottom right*/}
@@ -343,6 +388,13 @@ export default function DriverScreen() {
 				onDecline={handleDeclineRequest}
 				isLoading={isActioning}
 			/>
+			{activeTripId && (
+				<ActiveTripSheet
+					trip={trip}
+					commuterName={commuterName}
+					commuterPhone={commuterPhone}
+				/>
+			)}
 		</View>
 	);
 }
