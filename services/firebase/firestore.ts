@@ -249,6 +249,8 @@ export async function acceptClaimedRequest(
 		status: 'en_route',
 		pickupLocation: requestData?.location,
 		dropoffLocation: requestData?.dropoffLocation,
+		pickupAddress: requestData?.pickupAddress,
+		dropoffAddress: requestData?.dropoffAddress,
 		startTime: Timestamp.now(),
 		arrivalTime: null,
 		completionTime: null,
