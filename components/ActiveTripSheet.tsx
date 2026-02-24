@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import {
 	Animated,
 	Dimensions,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
@@ -67,6 +68,33 @@ export function ActiveTripSheet({
 				</View>
 				<Text style={styles.customerName}>{commuterName ?? 'Loading...'}</Text>
 			</View>
+
+			<ScrollView scrollEnabled={isExpanded}>
+				<View style={styles.divider} />
+				<View style={styles.infoCard}>
+					<View style={styles.infoRow}>
+						<Text style={styles.infoLabel}>Service</Text>
+						<Text style={styles.infoValue}>Towing</Text>
+					</View>
+
+					<View style={styles.infoRow}>
+						<Text style={styles.infoLabel}>📍 Pickup</Text>
+						<Text style={styles.infoValue}>{trip?.pickupAddress ?? '—'}</Text>
+					</View>
+
+					<View style={styles.infoRow}>
+						<Text style={styles.infoLabel}>🏁 Dropoff</Text>
+						<Text style={styles.infoValue}>{trip?.dropoffAddress ?? '—'}</Text>
+					</View>
+
+					<View style={styles.divider} />
+
+					<View style={styles.infoRow}>
+						<Text style={styles.infoLabel}>Fare</Text>
+						<Text style={styles.fareValue}>${trip?.estimatedPrice ?? '—'}</Text>
+					</View>
+				</View>
+			</ScrollView>
 		</Animated.View>
 	);
 }
@@ -130,5 +158,44 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		fontWeight: '700',
 		color: '#000',
+	},
+	divider: {
+		height: 1,
+		backgroundColor: '#E0E0E0',
+		marginHorizontal: 20,
+		marginVertical: 12,
+	},
+	infoRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'flex-start',
+		paddingHorizontal: 20,
+		paddingVertical: 20,
+	},
+	infoLabel: {
+		fontSize: 14,
+		color: '#666666',
+		flex: 1,
+	},
+	infoValue: {
+		fontSize: 14,
+		color: '#000',
+		fontWeight: '500',
+		flex: 2,
+		textAlign: 'right',
+	},
+	fareValue: {
+		fontSize: 21,
+		fontWeight: '700',
+		color: '#34C759',
+		flex: 2,
+		textAlign: 'right',
+	},
+	infoCard: {
+		backgroundColor: '#F8F8F8',
+		marginHorizontal: 16,
+		marginTop: 8,
+		borderRadius: 12,
+		overflow: 'hidden',
 	},
 });
