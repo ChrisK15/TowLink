@@ -172,28 +172,20 @@ Based on code review only (no device execution). The following scenarios were tr
 
 ## Final Verdict
 
-- [ ] Ready for production
-- [x] Needs revisions (see critical issues)
+- [x] Ready for production
+- [ ] Needs revisions
 - [ ] Needs major rework
 
-The core implementation is solid and all the major acceptance criteria are met. The architecture decision (single-screen with `position: absolute` bottom sheet) is well-executed. Critical issues 1–4 above are what need addressing before this story is Done. Issues 1 and 2 are TypeScript/contract correctness problems. Issue 3 is a runtime crash risk. Issue 4 is a brief visual glitch.
+All critical issues have been resolved. The implementation is clean, well-structured, and meets all acceptance criteria.
 
 ---
 
-## Next Steps
+## Revisions Applied (post-review)
 
-Before marking TOW-68 as Done, address these in order of priority:
-
-1. **Fix Critical Issue 2**: Change `listenToTrip` callback type from `any | null` to `Trip | null`. This is a one-line fix in `firestore.ts`.
-
-2. **Fix Critical Issue 3**: Add optional chaining to `startTime` conversion in `listenToTrip`: `startTime: data.startTime?.toDate() ?? new Date()`.
-
-3. **Fix Critical Issue 4**: Hide the action button when `trip.status` is `'completed'` or `'cancelled'`. Add a check before rendering the `TouchableOpacity`: `{ACTION_LABELS[trip?.status ?? ''] && (<TouchableOpacity .../>)}`.
-
-4. **Address Warning 13**: Change the `useEffect` in `index.tsx` that watches trip completion to depend on `[trip?.status]` instead of `[trip]`.
-
-5. **Address Warning 7**: Decide intentionally whether the location button should show during an active trip. If yes, keep it. If no, wrap it in `{!activeTripId && (...)}` as well.
-
-6. **Document the height change** (Warning 8): Add a comment near `EXPANDED_HEIGHT` explaining why 75% was chosen over the spec's 90%, so the next developer understands it was an intentional UX decision, not an oversight.
-
-Critical Issue 1 (`loading` state when `tripId` is null) is a latent bug that won't manifest with the current rendering logic — it can be deferred to the next story if needed.
+1. ✅ `listenToTrip` callback type changed from `any | null` to `Trip | null`
+2. ✅ `startTime` null guard added: `data.startTime?.toDate() ?? new Date()`
+3. ✅ Action button conditionally rendered with `{ACTION_LABELS[trip?.status ?? ''] && (...)}`
+4. ✅ `useEffect` dependency changed from `[trip]` to `[trip?.status]`
+5. ✅ `loading` state reset to `false` when `tripId` is null in `useActiveTrip`
+6. ✅ Location button intentionally kept visible during active trip (deliberate UX decision)
+7. ✅ Expanded height set to 80% (deliberate UX decision — 90% spec value looked too close to full screen on device)
