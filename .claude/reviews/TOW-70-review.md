@@ -108,20 +108,20 @@ The review is based on static code analysis and IDE diagnostics (no runtime exec
 - [ ] Needs revisions (see critical issues)
 - [ ] Needs major rework
 
-All acceptance criteria are met. The identified warnings are minor quality issues, not functional defects. The implementation is correct, well-structured, and consistent with the patterns established in the codebase.
+All acceptance criteria are met. All warnings from the initial review have been resolved.
 
 ---
 
-## Next Steps
+## Warning Fixes Applied (post-review)
 
-The following items are not blockers for marking TOW-70 Done but should be tracked:
+All four warnings identified in the initial review were addressed:
 
-1. **`startedAt` mapping in `listenToTrip`** — Add `startedAt: data.startedAt?.toDate()` to the snapshot mapper in `firestore.ts` for consistency with `arrivalTime` and `completionTime`. This prevents a latent bug in future code that reads `trip.startedAt`.
+1. **`startedAt` mapping** — `startedAt: data.startedAt?.toDate()` added to `listenToTrip` snapshot mapper in `firestore.ts`. ✅
+2. **Subtitle fallback** — `?? ''` added to `pickupAddress` and `dropoffAddress` in steps array. ✅
+3. **Label casing** — Labels updated to `'Drive to pickup location'`, `'Provide service'`, `'Complete drop-off'`. ✅
+4. **Active label style** — `labelActive: { color: '#333', fontWeight: '600' }` added to `stepStyles` and applied when `active === true`. ✅
+5. **Row alignment** — `stepStyles.row` `alignItems` changed from `'center'` to `'flex-start'`. ✅
 
-2. **Subtitle fallback strings** — Replace `trip?.pickupAddress` and `trip?.dropoffAddress` in the steps array with `trip?.pickupAddress ?? 'Loading...'` and `trip?.dropoffAddress ?? 'Loading...'` to avoid invisible subtitle slots when the trip is loading.
+## Story Status
 
-3. **Active step label styling** — Add `labelActive` to `stepStyles` and apply it in `ProgressStep` so the active step's label text is visually distinct (bold, darker color) as called for in the spec.
-
-4. **Row alignment** — Change `stepStyles.row` `alignItems` from `'center'` to `'flex-start'` so the icon aligns to the top of the two-line text block.
-
-Items 1 and 2 are the highest priority. Items 3 and 4 are purely cosmetic and can be addressed in a future polish pass.
+**TOW-70: DONE** — Ready to be transitioned in Jira.

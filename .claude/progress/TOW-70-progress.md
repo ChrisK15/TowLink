@@ -4,21 +4,28 @@
 Trip State Machine & Progress Tracking
 
 ## Completed Steps
-_(none yet)_
+- [x] Step 1: Add `startedAt?: Date` to the `Trip` interface in `types/models.ts`
+- [x] Step 2: Add `in_progress` branch with `startedAt` timestamp in `firestore.ts`
+- [x] Step 3: Add `isUpdating` state and guard to `handleStatusUpdate` in `ActiveTripSheet.tsx`
+- [x] Step 4: Update action button — add `disabled`, `ActivityIndicator`, and disabled style
+- [x] Step 5: Add `subtitle` prop to `ProgressStep` component with subtitle text and styles
+- [x] Step 6: Replace dot with `Ionicons` checkmark icon when `done === true`
+- [x] Step 7: Animate checkmark with `Animated.spring` scale when `done` transitions to true
+- [x] Step 8: Refactor three `ProgressStep` calls to use a mapped `steps` array with real subtitles
+- [x] Step 9: Manual end-to-end test of the full driver flow — PASSED
+
+## Bug Fix (post-review)
+- [x] Added `useEffect(() => setIsUpdating(false), [trip?.status])` to reset loading state after successful Firestore write (infinite spinner bug)
+
+## Warning Fixes (post-review)
+- [x] `startedAt: data.startedAt?.toDate()` added to `listenToTrip` snapshot mapper in `firestore.ts`
+- [x] Subtitle fallback `?? ''` added to `pickupAddress` and `dropoffAddress` in steps array
+- [x] Step label casing corrected: `'Drive to pickup location'`, `'Provide service'`, `'Complete drop-off'`
+- [x] `labelActive` style added to `stepStyles` and applied when `active === true`
+- [x] `stepStyles.row` `alignItems` changed from `'center'` to `'flex-start'`
 
 ## Current Step
-- [ ] Step 1: Add `startedAt` to the Trip type
-
-## Remaining Steps
-- [ ] Step 1: Add `startedAt?: Date` to the `Trip` interface in `types/models.ts`
-- [ ] Step 2: Add `in_progress` branch with `startedAt` timestamp in `firestore.ts`
-- [ ] Step 3: Add `isUpdating` state and guard to `handleStatusUpdate` in `ActiveTripSheet.tsx`
-- [ ] Step 4: Update action button — add `disabled`, `ActivityIndicator`, and disabled style
-- [ ] Step 5: Add `subtitle` prop to `ProgressStep` component with subtitle text and styles
-- [ ] Step 6: Replace dot with `Ionicons` checkmark icon when `done === true`
-- [ ] Step 7: Animate checkmark with `Animated.spring` scale when `done` transitions to true
-- [ ] Step 8: Refactor three `ProgressStep` calls to use a mapped `steps` array with real subtitles
-- [ ] Step 9: Manual end-to-end test of the full driver flow
+_(all steps complete)_
 
 ## What to Learn Per Step
 
