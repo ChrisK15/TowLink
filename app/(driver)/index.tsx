@@ -252,88 +252,93 @@ export default function DriverScreen() {
 				)}
 			</MapView>
 
-			{/* Status Card (top) */}
-			<View style={styles.statusCard}>
-				<View style={styles.statusRow}>
-					<View
-						style={[styles.statusDot, isOnline && styles.statusDotOnline]}
-					/>
-					<Text style={styles.statusText}>
-						{isOnline ? 'Online' : 'Offline'}
-					</Text>
-				</View>
+			{/* Hide all driver UI during an active trip */}
+			{!activeTripId && (
+				<>
+					{/* Status Card (top) */}
+					<View style={styles.statusCard}>
+						<View style={styles.statusRow}>
+							<View
+								style={[styles.statusDot, isOnline && styles.statusDotOnline]}
+							/>
+							<Text style={styles.statusText}>
+								{isOnline ? 'Online' : 'Offline'}
+							</Text>
+						</View>
 
-				<Switch
-					style={{ alignSelf: 'center' }}
-					value={isOnline}
-					onValueChange={handleToggleOnline}
-					disabled={isToggling}
-					trackColor={{ false: '#D1D1D6', true: '#007AFF' }}
-					thumbColor="#fff"
-				/>
-			</View>
+						<Switch
+							style={{ alignSelf: 'center' }}
+							value={isOnline}
+							onValueChange={handleToggleOnline}
+							disabled={isToggling}
+							trackColor={{ false: '#D1D1D6', true: '#007AFF' }}
+							thumbColor="#fff"
+						/>
+					</View>
 
-			{/* Temporary Sign Out Button for Testing */}
-			<TouchableOpacity
-				style={styles.signOutButton}
-				onPress={() => {
-					Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
-						{ text: 'Cancel', style: 'cancel' },
-						{
-							text: 'Sign Out',
-							style: 'destructive',
-							onPress: async () => {
-								if (isOnline && user?.uid) {
-									await updateDriverAvailability(user.uid, false, undefined);
-									await AsyncStorage.setItem(
-										'driver_is_online',
-										JSON.stringify(false),
-									);
-								}
-								signOut();
-							},
-						},
-					]);
-				}}
-			>
-				<Text style={styles.signOutText}>Sign Out</Text>
-			</TouchableOpacity>
-
-			{/* Info Banner */}
-			{showBanner && (
-				<View style={styles.infoBanner}>
-					<Text style={styles.infoBannerTitle}>
-						You're now online and broadcasting location
-					</Text>
-					<Text style={styles.infoBannerSubtitle}>
-						Ready to receive service requests
-					</Text>
-				</View>
-			)}
-
-			{!isOnline ? (
-				<View style={styles.bottomContainer}>
-					<Text style={styles.bottomText}>
-						Go online to start receiving requests
-					</Text>
+					{/* Temporary Sign Out Button for Testing */}
 					<TouchableOpacity
-						style={styles.goOnlineButton}
-						onPress={() => handleToggleOnline(true)}
-						disabled={isToggling}
+						style={styles.signOutButton}
+						onPress={() => {
+							Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+								{ text: 'Cancel', style: 'cancel' },
+								{
+									text: 'Sign Out',
+									style: 'destructive',
+									onPress: async () => {
+										if (isOnline && user?.uid) {
+											await updateDriverAvailability(user.uid, false, undefined);
+											await AsyncStorage.setItem(
+												'driver_is_online',
+												JSON.stringify(false),
+											);
+										}
+										signOut();
+									},
+								},
+							]);
+						}}
 					>
-						<Text style={styles.goOnlineButtonText}>
-							{isToggling ? 'Connecting...' : 'Go Online'}
-						</Text>
+						<Text style={styles.signOutText}>Sign Out</Text>
 					</TouchableOpacity>
-				</View>
-			) : (
-				<View style={styles.bottomContainer}>
-					<Text style={styles.waitingText}>Waiting for requests...</Text>
-					{/* Test Popup code. Leaving just incase */}
-					{/* <TouchableOpacity style={styles.testButton} onPress={handleTestPopup}>
-						<Text style={styles.testButtonText}>🧪 Test Popup</Text>
-					</TouchableOpacity> */}
-				</View>
+
+					{/* Info Banner */}
+					{showBanner && (
+						<View style={styles.infoBanner}>
+							<Text style={styles.infoBannerTitle}>
+								You're now online and broadcasting location
+							</Text>
+							<Text style={styles.infoBannerSubtitle}>
+								Ready to receive service requests
+							</Text>
+						</View>
+					)}
+
+					{!isOnline ? (
+						<View style={styles.bottomContainer}>
+							<Text style={styles.bottomText}>
+								Go online to start receiving requests
+							</Text>
+							<TouchableOpacity
+								style={styles.goOnlineButton}
+								onPress={() => handleToggleOnline(true)}
+								disabled={isToggling}
+							>
+								<Text style={styles.goOnlineButtonText}>
+									{isToggling ? 'Connecting...' : 'Go Online'}
+								</Text>
+							</TouchableOpacity>
+						</View>
+					) : (
+						<View style={styles.bottomContainer}>
+							<Text style={styles.waitingText}>Waiting for requests...</Text>
+							{/* Test Popup code. Leaving just incase */}
+							{/* <TouchableOpacity style={styles.testButton} onPress={handleTestPopup}>
+								<Text style={styles.testButtonText}>🧪 Test Popup</Text>
+							</TouchableOpacity> */}
+						</View>
+					)}
+				</>
 			)}
 
 			{/*Location Button bottom right*/}
