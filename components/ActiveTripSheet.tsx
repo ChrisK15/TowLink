@@ -1,5 +1,6 @@
 import { updateTripStatus } from '@/services/firebase/firestore';
 import { Trip } from '@/types/models';
+import { Ionicons } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
 import {
 	ActivityIndicator,
@@ -52,13 +53,11 @@ function ProgressStep({
 }) {
 	return (
 		<View style={stepStyles.row}>
-			<View
-				style={[
-					stepStyles.dot,
-					done && stepStyles.dotDone,
-					active && stepStyles.dotActive,
-				]}
-			/>
+			{done ? (
+				<Ionicons name="checkmark-circle" size={20} color="#34C759" />
+			) : (
+				<View style={[stepStyles.dot, active && stepStyles.dotActive]} />
+			)}
 			<View style={{ flex: 1 }}>
 				<Text style={[stepStyles.label, done && stepStyles.labelDone]}>
 					{label}
@@ -380,7 +379,6 @@ const stepStyles = StyleSheet.create({
 		borderColor: '#E0E0E0',
 	},
 	dotActive: { backgroundColor: '#34C759', borderColor: '#34C759' },
-	dotDone: { backgroundColor: '#A5D6A7', borderColor: '#A5D6A7' },
 	label: { fontSize: 14, color: '#999' },
 	labelDone: { color: '#333' },
 	subtitle: {
