@@ -36,7 +36,7 @@ service cloud.firestore {
         && location.longitude >= -180 && location.longitude <= 180;
     }
 
-    // Check if timestamp is valid (not in the past for creation)
+    // Check if timestamp is valid
     function isValidTimestamp(field) {
       return request.resource.data[field] is timestamp;
     }
@@ -51,6 +51,15 @@ service cloud.firestore {
     function isCommuter() {
       return isAuthenticated()
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['commuter', 'both'];
+    }
+
+    // Check that a trip status transition follows the state machine order
+    // cancelled is always allowed from any state
+    function isValidTripTransition(currentStatus, newStatus) {
+      return (currentStatus == 'en_route' && newStatus == 'arrived')
+        || (currentStatus == 'arrived' && newStatus == 'in_progress')
+        || (currentStatus == 'in_progress' && newStatus == 'completed')
+        || newStatus == 'cancelled';
     }
 
     // ============================================
@@ -103,7 +112,7 @@ service cloud.firestore {
           'location',
           'dropoffLocation',
           'pickupAddress',
-		  'dropoffAddress',
+          'dropoffAddress',
           'serviceType',
           'status',
           'createdAt',
@@ -116,7 +125,7 @@ service cloud.firestore {
         && isValidLocation(request.resource.data.dropoffLocation)
         // Address must be valid
         && isValidString('pickupAddress')
-		&& isValidString('dropoffAddress')
+        && isValidString('dropoffAddress')
         // Service type must be 'tow'
         && request.resource.data.serviceType == 'tow'
         // Initial status must be 'searching'
@@ -128,29 +137,43 @@ service cloud.firestore {
         && (!request.resource.data.keys().hasAny(['matchedDriverId'])
             || request.resource.data.matchedDriverId == null);
 
-    // Commuters can update their own requests (for cancellation)
-  	// Drivers can accept or decline claimed requests
-	allow update: if isAuthenticated()
-		&& (
-		// Commuter cancelling their own request
-		(resource.data.commuterId == request.auth.uid
-			&& request.resource.data.status == 'cancelled'
-			&& request.resource.data.commuterId == resource.data.commuterId)
-		||
-		// Driver accepting a claimed request
-		(isDriver()
-			&& resource.data.status == 'claimed'
-			&& resource.data.claimedByDriverId == request.auth.uid
-			&& request.resource.data.status == 'accepted'
-			&& request.resource.data.matchedDriverId == request.auth.uid)
-		||
-		// Driver declining a claimed request
-		(isDriver()
-			&& resource.data.status == 'claimed'
-			&& resource.data.claimedByDriverId == request.auth.uid
-			&& request.resource.data.status == 'searching'
-			&& request.resource.data.claimedByDriverId == null)
-		);
+      // Commuters can cancel their own requests.
+      // Drivers can claim, accept, or decline requests.
+      allow update: if isAuthenticated()
+        && (
+          // [1] Commuter cancelling their own request (from any active status)
+          (resource.data.commuterId == request.auth.uid
+            && request.resource.data.status == 'cancelled'
+            && request.resource.data.commuterId == resource.data.commuterId)
+
+          ||
+
+          // [2] Driver claiming a searching request (TOW-52)
+          // Sets status: 'claimed', claimedByDriverId, claimExpiresAt, notifiedDriverIds
+          (isDriver()
+            && resource.data.status == 'searching'
+            && request.resource.data.status == 'claimed'
+            && request.resource.data.claimedByDriverId == request.auth.uid
+            && request.resource.data.commuterId == resource.data.commuterId)
+
+          ||
+
+          // [3] Driver accepting a claimed request (finalises the claim, creates trip)
+          (isDriver()
+            && resource.data.status == 'claimed'
+            && resource.data.claimedByDriverId == request.auth.uid
+            && request.resource.data.status == 'accepted'
+            && request.resource.data.matchedDriverId == request.auth.uid)
+
+          ||
+
+          // [4] Driver declining a claimed request (returns to searching)
+          (isDriver()
+            && resource.data.status == 'claimed'
+            && resource.data.claimedByDriverId == request.auth.uid
+            && request.resource.data.status == 'searching'
+            && request.resource.data.claimedByDriverId == null)
+        );
 
       // No one can delete requests (keep for records)
       allow delete: if false;
@@ -193,56 +216,79 @@ service cloud.firestore {
         // Distance should be 0 initially
         && request.resource.data.distance == 0;
 
-      // Drivers can update their trips to change status
-      // Commuters cannot update trips (read-only for them)
+      // Drivers can update their trips to advance the state machine.
+      // Commuters cannot update trips (read-only for them).
       allow update: if isAuthenticated()
         && resource.data.driverId == request.auth.uid
-        // Cannot change core fields
+        // Cannot change core identity fields
         && request.resource.data.requestId == resource.data.requestId
         && request.resource.data.commuterId == resource.data.commuterId
         && request.resource.data.driverId == resource.data.driverId
         && request.resource.data.startTime == resource.data.startTime
-        // Status must be valid progression
+        // Status must be a valid value
         && request.resource.data.status in ['en_route', 'arrived', 'in_progress', 'completed', 'cancelled']
-        // If setting to completed, must have completionTime
-        && (request.resource.data.status != 'completed'
-            || isValidTimestamp('completionTime'))
-        // If setting to arrived, must have arrivalTime
+        // Status must follow the valid state machine progression (TOW-70)
+        && isValidTripTransition(resource.data.status, request.resource.data.status)
+        // Timestamp validation per state transition
         && (request.resource.data.status != 'arrived'
-            || isValidTimestamp('arrivalTime'));
+            || isValidTimestamp('arrivalTime'))
+        && (request.resource.data.status != 'in_progress'
+            || isValidTimestamp('startedAt'))
+        && (request.resource.data.status != 'completed'
+            || isValidTimestamp('completionTime'));
 
       // No one can delete trips (keep for records)
       allow delete: if false;
     }
 
     // ============================================
-    // DRIVERS COLLECTION (Future)
+    // DRIVERS COLLECTION
     // ============================================
     match /drivers/{driverId} {
       // Any authenticated user can read driver profiles
       allow read: if isAuthenticated();
 
-      // Only the user can create/update their own driver profile
-      allow create, update: if isAuthenticated()
+      // Any authenticated user can create their own driver profile during onboarding.
+      // NOTE: isDriver() check intentionally omitted — the user's role in Firestore
+      // may not yet be set when the driver profile is first created (TOW-50 race condition).
+      // isVerified must always start as false; it is set by admin/Cloud Function only.
+      allow create: if isAuthenticated()
         && isOwner(driverId)
-        && isDriver();
+        && hasRequiredFields(['userId', 'isAvailable', 'isVerified', 'vehicleInfo', 'currentLocation', 'serviceRadius', 'totalTrips'])
+        && request.resource.data.userId == request.auth.uid
+        // Cannot self-verify on creation
+        && request.resource.data.isVerified == false
+        // Cannot self-mark as actively driving on creation
+        && (request.resource.data.isActivelyDriving == false
+            || !request.resource.data.keys().hasAny(['isActivelyDriving']));
+
+      // Updates: driver must own the document and cannot self-verify or change userId
+      allow update: if isAuthenticated()
+        && isOwner(driverId)
+        // isVerified is immutable from the client — only Cloud Functions/admin can change it
+        && request.resource.data.isVerified == resource.data.isVerified
+        // userId is immutable
+        && request.resource.data.userId == resource.data.userId;
 
       // Cannot delete driver profiles
       allow delete: if false;
     }
 
     // ============================================
-    // DRIVER LOCATIONS COLLECTION (Future)
+    // DRIVER LOCATIONS COLLECTION
     // ============================================
+    // NOTE: As of Sprint 2, driverLocations is NOT written by any client-side
+    // service function. updateDriverAvailability() writes to drivers/{driverId} only.
+    // These rules are forward-looking for Phase 3 background location tracking.
     match /driverLocations/{driverId} {
       // Any authenticated user can read driver locations
-      // (commuters need to track their driver)
+      // (commuters need to track their driver during an active trip)
       allow read: if isAuthenticated();
 
-      // Only the driver can update their own location
+      // Only the driver can create/update their own location document
       allow create, update: if isAuthenticated()
         && isOwner(driverId)
-        && isDriver();
+        && request.resource.data.driverId == request.auth.uid;
 
       // Drivers can delete their location (when going offline)
       allow delete: if isAuthenticated()
@@ -252,7 +298,6 @@ service cloud.firestore {
     // ============================================
     // DEFAULT DENY ALL OTHER COLLECTIONS
     // ============================================
-    // This ensures any new collections are denied by default
-    // Must explicitly add rules for new collections
+    // Any new collection is denied by default until explicitly added above.
   }
 }
