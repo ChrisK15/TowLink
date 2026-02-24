@@ -12,25 +12,25 @@
 
 ## Description
 **As a** driver
-**I want to** navigate to an active trip screen with expandable trip details
+**I want to** see the active trip modal slide up from the bottom of my screen
 **So that** I can see the map and manage trip information simultaneously
 
 ## Acceptance Criteria
 
 ### Navigation & Screen Setup
-- [ ] Accepting request navigates to active trip screen
+- [ ] Accepting request slides down RequestPopup and slides up ActiveTrip modal
 - [ ] RequestPopup modal slides down when driver accepts
-- [ ] ActiveTrip screen slides up immediately after
-- [ ] Screen displays full-screen map with driver's current location
+- [ ] ActiveTrip modal slides up immediately after
+- [ ] Modal displays full-screen map with driver's current location
 - [ ] Screen listens to trip document for real-time updates
 
 ### Expandable Modal (Bottom Sheet UX)
 - [ ] Modal overlays the map, starting at 15% - 25% of screen height (test to see what's better)
 - [ ] Tapping the drag handle toggles between 25% (collapsed) and 90% (expanded)
 - [ ] Smooth spring animation when transitioning between states
-- [ ] Modal has rounded top corners and shadow
+- [ ] Modal has rounded top corners
 
-### Collapsed Content (Always Visible at 25%)
+### Collapsed Content (Always Visible at ~20%)
 - [ ] Drag handle (gray bar, centered)
 - [ ] Trip status text (e.g., "En Route to Pickup")
 - [ ] Customer name
@@ -44,7 +44,7 @@
 - [ ] Text button (opens SMS app)
 - [ ] Service type
 - [ ] Pickup address
-- [ ] Dropoff address (if provided)
+- [ ] Dropoff address
 - [ ] Estimated fare
 - [ ] All content scrollable if needed
 
@@ -60,16 +60,22 @@
 - Builds on TOW-50 (Driver Home Screen Online/Offline Toggle) - Done
 - TOW-70 (Trip State Machine & Progress Tracking) is a related upcoming story (To Do)
 
-## Next Steps
-Invoke the `technical-architect` agent to create a detailed implementation specification for this story. Key areas to cover:
+## Architecture Decisions (Finalized)
 
-1. Screen navigation flow - how to transition from RequestPopup to ActiveTrip screen
-2. Bottom sheet / expandable modal architecture (Reanimated 2 + Gesture Handler vs. libraries like `@gorhom/bottom-sheet`)
-3. Spring animation configuration for the toggle between collapsed (25%) and expanded (90%) states
-4. Real-time Firestore listener for the active trip document
-5. Map integration with driver's current location marker
-6. Communication buttons (Call / SMS) using `Linking` API
-7. Layout and component breakdown (collapsed vs. expanded content areas)
-8. Design reference integration from `.claude/design/screens/active_trip_modal.png`
+- **Single-screen approach**: No separate screen. The driver home screen (`index.tsx`) map is always the backdrop. `activeTripId` state determines what overlays on top.
+- **Bottom sheet**: React Native `Modal` + `Animated` API. `@gorhom/bottom-sheet` was abandoned during TOW-51 — do not use.
+- **Slide-up entrance**: `animationType="slide"` on the Modal handles the slide-up for free.
+- **Snap points**: `Animated.spring` toggles between `SCREEN_HEIGHT * 0.20` (collapsed) and `SCREEN_HEIGHT * 0.90` (expanded). Test 0.15–0.25 for best collapsed height.
 
-**Command**: Use `technical-architect` to analyze TOW-68 and create implementation specs
+## Implementation Progress
+
+- ✅ `listenToTrip` + `getRequestById` added to `services/firebase/firestore.ts`
+- ✅ `useActiveTrip` hook created at `hooks/use-active-trip.ts`
+- 🔄 Step 3: Update `app/(driver)/index.tsx` — add `activeTripId` state, wire accept handler
+- ⏳ Step 4: Build `components/ActiveTripSheet.tsx`
+- ⏳ Step 5: Add pickup/dropoff markers to `index.tsx`
+- ⏳ Step 6: Wire Call/SMS buttons in `ActiveTripSheet`
+- ⏳ Step 7: Status action button + trip completion handling
+
+**Spec**: `.claude/specs/TOW-68.md`
+**Progress**: `.claude/progress/TOW-68-progress.md`

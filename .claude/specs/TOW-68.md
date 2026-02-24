@@ -9,10 +9,10 @@
 **User Story**: As a driver, I want to navigate to an active trip screen with expandable trip details so that I can see the map and manage trip information simultaneously.
 
 **Key Acceptance Criteria**:
-- Accepting a request navigates the driver to the active trip screen
-- The RequestPopup modal closes and the ActiveTrip screen appears
-- Full-screen map with driver's current location
-- Bottom sheet modal starting at ~25% height, toggling to 90% with spring animation
+- Accepting a request shows the ActiveTripSheet on the existing driver home screen map
+- The RequestPopup modal closes and the ActiveTripSheet appears — no navigation occurs
+- Full-screen map (already present) with pickup/dropoff markers added
+- Bottom sheet modal starting at ~20% height (test between 15%-25% to find best fit), toggling to 90% with spring animation
 - Collapsed view: drag handle, status, customer name, brief location
 - Expanded view: distance, ETA, call/SMS buttons, addresses, fare - all scrollable
 - Real-time Firestore listener on the active trip document
@@ -21,34 +21,40 @@
 
 ## Architecture Overview
 
-The approach is a **new dedicated screen** for the active trip that layers over the driver's existing home screen. The navigation uses Expo Router's stack navigation within the `(driver)` group.
+**⚠️ Architecture Pivot**: Originally specced as a separate screen, but revised to a **single-screen approach**. The driver home screen (`index.tsx`) IS the map — always. The overlaid UI changes based on state. This mirrors how Uber Driver works and eliminates map duplication.
 
-**Bottom sheet implementation**: The expandable panel is built using React Native's built-in `Modal` + `Animated` API — the same pattern already proven in `components/RequestPopup.tsx` (TOW-51). `@gorhom/bottom-sheet` was attempted and abandoned during TOW-51 due to compatibility and reliability issues. The TOW-51 quality review explicitly called the pivot to native Modal "an improvement over the original spec." We follow that same approach here.
+**Bottom sheet implementation**: The expandable panel is built using React Native's built-in `Modal` + `Animated` API — the same pattern already proven in `components/RequestPopup.tsx` (TOW-51). `@gorhom/bottom-sheet` was attempted and abandoned during TOW-51 due to compatibility and reliability issues.
 
 **How the two-state sheet works**:
-- A `Modal` with `transparent={true}` and `animationType="none"` sits over the map
+- A `Modal` with `transparent={true}` and `animationType="slide"` sits over the map — this gives the natural slide-up entrance that mirrors the RequestPopup sliding down
 - An `Animated.Value` drives the panel height between two snap points:
-  - Collapsed: `SCREEN_HEIGHT * 0.25`
+  - Initial/Collapsed: `SCREEN_HEIGHT * 0.20` (start here, adjust between 0.15–0.25 during testing)
   - Expanded: `SCREEN_HEIGHT * 0.90`
 - `Animated.spring` drives smooth transitions between states
 - A tappable drag handle (`TouchableOpacity`) toggles between the two states
 - The modal is never dismissible — it stays on screen for the entire trip
 
-**Navigation flow**:
+**State flow** (replaces navigation):
 ```
-Driver Home Screen (index.tsx)
-  └─ handleAcceptRequest() succeeds
-       └─ acceptClaimedRequest() returns tripId
-            └─ router.push('/(driver)/active-trip?tripId=XXX')
-                 └─ ActiveTripScreen
-                      └─ ActiveTripSheet (Modal + Animated, 25% collapsed / 90% expanded)
+Driver Home Screen (index.tsx) — map is always visible
+  ├─ activeTripId === null  →  show online/offline UI + RequestPopup (if request pending)
+  └─ activeTripId !== null  →  show ActiveTripSheet over the map
+```
+
+**What triggers the switch**:
+```
+handleAcceptRequest() succeeds
+  └─ acceptClaimedRequest() returns tripId
+       └─ setActiveTripId(tripId)  ← state change, no navigation
+            └─ useActiveTrip(activeTripId) starts listening
+                 └─ ActiveTripSheet renders over existing map
 ```
 
 **Data flow**:
 ```
-Firestore trips/{tripId}  ──onSnapshot──▶  useActiveTrip hook  ──▶  ActiveTripScreen
+Firestore trips/{tripId}  ──onSnapshot──▶  useActiveTrip hook  ──▶  index.tsx
 Firestore requests/{requestId}  ──getDoc──▶  commuterPhone, commuterName
-expo-location  ──▶  driverLocation state  ──▶  MapView region
+expo-location  ──▶  driverLocation state  ──▶  MapView region (already in index.tsx)
 ```
 
 ---
@@ -58,14 +64,17 @@ expo-location  ──▶  driverLocation state  ──▶  MapView region
 ### Frontend Components
 
 **Files to create:**
-- `app/(driver)/active-trip.tsx` - New screen, the main ActiveTrip screen
 - `components/ActiveTripSheet.tsx` - The bottom sheet component (collapsed + expanded content)
-- `hooks/use-active-trip.ts` - Custom hook for real-time trip listener
+- `hooks/use-active-trip.ts` - Custom hook for real-time trip listener ✅ DONE
 
 **Files to modify:**
-- `app/(driver)/index.tsx` - Update `handleAcceptRequest` to navigate after accepting
-- `services/firebase/firestore.ts` - Add `listenToTrip` function
-- `types/models.ts` - Verify Trip type has all fields needed (currently looks complete)
+- `app/(driver)/index.tsx` - Add `activeTripId` state, integrate `useActiveTrip`, update `handleAcceptRequest` to set state instead of navigating, add markers and `ActiveTripSheet` conditionally
+- `services/firebase/firestore.ts` - Add `listenToTrip` + `getRequestById` ✅ DONE
+- `types/models.ts` - No changes needed (Trip type is complete)
+
+**Files NOT needed (pivot eliminated these):**
+- ~~`app/(driver)/active-trip.tsx`~~ - No separate screen
+- ~~`app/(driver)/_layout.tsx`~~ - No Stack navigator change needed
 
 ### State Management
 
@@ -88,7 +97,7 @@ const [error, setError] = useState<string | null>(null);
 **ActiveTripSheet state:**
 ```typescript
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const COLLAPSED_HEIGHT = SCREEN_HEIGHT * 0.25;
+const COLLAPSED_HEIGHT = SCREEN_HEIGHT * 0.20; // test between 0.15–0.25
 const EXPANDED_HEIGHT = SCREEN_HEIGHT * 0.90;
 
 // Animated value controlling panel height
@@ -162,7 +171,7 @@ The panel is a `Modal` with `transparent={true}` and `animationType="none"` (we 
 import { Animated, Dimensions, Modal, TouchableOpacity, ScrollView } from 'react-native';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const COLLAPSED_HEIGHT = SCREEN_HEIGHT * 0.25;
+const COLLAPSED_HEIGHT = SCREEN_HEIGHT * 0.20; // test between 0.15–0.25
 const EXPANDED_HEIGHT = SCREEN_HEIGHT * 0.90;
 
 // In component:
@@ -184,7 +193,7 @@ const toggleSheet = () => {
 <Modal
   visible={true}
   transparent={true}
-  animationType="none"
+  animationType="slide"
   onRequestClose={() => {}} // prevent Android back button from closing
 >
   <View style={styles.overlay}>
@@ -432,7 +441,7 @@ const STATUS_LABELS: Record<Trip['status'], string> = {
 
 **Status badge color from design**: Green background (`#E8F5E9`) with green text (`#2E7D32`) - matches "Active" badge in the design reference image.
 
-**Collapsed content (visible at 25% snap)**:
+**Collapsed content (visible at ~20% snap)**:
 - Trip status text in colored badge (top of sheet)
 - Customer name with initials circle
 - Call button (phone icon circle)

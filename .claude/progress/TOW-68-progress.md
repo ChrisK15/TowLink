@@ -23,31 +23,26 @@ Active Trip Screen with Expandable Modal
 
 ---
 
-### Step 3: Create the `active-trip.tsx` screen skeleton (map only)
-**File**: `app/(driver)/active-trip.tsx`
-**Learning objective**: Learn how to receive route parameters in Expo Router using `useLocalSearchParams`. Build a screen that reads from a custom hook and shows the map.
-**What you'll build**: A bare-bones screen with a full-screen `MapView`, driver location marker, and a navigation guard (redirect if no `tripId`).
-**Key concept**: Expo Router passes URL parameters as strings. `useLocalSearchParams<{ tripId: string }>()` is how you read them with TypeScript types.
+### ~~Step 3: Create the `active-trip.tsx` screen skeleton~~ — REMOVED (architecture pivot)
+### ~~Step 4: Update `_layout.tsx` to Stack navigator~~ — REMOVED (architecture pivot)
+### ~~Step 5: Wire navigation in `index.tsx`~~ — REPLACED by Step 3 below
 
 ---
 
-### Step 4: Update `_layout.tsx` to use Stack navigation
-**File**: `app/(driver)/_layout.tsx`
-**Learning objective**: Understand the difference between `Tabs` and `Stack` navigators. Learn why an active trip screen does NOT belong in a tab bar - it's a full-screen workflow.
-**What you'll build**: Switch the driver layout from `<Tabs>` to `<Stack>`, registering both `index` and `active-trip` screens, with `gestureEnabled: false` on the trip screen.
-**Key concept**: In Expo Router, each file in a directory can be a screen. The `_layout.tsx` controls HOW those screens are presented (tabs, stack, modal, etc.).
-
----
-
-### Step 5: Wire navigation in `index.tsx` (accept -> navigate)
+### Step 3: Update `index.tsx` to manage active trip state
 **File**: `app/(driver)/index.tsx`
-**Learning objective**: Practice using `useRouter` from expo-router to programmatically navigate after an async action completes.
-**What you'll build**: Update `handleAcceptRequest` to capture the returned `tripId` and call `router.push('/(driver)/active-trip?tripId=...')` instead of showing an Alert.
-**Key concept**: `acceptClaimedRequest` already returns the `tripId`. You just need to store it and use it to navigate. The navigation should happen inside the `try` block, after the await.
+**Learning objective**: Understand state-driven UI — instead of navigating to a new screen, a state change (`activeTripId`) determines what's rendered over the same map.
+**What you'll build**:
+- Add `activeTripId` state (`useState<string | null>(null)`)
+- Call `useActiveTrip(activeTripId)` to get live trip data
+- Update `handleAcceptRequest` to call `setActiveTripId(tripId)` instead of navigating
+- Conditionally render `ActiveTripSheet` when `activeTripId` is set
+- Clear `activeTripId` when trip status becomes `completed` or `cancelled`
+**Key concept**: The map is always the backdrop. State determines what UI layers on top of it.
 
 ---
 
-### Step 6: Build the `ActiveTripSheet` component with collapsed content
+### Step 4: Build the `ActiveTripSheet` component
 **File**: `components/ActiveTripSheet.tsx`
 **Learning objective**: Learn how `Animated.Value` drives layout changes (specifically height), and how `Animated.spring` creates smooth, physics-based transitions between two snap points.
 **What you'll build**: The bottom sheet component - a transparent `Modal` containing an `Animated.View` that springs between 25% and 90% of screen height when the drag handle is tapped.
@@ -55,15 +50,15 @@ Active Trip Screen with Expandable Modal
 
 ---
 
-### Step 7: Add map markers for pickup and dropoff
-**File**: `app/(driver)/active-trip.tsx`
+### Step 5: Add map markers for pickup and dropoff
+**File**: `app/(driver)/index.tsx`
 **Learning objective**: Practice rendering conditional `Marker` components on a MapView using coordinates from a Firestore document.
-**What you'll build**: Blue marker for pickup, red marker for dropoff, both using coordinates from `trip.pickupLocation` and `trip.dropoffLocation`.
+**What you'll build**: Blue marker for pickup, red marker for dropoff, both using coordinates from `trip.pickupLocation` and `trip.dropoffLocation`. Only rendered when an active trip exists.
 **Key concept**: Markers are optional and should be conditionally rendered with `trip?.pickupLocation && (...)`. The coordinate prop expects `{ latitude, longitude }` which matches your Firestore data directly.
 
 ---
 
-### Step 8: Wire Call and SMS buttons
+### Step 6: Wire Call and SMS buttons
 **File**: `components/ActiveTripSheet.tsx`
 **Learning objective**: Learn how to use React Native's `Linking` API to launch the phone dialer and SMS app from inside your app.
 **What you'll build**: Two icon buttons (phone and chat) that call `Linking.openURL('tel:...')` and `Linking.openURL('sms:...')` respectively, with graceful error handling.
@@ -71,11 +66,11 @@ Active Trip Screen with Expandable Modal
 
 ---
 
-### Step 9: Add the trip status action button
-**File**: `components/ActiveTripSheet.tsx`
+### Step 7: Add the trip status action button + handle completion
+**File**: `components/ActiveTripSheet.tsx`, `app/(driver)/index.tsx`
 **Learning objective**: Practice mapping UI state to business logic - different button labels based on trip status, wired to a Firestore update function that already exists.
-**What you'll build**: A full-width primary button at the bottom of the sheet whose label and action changes based on `trip.status`: "I've Arrived" → "Start Service" → "Complete Trip".
-**Key concept**: `updateTripStatus` already exists in `firestore.ts`. You just need to call it with the right next status. The `useEffect` in the screen will handle navigation back when status becomes `'completed'`.
+**What you'll build**: A full-width primary button at the bottom of the sheet whose label and action changes based on `trip.status`: "I've Arrived" → "Start Service" → "Complete Trip". When trip is completed/cancelled, clear `activeTripId` in `index.tsx` to return the screen to its waiting state.
+**Key concept**: `updateTripStatus` already exists in `firestore.ts`. The real-time listener in `useActiveTrip` picks up the status change automatically.
 
 ---
 
@@ -85,23 +80,25 @@ Active Trip Screen with Expandable Modal
   - Learned why `snapshot.exists()` needs `()` — it's a method, not a property
   - Learned why early return is needed here but not in `listenForClaimedRequests`
   - Proper Timestamp conversions: `startTime.toDate()`, optional chaining for nullable fields
+- [x] Step 2: Create `useActiveTrip` hook in `hooks/use-active-trip.ts`
+  - Combined real-time listener with a one-time async fetch for commuter info
+  - Used `useRef` flag to prevent `getRequestById` from firing on every snapshot
+  - Learned why `useRef` is better than `useState` for a non-rendering flag
+  - Added return type `Promise<Request | null>` to `getRequestById` and used `as Request` cast for Firestore's generic `DocumentData`
 
 ## Current Step
-- [ ] Step 2: Create `useActiveTrip` hook
+- [ ] Step 3: Update `index.tsx` to manage active trip state
 
 ## Remaining Steps
-- [ ] Step 2: Create `useActiveTrip` hook
-- [ ] Step 3: Create `active-trip.tsx` screen skeleton (map + location)
-- [ ] Step 4: Update `_layout.tsx` to use Stack navigator
-- [ ] Step 5: Wire navigation in `index.tsx` after accepting request
-- [ ] Step 6: Build `ActiveTripSheet` component with collapsed content and animation
-- [ ] Step 7: Add pickup and dropoff map markers to `active-trip.tsx`
-- [ ] Step 8: Wire Call and SMS buttons in `ActiveTripSheet`
-- [ ] Step 9: Add trip status action button to `ActiveTripSheet`
+- [ ] Step 3: Update `index.tsx` to manage active trip state
+- [ ] Step 4: Build `ActiveTripSheet` component with collapsed content and animation
+- [ ] Step 5: Add pickup and dropoff map markers to `index.tsx`
+- [ ] Step 6: Wire Call and SMS buttons in `ActiveTripSheet`
+- [ ] Step 7: Add trip status action button + handle trip completion
 
 ## Notes
+- **Architecture pivot**: Single-screen approach. The map in `index.tsx` is always visible. `activeTripId` state determines what UI overlays on top of it. No separate screen, no Stack navigator change.
 - `@gorhom/bottom-sheet` was abandoned during TOW-51. Do NOT use it. Stick to `Modal` + `Animated`.
 - `acceptClaimedRequest` in `firestore.ts` already returns `tripId` - no backend changes needed there.
-- `updateTripStatus` already exists in `firestore.ts` - Step 9 just needs to call it.
+- `updateTripStatus` already exists in `firestore.ts` - Step 7 just needs to call it.
 - The commuter's phone/name is NOT stored on the trip document - it lives on the `requests/{requestId}` document. That's why Step 2 needs a one-time fetch.
-- `_layout.tsx` currently uses `<Tabs>` with a single "Home" tab. Switching to `<Stack>` is the right call - no real tab bar is needed for the driver workflow at this stage.
