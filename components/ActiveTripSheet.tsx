@@ -59,10 +59,12 @@ function ProgressStep({
 					active && stepStyles.dotActive,
 				]}
 			/>
-			<Text style={[stepStyles.label, done && stepStyles.labelDone]}>
-				{label}
-			</Text>
-			{subtitle && <Text style={stepStyles.subtitle}>{subtitle}</Text>}
+			<View style={{ flex: 1 }}>
+				<Text style={[stepStyles.label, done && stepStyles.labelDone]}>
+					{label}
+				</Text>
+				{subtitle && <Text style={stepStyles.subtitle}>{subtitle}</Text>}
+			</View>
 		</View>
 	);
 }
