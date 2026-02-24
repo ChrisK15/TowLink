@@ -70,6 +70,7 @@ export function ActiveTripSheet({
 }: ActiveTripSheetProps) {
 	const sheetHeight = useRef(new Animated.Value(COLLAPSED_HEIGHT)).current;
 	const [isExpanded, setIsExpanded] = useState(false);
+	const [isUpdating, setIsUpdating] = useState(false);
 
 	const handleCall = () => {
 		if (!commuterPhone) return;
@@ -86,6 +87,7 @@ export function ActiveTripSheet({
 	};
 
 	async function handleStatusUpdate() {
+		if (isUpdating) return;
 		const NEXT_STATUS = {
 			en_route: 'arrived',
 			arrived: 'in_progress',
@@ -93,10 +95,12 @@ export function ActiveTripSheet({
 		} as const;
 		if (!trip) return;
 		try {
+			setIsUpdating(true);
 			const nextStatus = NEXT_STATUS[trip.status as keyof typeof NEXT_STATUS];
 			if (!nextStatus) return;
 			await updateTripStatus(trip.id, nextStatus);
 		} catch (error: any) {
+			setIsUpdating(false);
 			Alert.alert('Error', error.message);
 		}
 	}
