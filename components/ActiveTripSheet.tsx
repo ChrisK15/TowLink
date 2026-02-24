@@ -1,7 +1,9 @@
 import { updateTripStatus } from '@/services/firebase/firestore';
 import { Trip } from '@/types/models';
-import { useRef, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useEffect, useRef, useState } from 'react';
 import {
+	ActivityIndicator,
 	Alert,
 	Animated,
 	Dimensions,
@@ -42,23 +44,41 @@ function ProgressStep({
 	label,
 	done,
 	active,
+	subtitle,
 }: {
 	label: string;
 	done: boolean;
 	active: boolean;
+	subtitle?: string;
 }) {
+	const scaleAnim = useRef(new Animated.Value(done ? 1 : 0)).current;
+
+	useEffect(() => {
+		if (done) {
+			Animated.spring(scaleAnim, {
+				toValue: 1,
+				useNativeDriver: true,
+				tension: 200,
+				friction: 8,
+			}).start();
+		}
+	}, [done]);
+
 	return (
 		<View style={stepStyles.row}>
-			<View
-				style={[
-					stepStyles.dot,
-					done && stepStyles.dotDone,
-					active && stepStyles.dotActive,
-				]}
-			/>
-			<Text style={[stepStyles.label, done && stepStyles.labelDone]}>
-				{label}
-			</Text>
+			{done ? (
+				<Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+					<Ionicons name="checkmark-circle" size={20} color="#34C759" />
+				</Animated.View>
+			) : (
+				<View style={[stepStyles.dot, active && stepStyles.dotActive]} />
+			)}
+			<View style={{ flex: 1 }}>
+				<Text style={[stepStyles.label, done && stepStyles.labelDone, active && stepStyles.labelActive]}>
+					{label}
+				</Text>
+				{subtitle && <Text style={stepStyles.subtitle}>{subtitle}</Text>}
+			</View>
 		</View>
 	);
 }
@@ -70,6 +90,11 @@ export function ActiveTripSheet({
 }: ActiveTripSheetProps) {
 	const sheetHeight = useRef(new Animated.Value(COLLAPSED_HEIGHT)).current;
 	const [isExpanded, setIsExpanded] = useState(false);
+	const [isUpdating, setIsUpdating] = useState(false);
+
+	useEffect(() => {
+		setIsUpdating(false);
+	}, [trip?.status]);
 
 	const handleCall = () => {
 		if (!commuterPhone) return;
@@ -86,6 +111,7 @@ export function ActiveTripSheet({
 	};
 
 	async function handleStatusUpdate() {
+		if (isUpdating) return;
 		const NEXT_STATUS = {
 			en_route: 'arrived',
 			arrived: 'in_progress',
@@ -93,10 +119,12 @@ export function ActiveTripSheet({
 		} as const;
 		if (!trip) return;
 		try {
+			setIsUpdating(true);
 			const nextStatus = NEXT_STATUS[trip.status as keyof typeof NEXT_STATUS];
 			if (!nextStatus) return;
 			await updateTripStatus(trip.id, nextStatus);
 		} catch (error: any) {
+			setIsUpdating(false);
 			Alert.alert('Error', error.message);
 		}
 	}
@@ -111,6 +139,29 @@ export function ActiveTripSheet({
 		}).start();
 		setIsExpanded((prev) => !prev);
 	};
+
+	const steps = [
+		{
+			label: 'Drive to pickup location',
+			done: ['arrived', 'in_progress', 'completed'].includes(
+				trip?.status ?? '',
+			),
+			active: trip?.status === 'en_route',
+			subtitle: trip?.pickupAddress ?? '',
+		},
+		{
+			label: 'Provide service',
+			done: ['in_progress', 'completed'].includes(trip?.status ?? ''),
+			active: trip?.status === 'arrived',
+			subtitle: 'Towing',
+		},
+		{
+			label: 'Complete drop-off',
+			done: trip?.status === 'completed',
+			active: trip?.status === 'in_progress',
+			subtitle: trip?.dropoffAddress ?? '',
+		},
+	];
 
 	return (
 		<Animated.View style={[styles.sheet, { height: sheetHeight }]}>
@@ -170,33 +221,27 @@ export function ActiveTripSheet({
 				</View>
 
 				<View style={styles.progressSteps}>
-					<ProgressStep
-						label="Drive to Pickup"
-						done={['arrived', 'in_progress', 'completed'].includes(
-							trip?.status ?? '',
-						)}
-						active={trip?.status === 'en_route'}
-					/>
-					<ProgressStep
-						label="Provide Service"
-						done={['in_progress', 'completed'].includes(trip?.status ?? '')}
-						active={trip?.status === 'arrived'}
-					/>
-					<ProgressStep
-						label="Complete Drop-off"
-						done={trip?.status === 'completed'}
-						active={trip?.status === 'in_progress'}
-					/>
+					{steps.map((step) => (
+						<ProgressStep key={step.label} {...step} />
+					))}
 				</View>
 
 				{ACTION_LABELS[trip?.status ?? ''] && (
 					<TouchableOpacity
-						style={styles.actionButton}
+						style={[
+							styles.actionButton,
+							isUpdating && styles.actionButtonDisabled,
+						]}
 						onPress={handleStatusUpdate}
+						disabled={isUpdating}
 					>
-						<Text style={styles.actionButtonText}>
-							{ACTION_LABELS[trip?.status ?? '']}
-						</Text>
+						{isUpdating ? (
+							<ActivityIndicator color="#fff" />
+						) : (
+							<Text style={styles.actionButtonText}>
+								{ACTION_LABELS[trip?.status ?? '']}
+							</Text>
+						)}
 					</TouchableOpacity>
 				)}
 			</ScrollView>
@@ -333,6 +378,9 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 		alignItems: 'center',
 	},
+	actionButtonDisabled: {
+		opacity: 0.6,
+	},
 	actionButtonText: {
 		color: 'white',
 		fontSize: 16,
@@ -343,7 +391,7 @@ const styles = StyleSheet.create({
 const stepStyles = StyleSheet.create({
 	row: {
 		flexDirection: 'row',
-		alignItems: 'center',
+		alignItems: 'flex-start',
 		gap: 12,
 		paddingVertical: 6,
 	},
@@ -356,7 +404,12 @@ const stepStyles = StyleSheet.create({
 		borderColor: '#E0E0E0',
 	},
 	dotActive: { backgroundColor: '#34C759', borderColor: '#34C759' },
-	dotDone: { backgroundColor: '#A5D6A7', borderColor: '#A5D6A7' },
 	label: { fontSize: 14, color: '#999' },
 	labelDone: { color: '#333' },
+	labelActive: { color: '#333', fontWeight: '600' },
+	subtitle: {
+		fontSize: 12,
+		color: '#888',
+		marginTop: 2,
+	},
 });

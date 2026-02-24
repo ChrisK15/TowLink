@@ -135,6 +135,11 @@ export async function updateTripStatus(
 				status: status,
 				completionTime: Timestamp.now(),
 			});
+		} else if (status === 'in_progress') {
+			await updateDoc(doc(db, 'trips', tripId), {
+				status: status,
+				startedAt: Timestamp.now(),
+			});
 		} else {
 			await updateDoc(doc(db, 'trips', tripId), {
 				status: status,
@@ -311,6 +316,7 @@ export function listenToTrip(
 			...data,
 			startTime: data.startTime.toDate() ?? new Date(),
 			arrivalTime: data.arrivalTime?.toDate(),
+			startedAt: data.startedAt?.toDate(),
 			completionTime: data.completionTime?.toDate(),
 		} as Trip;
 		callback(trip);

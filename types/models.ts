@@ -82,6 +82,7 @@ export interface Trip {
 	startTime: Date;
 	arrivalTime?: Date;
 	completionTime?: Date;
+	startedAt?: Date;
 	distance: number;
 	estimatedPrice: number;
 	finalPrice?: number;
