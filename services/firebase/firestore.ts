@@ -316,6 +316,7 @@ export function listenToTrip(
 			...data,
 			startTime: data.startTime.toDate() ?? new Date(),
 			arrivalTime: data.arrivalTime?.toDate(),
+			startedAt: data.startedAt?.toDate(),
 			completionTime: data.completionTime?.toDate(),
 		} as Trip;
 		callback(trip);

@@ -74,7 +74,7 @@ function ProgressStep({
 				<View style={[stepStyles.dot, active && stepStyles.dotActive]} />
 			)}
 			<View style={{ flex: 1 }}>
-				<Text style={[stepStyles.label, done && stepStyles.labelDone]}>
+				<Text style={[stepStyles.label, done && stepStyles.labelDone, active && stepStyles.labelActive]}>
 					{label}
 				</Text>
 				{subtitle && <Text style={stepStyles.subtitle}>{subtitle}</Text>}
@@ -142,24 +142,24 @@ export function ActiveTripSheet({
 
 	const steps = [
 		{
-			label: 'Drive to Pickup',
+			label: 'Drive to pickup location',
 			done: ['arrived', 'in_progress', 'completed'].includes(
 				trip?.status ?? '',
 			),
 			active: trip?.status === 'en_route',
-			subtitle: trip?.pickupAddress,
+			subtitle: trip?.pickupAddress ?? '',
 		},
 		{
-			label: 'Provide Service',
+			label: 'Provide service',
 			done: ['in_progress', 'completed'].includes(trip?.status ?? ''),
 			active: trip?.status === 'arrived',
 			subtitle: 'Towing',
 		},
 		{
-			label: 'Complete Drop-off',
+			label: 'Complete drop-off',
 			done: trip?.status === 'completed',
 			active: trip?.status === 'in_progress',
-			subtitle: trip?.dropoffAddress,
+			subtitle: trip?.dropoffAddress ?? '',
 		},
 	];
 
@@ -391,7 +391,7 @@ const styles = StyleSheet.create({
 const stepStyles = StyleSheet.create({
 	row: {
 		flexDirection: 'row',
-		alignItems: 'center',
+		alignItems: 'flex-start',
 		gap: 12,
 		paddingVertical: 6,
 	},
@@ -406,6 +406,7 @@ const stepStyles = StyleSheet.create({
 	dotActive: { backgroundColor: '#34C759', borderColor: '#34C759' },
 	label: { fontSize: 14, color: '#999' },
 	labelDone: { color: '#333' },
+	labelActive: { color: '#333', fontWeight: '600' },
 	subtitle: {
 		fontSize: 12,
 		color: '#888',
