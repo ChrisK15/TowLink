@@ -1,3 +1,4 @@
+import { updateTripStatus } from '@/services/firebase/firestore';
 import { Trip } from '@/types/models';
 import { useRef, useState } from 'react';
 import {
@@ -15,12 +16,18 @@ import {
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const COLLAPSED_HEIGHT = SCREEN_HEIGHT * 0.15;
 const EXPANDED_HEIGHT = SCREEN_HEIGHT * 0.8;
+
 const STATUS_LABELS: Record<string, string> = {
 	en_route: 'En Route to Pickup',
 	arrived: 'Arrived at Pickup',
 	in_progress: 'Service in Progress',
 	completed: 'Trip Completed',
 	cancelled: 'Trip Cancelled',
+};
+const ACTION_LABELS: Record<string, string> = {
+	en_route: "I've Arrived",
+	arrived: 'Start Service',
+	in_progress: 'Complete Trip',
 };
 
 interface ActiveTripSheetProps {
@@ -75,6 +82,22 @@ export function ActiveTripSheet({
 			Alert.alert('Error', 'Could not open messages');
 		});
 	};
+
+	async function handleStatusUpdate() {
+		const NEXT_STATUS = {
+			en_route: 'arrived',
+			arrived: 'in_progress',
+			in_progress: 'completed',
+		} as const;
+		if (!trip) return;
+		try {
+			const nextStatus = NEXT_STATUS[trip.status as keyof typeof NEXT_STATUS];
+			if (!nextStatus) return;
+			await updateTripStatus(trip.id, nextStatus);
+		} catch (error: any) {
+			Alert.alert('Error', error.message);
+		}
+	}
 
 	const toggleSheet = () => {
 		const toValue = isExpanded ? COLLAPSED_HEIGHT : EXPANDED_HEIGHT;
@@ -163,6 +186,15 @@ export function ActiveTripSheet({
 						active={trip?.status === 'in_progress'}
 					/>
 				</View>
+
+				<TouchableOpacity
+					style={styles.actionButton}
+					onPress={handleStatusUpdate}
+				>
+					<Text style={styles.actionButtonText}>
+						{ACTION_LABELS[trip?.status ?? ''] ?? ''}
+					</Text>
+				</TouchableOpacity>
 			</ScrollView>
 		</Animated.View>
 	);
@@ -287,6 +319,20 @@ const styles = StyleSheet.create({
 		padding: 16,
 		backgroundColor: '#F8F8F8',
 		borderRadius: 12,
+	},
+	actionButton: {
+		backgroundColor: '#34C759',
+		marginHorizontal: 16,
+		marginTop: 16,
+		marginBottom: 32,
+		paddingVertical: 16,
+		borderRadius: 12,
+		alignItems: 'center',
+	},
+	actionButtonText: {
+		color: 'white',
+		fontSize: 16,
+		fontWeight: '700',
 	},
 });
 
