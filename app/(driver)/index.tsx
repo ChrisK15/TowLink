@@ -250,6 +250,20 @@ export default function DriverScreen() {
 				{driverLocation && (
 					<Marker coordinate={driverLocation} pinColor="red" />
 				)}
+				{trip?.pickupLocation && (
+					<Marker
+						coordinate={trip.pickupLocation}
+						title="Pickup"
+						pinColor="blue"
+					/>
+				)}
+				{trip?.dropoffLocation && (
+					<Marker
+						coordinate={trip.dropoffLocation}
+						title="Dropoff"
+						pinColor="green"
+					/>
+				)}
 			</MapView>
 
 			{/* Hide all driver UI during an active trip */}
@@ -287,7 +301,11 @@ export default function DriverScreen() {
 									style: 'destructive',
 									onPress: async () => {
 										if (isOnline && user?.uid) {
-											await updateDriverAvailability(user.uid, false, undefined);
+											await updateDriverAvailability(
+												user.uid,
+												false,
+												undefined,
+											);
 											await AsyncStorage.setItem(
 												'driver_is_online',
 												JSON.stringify(false),

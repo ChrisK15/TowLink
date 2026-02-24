@@ -14,8 +14,10 @@ import {
 } from 'react-native';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
+
+// CHANGING THESE NUMBERS WON'T SHOW IMMEDIATELY, TAP THE HANDLE THEN TAP AGAIN TO SEE THE NEW HEIGHT
 const COLLAPSED_HEIGHT = SCREEN_HEIGHT * 0.15;
-const EXPANDED_HEIGHT = SCREEN_HEIGHT * 0.8;
+const EXPANDED_HEIGHT = SCREEN_HEIGHT * 0.75;
 
 const STATUS_LABELS: Record<string, string> = {
 	en_route: 'En Route to Pickup',

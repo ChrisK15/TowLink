@@ -95,13 +95,24 @@ Active Trip Screen with Expandable Modal
     - Hid online/offline UI during active trip via `{!activeTripId && (...)}` in `index.tsx`
     - Fixed `isActivelyDriving` flag not resetting — added reset to `updateDriverAvailability`
 
+- [x] Step 6: Call and SMS buttons wired in `ActiveTripSheet`
+  - `handleCall` and `handleSMS` inside component with `Linking.openURL` + `.catch()` error handling
+  - `commuterPhone` null guard prevents crash when phone not on file
+- [x] Step 5: Pickup and dropoff map markers added to `index.tsx`
+  - Blue marker for pickup, green for dropoff
+  - Conditionally rendered via `trip?.pickupLocation` — only shows during active trip
+- [x] Step 7: Status action button + trip completion
+  - `ACTION_LABELS` maps status to button label
+  - `NEXT_STATUS` with `as keyof typeof` cast resolves TypeScript indexing issue
+  - `async/await` with try/catch on `updateTripStatus`
+  - `useEffect` in `index.tsx` clears `activeTripId` when status is `completed` or `cancelled`
+- [x] Step 4 (checklist): `ProgressStep` component with `done`/`active` states
+
 ## Current Step
-- [ ] Step 6: Wire Call and SMS buttons in `ActiveTripSheet`
+✅ All steps complete — ready for quality review
 
 ## Remaining Steps
-- [ ] Step 6: Wire Call and SMS buttons in `ActiveTripSheet`
-- [ ] Step 5: Add pickup and dropoff map markers to `index.tsx`
-- [ ] Step 7: Add trip status action button + handle trip completion
+_(none)_
 
 ## Notes
 - **Architecture pivot**: Single-screen approach. The map in `index.tsx` is always visible. `activeTripId` state determines what UI overlays on top of it. No separate screen, no Stack navigator change.
