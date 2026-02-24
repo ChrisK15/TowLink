@@ -92,6 +92,10 @@ export function ActiveTripSheet({
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [isUpdating, setIsUpdating] = useState(false);
 
+	useEffect(() => {
+		setIsUpdating(false);
+	}, [trip?.status]);
+
 	const handleCall = () => {
 		if (!commuterPhone) return;
 		Linking.openURL(`tel:${commuterPhone}`).catch(() => {
