@@ -61,6 +61,9 @@ export default function DriverScreen() {
 	useEffect(() => {
 		if (trip?.status === 'completed' || trip?.status === 'cancelled') {
 			setActiveTripId(null);
+			if (user?.uid) {
+				updateDriverAvailability(user.uid, true, driverLocation ?? undefined);
+			}
 		}
 	}, [trip]);
 
@@ -68,13 +71,10 @@ export default function DriverScreen() {
 	useEffect(() => {
 		if (!trip || !mapRef) return;
 		if (trip.status !== 'en_route') return;
-		mapRef.fitToCoordinates(
-			[trip.pickupLocation, trip.dropoffLocation],
-			{
-				edgePadding: { top: 80, right: 60, bottom: 300, left: 60 },
-				animated: true,
-			}
-		);
+		mapRef.fitToCoordinates([trip.pickupLocation, trip.dropoffLocation], {
+			edgePadding: { top: 80, right: 60, bottom: 300, left: 60 },
+			animated: true,
+		});
 	}, [trip?.id]);
 
 	// make banner disappear after 2 seconds
@@ -263,14 +263,14 @@ export default function DriverScreen() {
 				{driverLocation && (
 					<Marker coordinate={driverLocation} pinColor="red" />
 				)}
-				{trip?.pickupLocation && (
+				{activeTripId && trip?.pickupLocation && (
 					<Marker
 						coordinate={trip.pickupLocation}
 						title="Pickup"
 						pinColor="blue"
 					/>
 				)}
-				{trip?.dropoffLocation && (
+				{activeTripId && trip?.dropoffLocation && (
 					<Marker
 						coordinate={trip.dropoffLocation}
 						title="Dropoff"
