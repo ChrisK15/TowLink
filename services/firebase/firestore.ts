@@ -135,6 +135,11 @@ export async function updateTripStatus(
 				status: status,
 				completionTime: Timestamp.now(),
 			});
+		} else if (status === 'in_progress') {
+			await updateDoc(doc(db, 'trips', tripId), {
+				status: status,
+				startedAt: Timestamp.now(),
+			});
 		} else {
 			await updateDoc(doc(db, 'trips', tripId), {
 				status: status,
