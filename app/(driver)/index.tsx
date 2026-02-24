@@ -64,6 +64,19 @@ export default function DriverScreen() {
 		}
 	}, [trip]);
 
+	// Zoom map to show both pickup and dropoff markers when trip starts
+	useEffect(() => {
+		if (!trip || !mapRef) return;
+		if (trip.status !== 'en_route') return;
+		mapRef.fitToCoordinates(
+			[trip.pickupLocation, trip.dropoffLocation],
+			{
+				edgePadding: { top: 80, right: 60, bottom: 300, left: 60 },
+				animated: true,
+			}
+		);
+	}, [trip?.id]);
+
 	// make banner disappear after 2 seconds
 	useEffect(() => {
 		if (isOnline) {
