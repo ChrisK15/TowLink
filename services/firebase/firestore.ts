@@ -1,4 +1,4 @@
-import { Location, Request } from '@/types/models';
+import { Location, Request, Trip } from '@/types/models';
 import {
 	addDoc,
 	arrayUnion,
@@ -298,7 +298,7 @@ export async function declineClaimedRequest(
 
 export function listenToTrip(
 	tripId: string,
-	callback: (trip: any | null) => void,
+	callback: (trip: Trip | null) => void,
 ) {
 	return onSnapshot(doc(db, 'trips', tripId), (snapshot) => {
 		if (!snapshot.exists()) {
@@ -309,10 +309,10 @@ export function listenToTrip(
 		const trip = {
 			id: snapshot.id,
 			...data,
-			startTime: data.startTime.toDate(),
+			startTime: data.startTime.toDate() ?? new Date(),
 			arrivalTime: data.arrivalTime?.toDate(),
 			completionTime: data.completionTime?.toDate(),
-		};
+		} as Trip;
 		callback(trip);
 	});
 }

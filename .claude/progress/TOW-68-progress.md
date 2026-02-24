@@ -108,6 +108,12 @@ Active Trip Screen with Expandable Modal
   - `useEffect` in `index.tsx` clears `activeTripId` when status is `completed` or `cancelled`
 - [x] Step 4 (checklist): `ProgressStep` component with `done`/`active` states
 
+- [x] Polish & bug fixes post-implementation:
+  - Map zooms to fit both markers on trip start via `mapRef.fitToCoordinates` with bottom padding for sheet
+  - `isActivelyDriving` reset on trip completion via `updateDriverAvailability(uid, true, driverLocation)`
+  - Markers guarded by `activeTripId &&` to clear immediately when trip ends
+  - Fixed `currentLocation`/`geohash` going null on completion — now passes `driverLocation` instead of `undefined`
+
 ## Current Step
 ✅ All steps complete — ready for quality review
 

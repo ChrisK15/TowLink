@@ -65,7 +65,7 @@ export default function DriverScreen() {
 				updateDriverAvailability(user.uid, true, driverLocation ?? undefined);
 			}
 		}
-	}, [trip]);
+	}, [trip?.status]);
 
 	// Zoom map to show both pickup and dropoff markers when trip starts
 	useEffect(() => {

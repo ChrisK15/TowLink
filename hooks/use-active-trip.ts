@@ -12,7 +12,10 @@ export function useActiveTrip(tripId: string | null) {
 	const commuterFetchedRef = useRef(false);
 
 	useEffect(() => {
-		if (!tripId) return;
+		if (!tripId) {
+			setLoading(false);
+			return;
+		}
 		const unsubscribe = listenToTrip(tripId, async (updatedTrip) => {
 			if (!updatedTrip) {
 				setError('Trip not found');

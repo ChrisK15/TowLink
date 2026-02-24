@@ -189,14 +189,16 @@ export function ActiveTripSheet({
 					/>
 				</View>
 
-				<TouchableOpacity
-					style={styles.actionButton}
-					onPress={handleStatusUpdate}
-				>
-					<Text style={styles.actionButtonText}>
-						{ACTION_LABELS[trip?.status ?? ''] ?? ''}
-					</Text>
-				</TouchableOpacity>
+				{ACTION_LABELS[trip?.status ?? ''] && (
+					<TouchableOpacity
+						style={styles.actionButton}
+						onPress={handleStatusUpdate}
+					>
+						<Text style={styles.actionButtonText}>
+							{ACTION_LABELS[trip?.status ?? '']}
+						</Text>
+					</TouchableOpacity>
+				)}
 			</ScrollView>
 		</Animated.View>
 	);
