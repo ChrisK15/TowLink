@@ -81,16 +81,21 @@ Active Trip Screen with Expandable Modal
   - Learned why early return is needed here but not in `listenForClaimedRequests`
   - Proper Timestamp conversions: `startTime.toDate()`, optional chaining for nullable fields
 - [x] Step 2: Create `useActiveTrip` hook in `hooks/use-active-trip.ts`
+- [x] Step 3: Update `app/(driver)/index.tsx` to manage active trip state
+  - Added `activeTripId` state and `useActiveTrip` hook call
+  - `handleAcceptRequest` now captures `tripId` and calls `setActiveTripId` instead of Alert
+  - `useEffect` watches `trip?.status` — clears `activeTripId` on completion/cancellation
+  - Caught duplicate `acceptClaimedRequest` call bug (would've caused a transaction error)
   - Combined real-time listener with a one-time async fetch for commuter info
   - Used `useRef` flag to prevent `getRequestById` from firing on every snapshot
   - Learned why `useRef` is better than `useState` for a non-rendering flag
   - Added return type `Promise<Request | null>` to `getRequestById` and used `as Request` cast for Firestore's generic `DocumentData`
 
 ## Current Step
-- [ ] Step 3: Update `index.tsx` to manage active trip state
+- [ ] Step 4: Build `ActiveTripSheet` component
 
 ## Remaining Steps
-- [ ] Step 3: Update `index.tsx` to manage active trip state
+- [ ] Step 4: Build `ActiveTripSheet` component
 - [ ] Step 4: Build `ActiveTripSheet` component with collapsed content and animation
 - [ ] Step 5: Add pickup and dropoff map markers to `index.tsx`
 - [ ] Step 6: Wire Call and SMS buttons in `ActiveTripSheet`

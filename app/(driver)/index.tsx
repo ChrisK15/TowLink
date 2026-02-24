@@ -1,5 +1,6 @@
 import { RequestPopup } from '@/components/RequestPopup';
 import { useAuth } from '@/context/auth-context';
+import { useActiveTrip } from '@/hooks/use-active-trip';
 import { useClaimedRequest } from '@/hooks/use-claimed-request';
 import { db } from '@/services/firebase/config';
 import {
@@ -34,11 +35,12 @@ export default function DriverScreen() {
 	const [isToggling, setIsToggling] = useState(false); // prevents double tapping while firestore is updating
 	const [showBanner, setShowbanner] = useState(false);
 	const [isActioning, setIsActioning] = useState(false);
+	const [activeTripId, setActiveTripId] = useState<string | null>(null);
 
 	const { claimedRequest } = useClaimedRequest(user?.uid ?? null, isOnline);
+	const { trip, commuterName, commuterPhone } = useActiveTrip(activeTripId);
 	const showPopup = claimedRequest !== null;
 
-	// Get location
 	useEffect(() => {
 		getUserLocation();
 	}, []);
@@ -54,6 +56,12 @@ export default function DriverScreen() {
 			initializeDriverDocument();
 		}
 	}, [user]);
+
+	useEffect(() => {
+		if (trip?.status === 'completed' || trip?.status === 'cancelled') {
+			setActiveTripId(null);
+		}
+	}, [trip]);
 
 	// make banner disappear after 2 seconds
 	useEffect(() => {
@@ -198,8 +206,8 @@ export default function DriverScreen() {
 
 		setIsActioning(true);
 		try {
-			await acceptClaimedRequest(claimedRequest.id, user.uid);
-			Alert.alert('Request Accepted!', 'Starting trip...');
+			const tripId = await acceptClaimedRequest(claimedRequest.id, user.uid);
+			setActiveTripId(tripId);
 		} catch (error: any) {
 			Alert.alert('Error', error.message);
 		} finally {
