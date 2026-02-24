@@ -3,15 +3,14 @@ import { useRef, useState } from 'react';
 import {
 	Animated,
 	Dimensions,
-	Modal,
 	StyleSheet,
 	TouchableOpacity,
 	View,
 } from 'react-native';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const COLLAPSED_HEIGHT = SCREEN_HEIGHT * 0.2;
-const EXPANDED_HEIGHT = SCREEN_HEIGHT * 0.9;
+const COLLAPSED_HEIGHT = SCREEN_HEIGHT * 0.15;
+const EXPANDED_HEIGHT = SCREEN_HEIGHT * 0.8;
 
 interface ActiveTripSheetProps {
 	trip: Trip | null;
@@ -39,32 +38,20 @@ export function ActiveTripSheet({
 	};
 
 	return (
-		<Modal
-			visible={true}
-			transparent={true}
-			animationType="slide"
-			onRequestClose={() => {}}
-		>
-			<View style={styles.container}>
-				<Animated.View style={[styles.sheet, { height: sheetHeight }]}>
-					<TouchableOpacity
-						onPress={toggleSheet}
-						style={styles.handleContainer}
-					>
-						<View style={styles.dragHandle} />
-					</TouchableOpacity>
-				</Animated.View>
-			</View>
-		</Modal>
+		<Animated.View style={[styles.sheet, { height: sheetHeight }]}>
+			<TouchableOpacity onPress={toggleSheet} style={styles.handleContainer}>
+				<View style={styles.dragHandle} />
+			</TouchableOpacity>
+		</Animated.View>
 	);
 }
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'flex-end',
-	},
 	sheet: {
+		position: 'absolute',
+		bottom: 0,
+		left: 0,
+		right: 0,
 		backgroundColor: 'white',
 		borderTopLeftRadius: 20,
 		borderTopRightRadius: 20,
