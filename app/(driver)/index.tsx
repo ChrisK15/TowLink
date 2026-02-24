@@ -1,3 +1,4 @@
+import { ActiveTripSheet } from '@/components/ActiveTripSheet';
 import { RequestPopup } from '@/components/RequestPopup';
 import { useAuth } from '@/context/auth-context';
 import { useActiveTrip } from '@/hooks/use-active-trip';
@@ -351,6 +352,13 @@ export default function DriverScreen() {
 				onDecline={handleDeclineRequest}
 				isLoading={isActioning}
 			/>
+			{activeTripId && (
+				<ActiveTripSheet
+					trip={trip}
+					commuterName={commuterName}
+					commuterPhone={commuterPhone}
+				/>
+			)}
 		</View>
 	);
 }
