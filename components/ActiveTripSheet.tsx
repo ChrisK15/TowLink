@@ -136,6 +136,29 @@ export function ActiveTripSheet({
 		setIsExpanded((prev) => !prev);
 	};
 
+	const steps = [
+		{
+			label: 'Drive to Pickup',
+			done: ['arrived', 'in_progress', 'completed'].includes(
+				trip?.status ?? '',
+			),
+			active: trip?.status === 'en_route',
+			subtitle: trip?.pickupAddress,
+		},
+		{
+			label: 'Provide Service',
+			done: ['in_progress', 'completed'].includes(trip?.status ?? ''),
+			active: trip?.status === 'arrived',
+			subtitle: 'Towing',
+		},
+		{
+			label: 'Complete Drop-off',
+			done: trip?.status === 'completed',
+			active: trip?.status === 'in_progress',
+			subtitle: trip?.dropoffAddress,
+		},
+	];
+
 	return (
 		<Animated.View style={[styles.sheet, { height: sheetHeight }]}>
 			<TouchableOpacity onPress={toggleSheet} style={styles.handleContainer}>
@@ -194,26 +217,9 @@ export function ActiveTripSheet({
 				</View>
 
 				<View style={styles.progressSteps}>
-					<ProgressStep
-						label="Drive to Pickup"
-						done={['arrived', 'in_progress', 'completed'].includes(
-							trip?.status ?? '',
-						)}
-						active={trip?.status === 'en_route'}
-						subtitle={trip?.pickupAddress}
-					/>
-					<ProgressStep
-						label="Provide Service"
-						done={['in_progress', 'completed'].includes(trip?.status ?? '')}
-						active={trip?.status === 'arrived'}
-						subtitle="Towing"
-					/>
-					<ProgressStep
-						label="Complete Drop-off"
-						done={trip?.status === 'completed'}
-						active={trip?.status === 'in_progress'}
-						subtitle={trip?.dropoffAddress}
-					/>
+					{steps.map((step) => (
+						<ProgressStep key={step.label} {...step} />
+					))}
 				</View>
 
 				{ACTION_LABELS[trip?.status ?? ''] && (
