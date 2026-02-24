@@ -1,8 +1,10 @@
 import { Trip } from '@/types/models';
 import { useRef, useState } from 'react';
 import {
+	Alert,
 	Animated,
 	Dimensions,
+	Linking,
 	ScrollView,
 	StyleSheet,
 	Text,
@@ -34,6 +36,20 @@ export function ActiveTripSheet({
 }: ActiveTripSheetProps) {
 	const sheetHeight = useRef(new Animated.Value(COLLAPSED_HEIGHT)).current;
 	const [isExpanded, setIsExpanded] = useState(false);
+
+	const handleCall = () => {
+		if (!commuterPhone) return;
+		Linking.openURL(`tel:${commuterPhone}`).catch(() => {
+			Alert.alert('Error', 'Could not open phone dialer');
+		});
+	};
+
+	const handleSMS = () => {
+		if (!commuterPhone) return;
+		Linking.openURL(`sms:${commuterPhone}`).catch(() => {
+			Alert.alert('Error', 'Could not open messages');
+		});
+	};
 
 	const toggleSheet = () => {
 		const toValue = isExpanded ? COLLAPSED_HEIGHT : EXPANDED_HEIGHT;
@@ -67,6 +83,14 @@ export function ActiveTripSheet({
 					</Text>
 				</View>
 				<Text style={styles.customerName}>{commuterName ?? 'Loading...'}</Text>
+				<View style={styles.contactButtons}>
+					<TouchableOpacity style={styles.contactButton} onPress={handleCall}>
+						<Text>📞</Text>
+					</TouchableOpacity>
+					<TouchableOpacity style={styles.contactButton} onPress={handleSMS}>
+						<Text>💬</Text>
+					</TouchableOpacity>
+				</View>
 			</View>
 
 			<ScrollView scrollEnabled={isExpanded}>
@@ -155,6 +179,7 @@ const styles = StyleSheet.create({
 		color: '#333',
 	},
 	customerName: {
+		flex: 1,
 		fontSize: 18,
 		fontWeight: '700',
 		color: '#000',
@@ -197,5 +222,18 @@ const styles = StyleSheet.create({
 		marginTop: 8,
 		borderRadius: 12,
 		overflow: 'hidden',
+	},
+	contactButtons: {
+		flexDirection: 'row',
+		gap: 8,
+		marginLeft: 'auto',
+	},
+	contactButton: {
+		width: 40,
+		height: 40,
+		borderRadius: 20,
+		backgroundColor: '#F0F0F0',
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 });
