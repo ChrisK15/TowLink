@@ -67,6 +67,7 @@ export async function updateDriverAvailability(
 	try {
 		await updateDoc(doc(db, 'drivers', driverId), {
 			isAvailable: isAvailable,
+			isActivelyDriving: false,
 			updatedAt: Timestamp.now(),
 			currentLocation: currentLocation ? currentLocation : null,
 			geohash: currentLocation
