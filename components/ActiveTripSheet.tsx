@@ -2,6 +2,7 @@ import { updateTripStatus } from '@/services/firebase/firestore';
 import { Trip } from '@/types/models';
 import { useRef, useState } from 'react';
 import {
+	ActivityIndicator,
 	Alert,
 	Animated,
 	Dimensions,
@@ -42,10 +43,12 @@ function ProgressStep({
 	label,
 	done,
 	active,
+	subtitle,
 }: {
 	label: string;
 	done: boolean;
 	active: boolean;
+	subtitle?: string;
 }) {
 	return (
 		<View style={stepStyles.row}>
@@ -59,6 +62,7 @@ function ProgressStep({
 			<Text style={[stepStyles.label, done && stepStyles.labelDone]}>
 				{label}
 			</Text>
+			{subtitle && <Text style={stepStyles.subtitle}>{subtitle}</Text>}
 		</View>
 	);
 }
@@ -180,27 +184,38 @@ export function ActiveTripSheet({
 							trip?.status ?? '',
 						)}
 						active={trip?.status === 'en_route'}
+						subtitle={trip?.pickupAddress}
 					/>
 					<ProgressStep
 						label="Provide Service"
 						done={['in_progress', 'completed'].includes(trip?.status ?? '')}
 						active={trip?.status === 'arrived'}
+						subtitle="Towing"
 					/>
 					<ProgressStep
 						label="Complete Drop-off"
 						done={trip?.status === 'completed'}
 						active={trip?.status === 'in_progress'}
+						subtitle={trip?.dropoffAddress}
 					/>
 				</View>
 
 				{ACTION_LABELS[trip?.status ?? ''] && (
 					<TouchableOpacity
-						style={styles.actionButton}
+						style={[
+							styles.actionButton,
+							isUpdating && styles.actionButtonDisabled,
+						]}
 						onPress={handleStatusUpdate}
+						disabled={isUpdating}
 					>
-						<Text style={styles.actionButtonText}>
-							{ACTION_LABELS[trip?.status ?? '']}
-						</Text>
+						{isUpdating ? (
+							<ActivityIndicator color="#fff" />
+						) : (
+							<Text style={styles.actionButtonText}>
+								{ACTION_LABELS[trip?.status ?? '']}
+							</Text>
+						)}
 					</TouchableOpacity>
 				)}
 			</ScrollView>
@@ -337,6 +352,9 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 		alignItems: 'center',
 	},
+	actionButtonDisabled: {
+		opacity: 0.6,
+	},
 	actionButtonText: {
 		color: 'white',
 		fontSize: 16,
@@ -363,4 +381,9 @@ const stepStyles = StyleSheet.create({
 	dotDone: { backgroundColor: '#A5D6A7', borderColor: '#A5D6A7' },
 	label: { fontSize: 14, color: '#999' },
 	labelDone: { color: '#333' },
+	subtitle: {
+		fontSize: 12,
+		color: '#888',
+		marginTop: 2,
+	},
 });
