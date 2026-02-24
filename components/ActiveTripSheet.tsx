@@ -29,6 +29,31 @@ interface ActiveTripSheetProps {
 	commuterPhone: string | null;
 }
 
+function ProgressStep({
+	label,
+	done,
+	active,
+}: {
+	label: string;
+	done: boolean;
+	active: boolean;
+}) {
+	return (
+		<View style={stepStyles.row}>
+			<View
+				style={[
+					stepStyles.dot,
+					done && stepStyles.dotDone,
+					active && stepStyles.dotActive,
+				]}
+			/>
+			<Text style={[stepStyles.label, done && stepStyles.labelDone]}>
+				{label}
+			</Text>
+		</View>
+	);
+}
+
 export function ActiveTripSheet({
 	trip,
 	commuterName,
@@ -117,6 +142,26 @@ export function ActiveTripSheet({
 						<Text style={styles.infoLabel}>Fare</Text>
 						<Text style={styles.fareValue}>${trip?.estimatedPrice ?? '—'}</Text>
 					</View>
+				</View>
+
+				<View style={styles.progressSteps}>
+					<ProgressStep
+						label="Drive to Pickup"
+						done={['arrived', 'in_progress', 'completed'].includes(
+							trip?.status ?? '',
+						)}
+						active={trip?.status === 'en_route'}
+					/>
+					<ProgressStep
+						label="Provide Service"
+						done={['in_progress', 'completed'].includes(trip?.status ?? '')}
+						active={trip?.status === 'arrived'}
+					/>
+					<ProgressStep
+						label="Complete Drop-off"
+						done={trip?.status === 'completed'}
+						active={trip?.status === 'in_progress'}
+					/>
 				</View>
 			</ScrollView>
 		</Animated.View>
@@ -236,4 +281,32 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
+	progressSteps: {
+		marginHorizontal: 16,
+		marginTop: 16,
+		padding: 16,
+		backgroundColor: '#F8F8F8',
+		borderRadius: 12,
+	},
+});
+
+const stepStyles = StyleSheet.create({
+	row: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 12,
+		paddingVertical: 6,
+	},
+	dot: {
+		width: 16,
+		height: 16,
+		borderRadius: 8,
+		backgroundColor: '#E0E0E0',
+		borderWidth: 2,
+		borderColor: '#E0E0E0',
+	},
+	dotActive: { backgroundColor: '#34C759', borderColor: '#34C759' },
+	dotDone: { backgroundColor: '#A5D6A7', borderColor: '#A5D6A7' },
+	label: { fontSize: 14, color: '#999' },
+	labelDone: { color: '#333' },
 });
