@@ -113,6 +113,9 @@ service cloud.firestore {
           'dropoffLocation',
           'pickupAddress',
           'dropoffAddress',
+          'vehicleInfo',
+          'estimatedPrice',
+          'totalTripDistance',
           'serviceType',
           'status',
           'createdAt',
@@ -126,6 +129,17 @@ service cloud.firestore {
         // Address must be valid
         && isValidString('pickupAddress')
         && isValidString('dropoffAddress')
+        // Vehicle info must be a non-empty string
+        && isValidString('vehicleInfo')
+        // Price and distance must be positive numbers
+        && request.resource.data.estimatedPrice is number
+        && request.resource.data.estimatedPrice > 0
+        && request.resource.data.totalTripDistance is number
+        && request.resource.data.totalTripDistance > 0
+        // additionalNotes is optional; if present it must be a non-empty string
+        && (!request.resource.data.keys().hasAny(['additionalNotes'])
+            || (request.resource.data.additionalNotes is string
+                && request.resource.data.additionalNotes.size() > 0))
         // Service type must be 'tow'
         && request.resource.data.serviceType == 'tow'
         // Initial status must be 'searching'
