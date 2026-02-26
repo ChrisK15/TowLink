@@ -21,6 +21,10 @@ export async function createRequest(
 	dropoffLocation: Location,
 	pickupAddress: string,
 	dropoffAddress: string,
+	vehicleInfo: string,
+	estimatedPrice: number,
+	distanceMiles: number,
+	additionalNotes?: string,
 ): Promise<string> {
 	if (pickupLocation.latitude === 0 && pickupLocation.longitude === 0) {
 		throw new Error('Invalid pickup location.');
@@ -47,6 +51,10 @@ export async function createRequest(
 		dropoffLocation: dropoffLocation,
 		pickupAddress: pickupAddress,
 		dropoffAddress: dropoffAddress,
+		vehicleInfo: vehicleInfo,
+		additionalNotes: additionalNotes,
+		estimatedPrice: estimatedPrice,
+		totalTripDistance: distanceMiles,
 		serviceType: 'tow',
 		status: 'searching',
 		matchedDriverId: null,
