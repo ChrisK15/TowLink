@@ -78,6 +78,10 @@ export default function CommuterScreen() {
 				{ latitude: 34.2407, longitude: -118.53 }, //CSUN coordinates, temporary will change later
 				'Test pickup address',
 				'Test dropoff address',
+				'Tesla',
+				80,
+				10,
+				'Hi',
 			);
 			Alert.alert('Request sent, searching for nearby drivers...');
 
