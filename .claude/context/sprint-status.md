@@ -1,101 +1,113 @@
-# TOW Sprint 1 Status
+# TOW Sprint 3 Status
 
-**Sprint Name**: TOW Sprint 1
-**Sprint Dates**: January 27, 2026 - February 1, 2026
+**Sprint Name**: TOW Sprint 3
+**Sprint Dates**: February 25, 2026 - March 11, 2026
 **Sprint State**: Active
-**Sprint Goal**: Complete foundational authentication and configuration stories
+**Sprint Goal**: Build the Multi-Step Commuter Request Flow (Service Selection, Location/Vehicle, Price Confirmation) and complete supporting account setup screens
 
 ---
 
 ## Sprint Summary
 
-- **Total Stories**: 7
-- **Completed**: 0
-- **In Progress**: 0
-- **To Do**: 7
-- **Total Story Points**: 26
+- **Total Stories**: 9
+- **Completed (Done)**: 2
+- **In Progress**: 1
+- **To Do**: 6
+- **Total Story Points**: 30
 
 ---
 
 ## Stories in Sprint
 
-### 1. TOW-7: User Sign Up with Email/Password ⭐ RECOMMENDED NEXT
-- **Status**: To Do
-- **Story Points**: 5
-- **Priority**: CRITICAL
-- **Epic**: User Authentication & Account Management
-- **Description**: Create account with email/password, Firebase Auth integration
-- **Why start here**: Foundation for all other auth stories. No dependencies.
+### Done
 
-### 2. TOW-8: Role Selection During Signup ⭐
-- **Status**: To Do
+| Key | Title | Type | Points | Status |
+|-----|-------|------|--------|--------|
+| TOW-57 | Update Firebase Security Rules | Task | 1 | Done |
+| TOW-79 | Update Request Data Model for New Fields | Story | 2 | Done |
+
+### In Progress
+
+| Key | Title | Type | Points | Status |
+|-----|-------|------|--------|--------|
+| TOW-76 | Multi-Step Request Form - Service Selection | Story | 3 | **In Progress** (ACTIVE) |
+
+### To Do
+
+| Key | Title | Type | Points | Status |
+|-----|-------|------|--------|--------|
+| TOW-77 | Multi-Step Form - Location/Vehicle | Story | 5 | To Do |
+| TOW-78 | Price Breakdown & Request Confirmation | Story | 3 | To Do |
+| TOW-74 | FE Sprint 3A - Commuter Account Setup Screen | Task | 3 | To Do |
+| TOW-75 | FE Sprint 3B - Driver Account Setup Screen | Task | 3 | To Do |
+| TOW-16 | US-2.4: See Assigned Driver Details | Story | 8 | To Do |
+| TOW-24 | US-4.5: Location Permission Handling | Story | 2 | To Do |
+
+---
+
+## TOW-76 Detail: Multi-Step Request Form - Service Selection
+
+- **ID**: TOW-76
+- **Title**: Multi-Step Request Form - Service Selection
+- **Epic**: EPIC 2: Commuter Request Flow (TOW-2)
+- **Priority**: Medium
 - **Story Points**: 3
-- **Priority**: CRITICAL
-- **Epic**: User Authentication & Account Management
-- **Description**: Select commuter or driver role during signup
-- **Dependencies**: Requires TOW-7 (signup flow must exist first)
+- **Status**: In Progress
+- **Assignee**: Chris Kelamyan
+- **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-76
 
-### 3. TOW-9: User Login
-- **Status**: To Do
-- **Story Points**: 3
-- **Priority**: HIGH
-- **Epic**: User Authentication & Account Management
-- **Description**: Login with email/password
-- **Dependencies**: Requires TOW-7 (users must be able to sign up first)
+### Description
 
-### 4. TOW-10: Role-Based Navigation Routing ⭐
-- **Status**: To Do
-- **Story Points**: 5
-- **Priority**: CRITICAL
-- **Epic**: User Authentication & Account Management
-- **Description**: Auto-direct to correct dashboard based on user role
-- **Dependencies**: Requires TOW-8 (role must be set during signup)
+**As a** commuter
+**I want to** select the type of service I need
+**So that** drivers know what help I require
 
-### 5. TOW-11: Persistent Authentication State
-- **Status**: To Do
-- **Story Points**: 3
-- **Priority**: HIGH
-- **Epic**: User Authentication & Account Management
-- **Description**: Stay logged in across app restarts
-- **Dependencies**: Requires TOW-9 (login functionality)
+### Acceptance Criteria
 
-### 6. TOW-12: Firebase Security Rules ⭐
-- **Status**: To Do
-- **Story Points**: 5
-- **Priority**: CRITICAL
-- **Epic**: User Authentication & Account Management
-- **Description**: Implement Firestore security rules for data access control
-- **Dependencies**: Should be done after basic auth flow works (TOW-7, TOW-8, TOW-9)
+- Tapping "Request Roadside Assistance" slides up a selection modal (similar to `components/ActiveTripSheet.tsx` & `components/RequestPopup.tsx`)
+- Modal shows "Towing" service card (highlighted/selected by default)
+- Card shows: tow truck icon, "Towing" label, price range "$75-120"
+- Other service types (Jump Start, Fuel Delivery, etc.) shown as disabled/grayed out
+- "Continue" button at bottom
+- Tapping Drag Handle button at top closes Modal
+- No Back Button
+- Matches Figma design (`commuter_request_flow_2a`)
 
-### 7. TOW-13: Environment Configuration
-- **Status**: To Do
-- **Story Points**: 2
-- **Priority**: HIGH
-- **Epic**: User Authentication & Account Management
-- **Description**: Use environment variables for API keys and sensitive data
-- **Dependencies**: Can be done anytime, but ideally before adding more API keys
+### Technical Notes
+
+- Create new component: `component/RequestServiceSheet.tsx`
+- For MVP, only Towing is enabled
+- Other service types are UI-only (not functional yet)
+- Modal should fill basically the entire screen when slid up (95%)
+- Consider using `ScrollView` since other stories will also populate this modal
+- Design Reference: `.claude/design/screens/commuter_request_flow_2a.png`
+
+### Dependencies
+
+- TOW-76 blocks TOW-77 (Multi-Step Form - Location/Vehicle must come after)
+- TOW-79 (Update Request Data Model for New Fields) is Done - data model is ready
 
 ---
 
 ## Recommended Work Order
 
-Based on dependencies and priority:
+Based on dependencies and current state:
 
-1. **TOW-7** - User Sign Up (FOUNDATION - START HERE)
-2. **TOW-8** - Role Selection (Extends signup)
-3. **TOW-9** - User Login (Complete basic auth flow)
-4. **TOW-10** - Role-Based Navigation (Makes auth functional)
-5. **TOW-11** - Persistent Auth State (Polish auth experience)
-6. **TOW-13** - Environment Configuration (Security best practice)
-7. **TOW-12** - Firebase Security Rules (Secure the backend)
+1. **TOW-76** - Multi-Step Request Form: Service Selection (IN PROGRESS - START HERE)
+2. **TOW-77** - Multi-Step Form: Location/Vehicle (blocked by TOW-76)
+3. **TOW-78** - Price Breakdown & Request Confirmation (follows Location/Vehicle step)
+4. **TOW-74** - Commuter Account Setup Screen (independent, can be parallelized)
+5. **TOW-75** - Driver Account Setup Screen (independent, can be parallelized)
+6. **TOW-24** - Location Permission Handling (supporting infrastructure)
+7. **TOW-16** - See Assigned Driver Details (higher complexity, 8 pts)
 
 ---
 
 ## Current Focus
 
-**Active Story**: TOW-7 - User Sign Up with Email/Password
-**Next Agent**: Invoke `technical-architect` to create implementation spec
+**Active Story**: TOW-76 - Multi-Step Request Form - Service Selection
+**Next Agent**: Invoke `technical-architect` to create implementation spec at `.claude/specs/TOW-76.md`
 
 ---
 
-_Last Updated: January 27, 2026_
+_Last Updated: 2026-02-27_

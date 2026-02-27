@@ -1,61 +1,47 @@
-# Current Story: TOW-70
+# Current Story: TOW-76
 
 ## Story Details
-- **ID**: TOW-70
-- **Title**: Trip State Machine & Progress Tracking
-- **Epic**: EPIC 3: Driver Job Management (TOW-3)
+- **ID**: TOW-76
+- **Title**: Multi-Step Request Form - Service Selection
+- **Epic**: EPIC 2: Commuter Request Flow (TOW-2)
 - **Priority**: Medium
-- **Sprint**: TOW Sprint 2 (active)
-- **Story Points**: 5
+- **Sprint**: TOW Sprint 3 (active, Feb 25 - Mar 11, 2026)
+- **Story Points**: 3
 - **Status**: In Progress
-- **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-70
+- **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-76
 
 ## Description
 
-**As a** driver
-**I want to** progress through trip stages with clear visual feedback
-**So that** I can complete the service workflow step-by-step
+**As a** commuter
+**I want to** select the type of service I need
+**So that** drivers know what help I require
 
 ## Acceptance Criteria
 
-### State Machine Implementation
+- Tapping "Request Roadside Assistance" slides up a selection modal (similar to `components/ActiveTripSheet.tsx` & `components/RequestPopup.tsx`)
+- Modal shows "Towing" service card (highlighted/selected by default)
+- Card shows: tow truck icon, "Towing" label, price range "$75-120"
+- Other service types (Jump Start, Fuel Delivery, etc.) shown as disabled/grayed out
+- "Continue" button at bottom
+- Tapping Drag Handle button at top closes Modal
+- No Back Button
+- Matches Figma design (`commuter_request_flow_2a`)
 
-- Trip progresses through states: `en_route` -> `arrived` -> `in_progress` -> `completed`
-- Button in ActiveTrip modal updates text based on current state:
-  - `en_route`: "I've Arrived"
-  - `arrived`: "Start Service"
-  - `in_progress`: "Complete Trip"
-- Pressing button transitions to next state
-- Firestore trip document updates with new status
-- Timestamps recorded for each transition:
-  - `arrivedAt` (when "I've Arrived" pressed)
-  - `startedAt` (when "Start Service" pressed)
-  - `completedAt` (when "Complete Trip" pressed)
+## Technical Notes (from Jira)
 
-### Dynamic Checklist
-
-- Checklist displays 3 steps with dynamic completion status:
-  1. "Drive to pickup location" (subtitle: pickup address)
-     - Complete when status changes from `en_route` to `arrived`
-  2. "Provide service" (subtitle: service type)
-     - Complete when status changes from `arrived` to `in_progress`
-  3. "Complete drop-off" (subtitle: dropoff address)
-     - Complete when status = `completed`
-- Checkmarks appear/animate when step is completed
-- Current step is highlighted
-
-### Error Handling
-
-- If Firestore update fails, show error message
-- Button is disabled while update is in progress
-- Retry mechanism if network error
+- Create new component: `components/RequestServiceSheet.tsx`
+- For MVP, only Towing is enabled
+- Other service types are UI-only (not functional yet)
+- Modal should fill basically the entire screen when slid up (95%)
+- Consider using `ScrollView` since other stories will also populate this modal
+- Design Reference: `.claude/design/screens/commuter_request_flow_2a.png`
 
 ## Dependencies
 
-- Split from TOW-19 (US-3.3: Accept Request - Complete UI), which is still To Do
-- Builds on the ActiveTrip modal/screen established in TOW-68 (recently merged)
-- Requires Firestore trip document with status field already in place
+- **Blocks**: TOW-77 (Multi-Step Form - Location/Vehicle) - cannot start until TOW-76 is done
+- **Depends on**: TOW-79 (Update Request Data Model for New Fields) - already Done, data model is ready
+- No other blockers
 
 ## Next Steps
 
-Invoke the `technical-architect` agent to create a detailed implementation spec at `.claude/specs/TOW-70.md`.
+Invoke the `technical-architect` agent to create a detailed implementation spec at `.claude/specs/TOW-76.md`.
