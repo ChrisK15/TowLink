@@ -1,5 +1,11 @@
 import { ServiceType } from '@/types/models';
-import { Dimensions, Modal, StyleSheet, View } from 'react-native';
+import {
+	Dimensions,
+	Modal,
+	StyleSheet,
+	TouchableOpacity,
+	View,
+} from 'react-native';
 
 export interface ServiceOption {
 	id: ServiceType;
@@ -65,7 +71,11 @@ export function RequestServiceSheet({
 			onRequestClose={onClose}
 		>
 			<View style={styles.overlay}>
-				<View style={styles.sheet}></View>
+				<View style={styles.sheet}>
+					<TouchableOpacity onPress={onClose} style={styles.handleContainer}>
+						<View style={styles.dragHandle} />
+					</TouchableOpacity>
+				</View>
 			</View>
 		</Modal>
 	);
@@ -83,5 +93,16 @@ const styles = StyleSheet.create({
 		borderTopLeftRadius: 20,
 		borderTopRightRadius: 20,
 		overflow: 'hidden',
+	},
+	handleContainer: {
+		backgroundColor: 'white',
+		alignItems: 'center',
+		paddingVertical: 12,
+	},
+	dragHandle: {
+		width: 40,
+		height: 4,
+		backgroundColor: '#CCCCCC',
+		borderRadius: 2,
 	},
 });
