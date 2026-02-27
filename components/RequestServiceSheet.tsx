@@ -12,7 +12,6 @@ export interface ServiceOption {
 	label: string;
 	icon: string;
 	priceRange: string;
-	description: string;
 	isEnabled: boolean;
 }
 
@@ -27,33 +26,43 @@ const SERVICE_OPTIONS: ServiceOption[] = [
 	{
 		id: 'tow',
 		label: 'Towing',
-		icon: '🚚',
-		priceRange: '$75 - $120',
-		description: 'Vehicle towed to your destination',
+		icon: '🚗',
+		priceRange: '$75-120',
 		isEnabled: true,
 	},
 	{
 		id: 'jump_start',
 		label: 'Jump Start',
-		icon: '⚡',
-		priceRange: 'Coming Soon',
-		description: 'Battery jump start service',
+		icon: '🔋',
+		priceRange: '$45-65',
 		isEnabled: false,
 	},
 	{
 		id: 'fuel_delivery',
 		label: 'Fuel Delivery',
 		icon: '⛽',
-		priceRange: 'Coming Soon',
-		description: 'Emergency fuel delivered to you',
+		priceRange: '$35-50',
 		isEnabled: false,
 	},
 	{
 		id: 'tire_change',
 		label: 'Tire Change',
 		icon: '🔧',
-		priceRange: 'Coming Soon',
-		description: 'Flat tire replacement',
+		priceRange: '$50-75',
+		isEnabled: false,
+	},
+	{
+		id: 'lockout',
+		label: 'Lockout',
+		icon: '🔑',
+		priceRange: '$55-80',
+		isEnabled: false,
+	},
+	{
+		id: 'winch_out',
+		label: 'Winch Out',
+		icon: '⚙️',
+		priceRange: '$85-140',
 		isEnabled: false,
 	},
 ];

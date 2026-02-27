@@ -47,7 +47,9 @@ export type ServiceType =
 	| 'tow'
 	| 'jump_start'
 	| 'fuel_delivery'
-	| 'tire_change';
+	| 'tire_change'
+	| 'lockout'
+	| 'winch_out';
 
 export interface Request {
 	id: string;
