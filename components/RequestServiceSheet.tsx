@@ -1,4 +1,5 @@
 import { ServiceType } from '@/types/models';
+import { Dimensions, Modal, StyleSheet, View } from 'react-native';
 
 export interface ServiceOption {
 	id: ServiceType;
@@ -15,6 +16,7 @@ interface RequestServiceSheetProps {
 	onContinue: (serviceType: ServiceType) => void;
 }
 
+const SHEET_HEIGHT = Dimensions.get('window').height * 0.95;
 const SERVICE_OPTIONS: ServiceOption[] = [
 	{
 		id: 'tow',
@@ -54,4 +56,32 @@ export function RequestServiceSheet({
 	visible,
 	onClose,
 	onContinue,
-}: RequestServiceSheetProps) {}
+}: RequestServiceSheetProps) {
+	return (
+		<Modal
+			visible={visible}
+			animationType="slide"
+			transparent={true}
+			onRequestClose={onClose}
+		>
+			<View style={styles.overlay}>
+				<View style={styles.sheet}></View>
+			</View>
+		</Modal>
+	);
+}
+
+const styles = StyleSheet.create({
+	overlay: {
+		flex: 1,
+		backgroundColor: 'rgba(0,0,0,0.5)',
+		justifyContent: 'flex-end',
+	},
+	sheet: {
+		height: SHEET_HEIGHT,
+		backgroundColor: '#F5F5F5',
+		borderTopLeftRadius: 20,
+		borderTopRightRadius: 20,
+		overflow: 'hidden',
+	},
+});
