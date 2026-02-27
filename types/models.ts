@@ -43,6 +43,12 @@ export interface Location {
 	longitude: number;
 }
 
+export type ServiceType =
+	| 'tow'
+	| 'jump_start'
+	| 'fuel_delivery'
+	| 'tire_change';
+
 export interface Request {
 	id: string;
 	commuterId: string;
@@ -50,7 +56,7 @@ export interface Request {
 	dropoffLocation: Location;
 	pickupAddress: string;
 	dropoffAddress: string;
-	serviceType: 'tow';
+	serviceType: ServiceType;
 	status: 'searching' | 'claimed' | 'matched' | 'accepted' | 'cancelled';
 	matchedDriverId?: string; // only exists after being matched
 	claimedByDriverId?: string;
