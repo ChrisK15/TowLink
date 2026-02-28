@@ -2,45 +2,60 @@
 
 ## Story Summary
 
-Build a bottom sheet modal (`components/RequestServiceSheet.tsx`) that slides up when the commuter taps "Request Roadside Assistance". It shows 6 service type cards in a 2-column grid - Towing is selected and enabled by default; the other 5 (Jump Start, Fuel Delivery, Tire Change, Lockout, Winch Out) are visible but grayed out. A visual step progress indicator (Location -> Service -> Vehicle) sits at the top. A "Continue" button at the bottom advances to Step 2 (TOW-77). This is Step 1 of 3 in the multi-step request flow.
+Build the shell of a single bottom sheet (`components/RequestServiceSheet.tsx`) that will grow across three stories. TOW-76 contributes: the Modal shell, drag handle, a ScrollView containing the step indicator + service type grid, and a pinned "Request Service Now" footer button (disabled for now). TOW-77 and TOW-78 will add their sections into the same ScrollView later.
 
 ---
 
 ## Completed Steps
 
 - [x] Step 1: Defined TypeScript types and data constants
-  - `ServiceType` union type added (4 services - needs `'lockout'` and `'winch_out'` added, see note below)
-  - `ServiceOption` interface created (without `description` field per updated spec)
-  - `RequestServiceSheetProps` interface created
-  - `SERVICE_OPTIONS` array built with 4 entries (needs Lockout and Winch Out added, see note below)
+  - `ServiceType` union type with all six values (`'tow'`, `'jump_start'`, `'fuel_delivery'`, `'tire_change'`, `'lockout'`, `'winch_out'`)
+  - `ServiceOption` interface (no `description` field)
+  - `SERVICE_OPTIONS` array with all six entries including Lockout and Winch Out
+  - `ServiceType` imported from `@/types/models` (not redefined locally)
 
 - [x] Step 2: Created the Modal shell with overlay and sheet container
   - `Modal` with `animationType="slide"` and `transparent={true}`
-  - Overlay View with semi-transparent black background
-  - Sheet View at 95% screen height with rounded top corners
+  - Overlay `View` with semi-transparent black background
+  - Sheet `View` at 95% screen height with rounded top corners
 
 - [x] Step 3: Added the drag handle (tap to close)
   - `TouchableOpacity` wrapping a gray pill `View`
   - Calls `onClose` on press
 
+- [x] Step 4: Built the `StepIndicator` sub-component
+  - All three nodes (Location, Service, Vehicle) render with the same blue-tinted circle style
+  - No active/inactive distinction - the indicator is purely decorative context for the user
+
+- [x] Step 5: Added the "Select Service Type" section header
+  - `<Text>` element with the label "Select Service Type" rendered below `StepIndicator`
+
 ---
 
 ## Current Step
 
-- [ ] Step 4: Build the `StepIndicator` sub-component
+- [ ] Step 6: Correct the grid and sheet structure (architectural fix)
+
+**What needs to change - three specific problems to fix:**
+
+**Problem A - `onContinue` must be removed from props.**
+The component currently has `onContinue: (serviceType: ServiceType) => void` in `RequestServiceSheetProps`. This prop no longer exists. The new architecture has the "Request Service Now" button live entirely inside the component - the parent does not need a callback. Remove it from the interface and from the function destructuring.
+
+**Problem B - `FlatList` must move inside a `ScrollView`.**
+The current build uses a bare `FlatList` that fills the sheet. TOW-77 needs to add more sections below the grid - those sections and the grid all need to scroll together as one unit. The fix is to wrap everything scrollable in a `ScrollView` and set `scrollEnabled={false}` on the `FlatList` so the two scroll views do not conflict.
+
+**Problem C - The sheet has no footer button.**
+A "Request Service Now" button must be added, pinned outside the `ScrollView` at the bottom of the sheet. It is always `disabled={true}` in TOW-76. TOW-78 will enable it.
 
 ---
 
 ## Remaining Steps
 
-- [ ] Step 4: Build the `StepIndicator` sub-component
-- [ ] Step 5: Add the "Select Service Type" section header
-- [ ] Step 6: Build the `ServiceCard` sub-component (square card: icon top, label middle, price bottom)
-- [ ] Step 7: Add `selectedService` state and render the 2-column grid with `FlatList`
-- [ ] Step 8: Build the pinned "Continue" footer button
-- [ ] Step 9: Add the complete `StyleSheet`
-- [ ] Step 10: Integrate the new sheet into `app/(commuter)/index.tsx`
-- [ ] Step 11: Manual test against acceptance criteria checklist
+- [ ] Step 6: Correct the grid and sheet structure (remove `onContinue`, add `ScrollView` wrapper, fix grid layout)
+- [ ] Step 7: Add the "Request Service Now" footer button (disabled stub)
+- [ ] Step 8: StyleSheet cleanup and additions
+- [ ] Step 9: Update `app/(commuter)/index.tsx` integration
+- [ ] Step 10: Manual testing checklist
 
 ---
 
@@ -48,232 +63,192 @@ Build a bottom sheet modal (`components/RequestServiceSheet.tsx`) that slides up
 
 ---
 
-### Step 1 - TypeScript Types and Data Constants (Completed - needs two additions)
+### Steps 1-5 - Completed
 
-**What was built.**
-The file `components/RequestServiceSheet.tsx` was created with `ServiceType`, `ServiceOption`, `RequestServiceSheetProps`, and a `SERVICE_OPTIONS` array.
-
-**Two things still need to be updated before this is fully done.**
-
-1. `ServiceType` in the component file needs two new string literals: `'lockout'` and `'winch_out'`. Also check `types/models.ts` - if `ServiceType` is defined there too, it needs the same additions.
-
-2. `SERVICE_OPTIONS` needs two new entries appended:
-   - Lockout: icon `'🔑'`, price `'$55-80'`, `isEnabled: false`
-   - Winch Out: icon `'⚙️'`, price `'$85-140'`, `isEnabled: false`
-
-Also note: the updated spec removes the `description` field from `ServiceOption`. If your interface still has it, you can leave it in (the spec keeps it for potential future use) - just do not render it on the card.
-
-**Try it yourself first.**
-Open your `ServiceType` type and add the two new IDs. Then scroll down to `SERVICE_OPTIONS` and add the two new objects following the same shape as the existing entries. Can you do this without looking at the spec?
-
-**Spec reference.**
-See "TypeScript Types" and "Data: Service Options Array" in `.claude/specs/TOW-76.md`.
+Types, `SERVICE_OPTIONS`, Modal shell, drag handle, `StepIndicator`, and "Select Service Type" header are all built. Move on to Step 6.
 
 ---
 
-### Step 4 - StepIndicator Sub-Component
+### Step 6 - Correct the Grid and Sheet Structure (IN PROGRESS)
 
 **What you will do.**
-Above the `RequestServiceSheet` function (but in the same file), define a `StepIndicator` function component. It takes a single prop: `currentStep: 1 | 2 | 3`.
+Three targeted fixes to the existing `RequestServiceSheet.tsx`:
 
-Inside, define an array of three step objects (each with a `label` and an `icon` emoji). Map over them to render a horizontal row. Each step renders:
-- An icon circle (a `View` with a rounded border radius)
-- A text label below the icon
-- A connecting line between this step and the next (except after the last step)
+**Fix A: Remove `onContinue`.**
 
-The active step (where `index + 1 === currentStep`) gets a different circle background color and a bolder label color.
+Open `RequestServiceSheetProps`. Delete the `onContinue` line. Then look at the function signature - delete `onContinue` from the destructured props there too. Do a quick search in the file for any remaining reference to `onContinue` and remove those as well.
 
-In `RequestServiceSheet`, render `<StepIndicator currentStep={1} />` below the drag handle.
+**Fix B: Wrap content in `ScrollView`.**
 
-**Concept this teaches.**
-Building a self-contained sub-component in the same file as the parent component. Conditional styling based on computed state (`isActive`). The `index + 1 === currentStep` pattern is a common way to derive "am I the active item?" from an index.
-
-**Try it yourself first.**
-Before looking at the spec hint: sketch the JSX structure on paper or in a comment. You have three steps. Each step needs a container View, an icon circle View, and a label Text. What flex direction does the row need? What flex direction does each individual step item need? Try to write the outer structure before adding styles.
-
-**Key insight on the connector line.**
-The connector between steps is tricky. One approach: render it as a `View` with `position: 'absolute'` inside the step item container. A simpler alternative: make each `stepItem` use `flex: 1` and put the connector as a sibling `View` between step items directly in the row (using `flex: 1` to stretch). Either works - pick the one you can reason about more easily.
-
-**Spec reference.**
-See "Step 4: Build the step progress indicator" in `.claude/specs/TOW-76.md`. The stylesheet section in Step 9 of the spec also has style values for `stepRow`, `stepItem`, `stepIconCircle`, `stepIconCircleActive`, `stepIcon`, `stepLabel`, `stepLabelActive`, and `stepConnector`.
-
----
-
-### Step 5 - "Select Service Type" Section Header
-
-**What you will do.**
-Below the `<StepIndicator />`, add a single `<Text>` element with the label "Select Service Type".
-
-This replaces the three-line header from the original plan ("Step 1 of 3" + title + subtitle). The step indicator now handles the progress communication visually, so the section header just needs to name the task.
-
-**Concept this teaches.**
-How a visual component (the step indicator) can communicate information that used to require text, reducing visual clutter. Less text on screen often makes an interface feel cleaner.
-
-**Try it yourself first.**
-Just write the `<Text>` element and give it a style name (`sectionHeader`). Add the style values in Step 9. For now, even unstyled text is fine - verify the structure works before polishing.
-
-**Spec reference.**
-See "Step 5: Build the 'Select Service Type' header" in `.claude/specs/TOW-76.md`.
-
----
-
-### Step 6 - ServiceCard Sub-Component (Square Layout)
-
-**What you will do.**
-Above `RequestServiceSheet` (but below `StepIndicator`), define a `ServiceCard` function component. It accepts `option: ServiceOption`, `selected: boolean`, and `onPress: () => void`.
-
-The card layout is vertical (top to bottom):
-1. Icon (`<Text>` with emoji, large font)
-2. Label (`<Text>`, bold)
-3. Price range (`<Text>`, smaller gray text)
-
-Visual states to implement:
-- **Normal enabled**: white background, transparent border
-- **Selected**: blue border, light blue background fill
-- **Disabled**: the entire card at ~40% opacity, `disabled={true}` on the `TouchableOpacity`
-
-**Concept this teaches.**
-This card layout is fundamentally different from a horizontal row - the icon sits at the top rather than the left. The `justifyContent: 'space-between'` on the card style spreads the three text elements vertically, giving each card a consistent visual weight. Conditional styling using the array style syntax (`style={[styles.card, selected && styles.cardSelected]}`).
-
-**Try it yourself first.**
-Before looking at the spec hint: what flex direction does the card's inner layout need? (The icon is at the top, label in the middle, price at the bottom.) What `TouchableOpacity` prop makes a button completely non-pressable? Try to write the JSX structure before adding styles.
-
-**Spec reference.**
-See "Step 6: Build the ServiceCard sub-component (2-column grid card)" in `.claude/specs/TOW-76.md`.
-
----
-
-### Step 7 - 2-Column Grid with State
-
-**What you will do.**
-Back inside `RequestServiceSheet`, add `useState` to track which service is selected (default `'tow'`). Inside the sheet's `ScrollView`, render a `FlatList` with `numColumns={2}`. The `FlatList` renders a `ServiceCard` for each item in `SERVICE_OPTIONS`.
+Currently the JSX inside the sheet `View` probably looks something like this (in some form):
 
 ```
-numColumns={2}
-scrollEnabled={false}   // outer ScrollView handles scrolling
-keyExtractor={(item) => item.id}
+<View style={styles.sheet}>
+  <TouchableOpacity ...>  {/* drag handle */}
+  <FlatList ... />         {/* grid */}
+</View>
 ```
 
-Pass `selected={selectedService === item.id}` and `onPress={() => setSelectedService(item.id)}` to each `ServiceCard`.
+You need to restructure it to:
+
+```
+<View style={styles.sheet}>
+  <TouchableOpacity ...>   {/* drag handle - stays OUTSIDE ScrollView */}
+  <ScrollView ...>         {/* new wrapper for all section content */}
+    <StepIndicator />
+    <Text ...>Select Service Type</Text>
+    <FlatList scrollEnabled={false} ... />  {/* grid - INSIDE ScrollView */}
+    {/* TOW-77 will add more sections here */}
+  </ScrollView>
+  {/* footer will go here in Step 7 - also OUTSIDE ScrollView */}
+</View>
+```
+
+The key rule: the drag handle and the footer button are siblings of the `ScrollView`, not children of it. The step indicator, section header, and grid are children of the `ScrollView`.
+
+**Fix C: Add `scrollEnabled={false}` to `FlatList`.**
+
+Once the `FlatList` is inside the `ScrollView`, you must add `scrollEnabled={false}` to the `FlatList` props. Without this, React Native will log a warning about nested scroll views and scrolling behavior will be unpredictable.
 
 **Concept this teaches.**
-`FlatList` with `numColumns` is the standard React Native way to build a grid - it handles the row-wrapping automatically. Setting `scrollEnabled={false}` on a `FlatList` nested inside a `ScrollView` is important: two nested scroll views conflict. The outer one handles all scrolling; the inner `FlatList` just handles rendering.
+`FlatList` is itself a scroll container. When you nest it inside another scroll container (`ScrollView`), they compete for touch events. The rule: only ONE scroll container should be active. Setting `scrollEnabled={false}` on the `FlatList` tells it "don't try to scroll, just render." The outer `ScrollView` handles all scrolling for the whole sheet.
+
+This pattern - one outer `ScrollView` with inner `FlatList` set to `scrollEnabled={false}` - is the standard React Native approach for a complex form that has a list in the middle.
 
 **Try it yourself first.**
-Before writing the `FlatList`, think: previously the plan used `ScrollView` with `.map()`. Now you are switching to `FlatList` with `numColumns`. What import do you need to add? What is the `FlatList` equivalent of `key` in a `.map()`? (Hint: look at the `keyExtractor` prop.)
+Before writing code, draw the new JSX tree on paper (or in a comment block). Label each node: is it inside or outside the `ScrollView`? Once you have the structure clear in your head, translating it to JSX is straightforward. The most common mistake is accidentally putting the footer button inside the `ScrollView` - double-check this after you write it.
 
 **Spec reference.**
-See "Step 7: Build the 2-column service grid" in `.claude/specs/TOW-76.md`.
+See "Issue 3: FlatList is not inside a ScrollView" and the structural fix code block in `.claude/specs/TOW-76.md`.
 
 ---
 
-### Step 8 - Pinned "Continue" Footer Button
+### Step 7 - "Request Service Now" Footer Button (Disabled Stub)
 
 **What you will do.**
-Below the `ScrollView` (but still inside the sheet), add a `<View>` with a `footer` style containing a `<TouchableOpacity>` styled as a full-width blue button with the label "Continue". On press it calls `onContinue(selectedService)`.
+After the closing `</ScrollView>` tag but still inside the sheet `View`, add:
 
-Important: this button must be OUTSIDE the `ScrollView` so it stays pinned to the bottom of the sheet and does not scroll away.
+```typescript
+<View style={styles.footer}>
+  <TouchableOpacity
+    style={[styles.submitButton, styles.submitButtonDisabled]}
+    disabled={true}
+  >
+    <Text style={styles.submitButtonText}>Request Service Now</Text>
+  </TouchableOpacity>
+</View>
+```
+
+This button does nothing when tapped. The `disabled={true}` prop makes `TouchableOpacity` ignore all touch events. The visual disabled style (added in Step 8) makes it look grayed out so the user understands it is not yet actionable.
+
+**Why "Request Service Now" and not "Continue"?**
+The Jira acceptance criteria said "Continue button at bottom". The design shows "Request Service Now" as the only action button. This was a documentation lag - the design is definitive. There is no multi-step Continue flow here; everything lives in one sheet, and the single action is submitting the request.
 
 **Concept this teaches.**
-The layout distinction between scrollable content and fixed UI chrome. In almost every real app, action buttons are pinned outside the scroll area so users can always reach them. This is a best practice pattern you will use in TOW-77 and TOW-78 as well.
+The layout distinction between scrollable content and fixed UI chrome. Pinning the action button outside the scroll area means the user can always reach it regardless of how far they have scrolled. This is a standard mobile UI pattern - nearly every form-style screen in a professional app uses it.
 
 **Try it yourself first.**
-Look at `components/RequestPopup.tsx` lines 215-233. The `buttonContainer` View is outside the `ScrollView` but inside the same parent `View`. This is the same pattern you need here.
+Before adding the footer, think about where the user's thumb naturally rests when holding a phone one-handed. Why does pinning the button at the bottom of the screen (not the bottom of the scroll content) matter for usability?
 
 **Spec reference.**
-See "Step 8: Build the Continue button (pinned footer)" in `.claude/specs/TOW-76.md`.
+See "Step 4: Add the 'Request Service Now' footer button (disabled stub)" in `.claude/specs/TOW-76.md`.
 
 ---
 
-### Step 9 - Complete StyleSheet
+### Step 8 - StyleSheet Cleanup and Additions
 
 **What you will do.**
-Write the full `StyleSheet.create({})` at the bottom of the file. All the style names referenced in previous steps should now be defined with actual values.
+Your `StyleSheet.create({})` needs several additions to cover the new elements. Add these style objects:
 
-**Key colors for this component:**
-- Blue accent (selected state): `#1565C0`
-- Selected card background fill: `#EFF6FF`
-- Active step indicator circle: `#DBEAFE`
-- Active step label color: `#1565C0`
-- Sheet background: `#F5F5F5`
-- Card background: `white`
-- Disabled opacity: `0.4`
-- Footer border: `#E0E0E0`
+- `scrollView` - for the `ScrollView` wrapper (`flex: 1`)
+- `scrollContent` - for the `ScrollView`'s `contentContainerStyle` (`paddingBottom: 8`)
+- `footer` - white background, top border, padding
+- `submitButton` - blue background, full-width, rounded corners
+- `submitButtonDisabled` - gray background, reduced opacity
+- `submitButtonText` - white text, bold
 
-**Card sizing for the 2-column grid:**
-```
-const CARD_SIZE = (Dimensions.get('window').width - 16 * 3) / 2;
-// 2 columns, 3 gaps: left edge + middle gap + right edge
+You may also need to adjust any existing styles that were written assuming the `FlatList` was the direct child of the sheet (for example, a `flex: 1` that now belongs on the `ScrollView` instead).
+
+**On the step connector line.**
+If `stepConnector` uses `position: 'absolute'` and the lines are not rendering correctly in the simulator (not visible, or clipping), this is a known tricky point in React Native flex rows. The alternative approach: insert a plain `<View style={styles.stepConnector} />` between each step node in the row (as a flex sibling, not inside the step item), and give it `flex: 1` with a fixed height and background color. Try your current approach first; switch if it looks wrong.
+
+**Concept this teaches.**
+`StyleSheet.create()` runs validation once at startup rather than on every render. This is a small performance optimization, but more importantly it catches style property typos at development time rather than silently rendering incorrectly. Keeping your style names in the same order as the component's visual hierarchy (top to bottom) makes the file much easier to navigate.
+
+**Try it yourself first.**
+Write the new style values without looking at the spec first. Pick numbers that look reasonable to you, run the simulator, and adjust by eye. Then compare to the spec values if something looks off. Your eye is the final judge - the spec values are starting points, not absolutes.
+
+**Spec reference.**
+See "Step 5: Add styles for new elements" in `.claude/specs/TOW-76.md`. Complete style values for all new style names are listed there.
+
+---
+
+### Step 9 - Update `app/(commuter)/index.tsx`
+
+**What you will do.**
+This step is simpler than the original plan because `onContinue` is gone. Make these targeted changes to `index.tsx`:
+
+1. Remove `onContinue={handleServiceSelected}` from the `<RequestServiceSheet>` JSX
+2. Remove the `handleServiceSelected` function entirely
+3. Remove the `ServiceType` import if it is only used in `handleServiceSelected` (check carefully - do not remove it if it is used elsewhere)
+4. Leave everything else unchanged: `showServiceSheet` state, `handleRequestAssistance`, `onClose`, and the `<RequestServiceSheet visible={...} onClose={...} />` JSX remain
+
+After your changes the component usage should look like:
+
+```typescript
+<RequestServiceSheet
+  visible={showServiceSheet}
+  onClose={() => setShowServiceSheet(false)}
+/>
 ```
 
 **Concept this teaches.**
-The `StyleSheet.create()` performance optimization (React Native validates styles at creation time). Organizing styles in the same top-to-bottom order as the component's visual hierarchy makes the file easier to navigate.
+Parent-child component communication via props. The parent (`index.tsx`) owns the visibility state and passes it down. The child handles all its own internal logic. Because the "Request Service Now" button now lives inside the component, the parent does not need to know when it is tapped - that communication is fully internal to the component. This is the principle of encapsulation.
 
 **Try it yourself first.**
-Write your own values first, then compare to the spec's stylesheet. If something looks off in the simulator, adjust. The spec values are starting points - your eye is the final judge. Pay particular attention to the `stepConnector` positioning - it may need adjustment after you see how it actually renders.
+Before editing, read the current `index.tsx` and identify every line that references `onContinue` or `handleServiceSelected`. List them in a comment. Then delete them one by one and verify the TypeScript compiler does not complain.
 
 **Spec reference.**
-See "Step 9: Apply StyleSheet" in `.claude/specs/TOW-76.md`. The spec has complete style values for every named style in the component.
+See "Step 6: Update `app/(commuter)/index.tsx`" in `.claude/specs/TOW-76.md`.
 
 ---
 
-### Step 10 - Integration into `app/(commuter)/index.tsx`
+### Step 10 - Manual Testing Against Acceptance Criteria
 
 **What you will do.**
-Modify the commuter home screen to wire up the sheet. Four specific changes:
-
-1. Import `RequestServiceSheet` and the `ServiceType` type from your new component
-2. Add `const [showServiceSheet, setShowServiceSheet] = useState(false)`
-3. Rewrite `handleRequestAssistance` - remove the `createRequest` Firebase call, just set `showServiceSheet(true)` (keep the location guards)
-4. Add a `handleServiceSelected(serviceType: ServiceType)` function that closes the sheet and logs to console (placeholder for TOW-77)
-5. Remove the `serviceSelector` View and `selectedService` state (the old four-chip UI - that functionality now lives inside the sheet)
-6. Render `<RequestServiceSheet>` in the JSX after the MapView
-
-**Concept this teaches.**
-Parent-child component communication via props. The parent (`index.tsx`) owns the visibility state (`showServiceSheet`) and passes down both a value (`visible`) and two callbacks (`onClose`, `onContinue`). The child never manages its own visibility - it just calls the callbacks and the parent decides what to do.
-
-**Try it yourself first.**
-Before writing the `<RequestServiceSheet>` JSX, think about what the three props need to be. `visible` is straightforward. What function should `onClose` call? What should `onContinue` call? Write out the prop values in plain English before writing code.
-
-**Spec reference.**
-See "Step 10: Integrate into the commuter home screen" in `.claude/specs/TOW-76.md`.
-
----
-
-### Step 11 - Manual Testing Against Acceptance Criteria
-
-**What you will do.**
-Run `npx expo start` and open on your iOS simulator. Walk through every item in this checklist:
+Run `npx expo start` and open on your iOS simulator. Walk through this checklist item by item:
 
 - [ ] Tapping "Request Roadside Assistance" slides up the sheet
-- [ ] Sheet covers roughly 95% of the screen height
-- [ ] The map and dark overlay are visible behind/around the sheet
+- [ ] Sheet covers roughly 95% of screen height
+- [ ] Map and dark overlay are visible behind the sheet
 - [ ] Drag handle pill is visible at the top of the sheet
 - [ ] Tapping the drag handle dismisses the sheet
-- [ ] Step indicator shows Location, Service, Vehicle - with Service highlighted
+- [ ] Step indicator shows Location, Service, Vehicle - all three with blue-tinted circles
 - [ ] "Select Service Type" section header is visible below the step indicator
-- [ ] Cards are displayed in a 2-column grid (3 rows of 2)
+- [ ] Six cards are displayed in a 2-column grid (three rows of two)
 - [ ] "Towing" card is highlighted with blue border and blue background fill by default
 - [ ] All 6 cards show: icon, label, price range
-- [ ] Jump Start, Fuel Delivery, Tire Change, Lockout, Winch Out cards are visible but grayed out (~40% opacity)
+- [ ] Jump Start, Fuel Delivery, Tire Change, Lockout, Winch Out cards are visually grayed out (~40% opacity)
 - [ ] Tapping a grayed-out card does nothing
-- [ ] "Continue" button is visible and stays pinned at the bottom
-- [ ] Tapping "Continue" logs the service type to the console and closes the sheet
-- [ ] The commuter home screen map still works correctly (no regression)
-- [ ] Android back button closes the sheet (if Android device/emulator available)
+- [ ] "Request Service Now" button is visible and stays pinned at the bottom (does not scroll away)
+- [ ] "Request Service Now" button is visually disabled (gray/muted, not the blue active style)
+- [ ] Tapping "Request Service Now" does nothing (disabled)
+- [ ] Scrolling inside the sheet works - drag up to confirm the scroll area is live
+- [ ] No TypeScript errors in the terminal
+- [ ] Commuter home screen map still works correctly (no regressions from your `index.tsx` changes)
+- [ ] Android back button closes the sheet (if Android device or emulator is available)
 
 **Concept this teaches.**
-Manual acceptance testing against written criteria. Every professional feature goes through this before it is considered done.
+Manual acceptance testing against written criteria. Every professional feature goes through a structured test pass before it is considered done. Walking through a checklist is also a good habit for catching regressions - things you broke that used to work.
 
 ---
 
 ## Notes
 
-- Steps 1-3 are marked complete but Step 1 needs two small additions before moving on: add `'lockout'` and `'winch_out'` to `ServiceType`, and add the Lockout and Winch Out entries to `SERVICE_OPTIONS`. Do this before starting Step 4.
-- The spec was updated on 2026-02-27 after a Figma design review. The key changes from the original plan: 2-column FlatList grid instead of ScrollView list, square cards instead of horizontal rows, visual StepIndicator instead of plain "Step 1 of 3" text, 6 services instead of 4, real prices on all cards, title changed to "Select Service Type".
-- The original plan had 10 steps. The updated plan has 11 steps because the StepIndicator and the section header are now separate steps (4 and 5).
-- The existing `serviceSelector` View in `index.tsx` (the four small icon chips) should be completely removed in Step 10. That functionality is being replaced by the full sheet.
-- The `selectedService` useState in `index.tsx` should also be removed in Step 10 - it moves into `RequestServiceSheet.tsx`.
-- No Firebase writes happen in this story. `handleRequestAssistance` will no longer call `createRequest` - that moves to TOW-78 (Step 3 of the flow).
-- `paddingBottom: 32` in the footer style handles the iPhone home indicator. If it looks clipped on your device, increase this value or use `useSafeAreaInsets`.
-- The `stepConnector` line in the `StepIndicator` may need positioning adjustments after seeing how it renders. The spec notes two approaches: absolute positioning inside the step item, or inline connector Views between step nodes. Use whichever renders correctly on your device.
+- Steps 1-5 were completed under the old spec. The types, `SERVICE_OPTIONS`, Modal shell, drag handle, `StepIndicator`, and section header are all correct and do not need to change.
+- The significant architectural change in the revised spec (2026-02-28): this is ONE single sheet with one `ScrollView`. TOW-77 and TOW-78 will add sections into the same `ScrollView`, not create new sheet components.
+- `onContinue` is gone entirely. The "Request Service Now" button lives inside the component and will be wired to Firebase in TOW-78. The parent only needs `visible` and `onClose`.
+- `FlatList` inside `ScrollView` requires `scrollEnabled={false}` on the `FlatList`. Without it you will get a React Native warning and unpredictable scroll behavior.
+- The `stepConnector` absolute positioning in the step indicator is a known tricky point. If the lines do not render correctly, the fallback is to place connector `View` elements as flex siblings between step nodes (not inside them) with `flex: 1`.
+- `paddingBottom: 32` in the footer style covers the iPhone home indicator on most devices. Use `useSafeAreaInsets` from `react-native-safe-area-context` if it looks clipped on your specific device.
+- No Firebase writes happen in this story. TOW-78 handles the `createRequest` call.

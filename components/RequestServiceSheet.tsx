@@ -1,7 +1,10 @@
 import { ServiceType } from '@/types/models';
+import { useState } from 'react';
 import {
 	Dimensions,
+	FlatList,
 	Modal,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
@@ -19,7 +22,12 @@ export interface ServiceOption {
 interface RequestServiceSheetProps {
 	visible: boolean;
 	onClose: () => void;
-	onContinue: (serviceType: ServiceType) => void;
+}
+
+interface ServiceCardProps {
+	option: ServiceOption;
+	selected: boolean;
+	onPress: () => void;
 }
 
 const SHEET_HEIGHT = Dimensions.get('window').height * 0.95;
@@ -69,12 +77,6 @@ const SERVICE_OPTIONS: ServiceOption[] = [
 	},
 ];
 
-interface ServiceCardProps {
-	option: ServiceOption;
-	selected: boolean;
-	onPress: () => void;
-}
-
 function ServiceCard({ option, selected, onPress }: ServiceCardProps) {
 	return (
 		<TouchableOpacity
@@ -96,8 +98,9 @@ function ServiceCard({ option, selected, onPress }: ServiceCardProps) {
 export function RequestServiceSheet({
 	visible,
 	onClose,
-	onContinue,
 }: RequestServiceSheetProps) {
+	const [selectedService, setSelectedService] = useState<ServiceType>('tow');
+
 	return (
 		<Modal
 			visible={visible}
@@ -110,7 +113,23 @@ export function RequestServiceSheet({
 					<TouchableOpacity onPress={onClose} style={styles.handleContainer}>
 						<View style={styles.dragHandle} />
 					</TouchableOpacity>
-					<Text style={styles.sectionTitle}>Select Service Type</Text>
+					<ScrollView style={styles.scrollView}>
+						<Text style={styles.sectionTitle}>Select Service Type</Text>
+						<FlatList
+							data={SERVICE_OPTIONS}
+							numColumns={2}
+							scrollEnabled={false}
+							contentContainerStyle={{ padding: 8 }}
+							keyExtractor={(item) => item.id}
+							renderItem={({ item }) => (
+								<ServiceCard
+									option={item}
+									selected={selectedService === item.id}
+									onPress={() => setSelectedService(item.id)}
+								/>
+							)}
+						/>
+					</ScrollView>
 				</View>
 			</View>
 		</Modal>
@@ -140,6 +159,9 @@ const styles = StyleSheet.create({
 		height: 4,
 		backgroundColor: '#CCCCCC',
 		borderRadius: 2,
+	},
+	scrollView: {
+		flex: 1,
 	},
 	sectionTitle: {
 		fontSize: 22,
