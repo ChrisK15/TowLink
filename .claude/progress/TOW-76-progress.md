@@ -34,28 +34,17 @@ Build the shell of a single bottom sheet (`components/RequestServiceSheet.tsx`) 
 
 ## Current Step
 
-- [ ] Step 6: Correct the grid and sheet structure (architectural fix)
-
-**What needs to change - three specific problems to fix:**
-
-**Problem A - `onContinue` must be removed from props.**
-The component currently has `onContinue: (serviceType: ServiceType) => void` in `RequestServiceSheetProps`. This prop no longer exists. The new architecture has the "Request Service Now" button live entirely inside the component - the parent does not need a callback. Remove it from the interface and from the function destructuring.
-
-**Problem B - `FlatList` must move inside a `ScrollView`.**
-The current build uses a bare `FlatList` that fills the sheet. TOW-77 needs to add more sections below the grid - those sections and the grid all need to scroll together as one unit. The fix is to wrap everything scrollable in a `ScrollView` and set `scrollEnabled={false}` on the `FlatList` so the two scroll views do not conflict.
-
-**Problem C - The sheet has no footer button.**
-A "Request Service Now" button must be added, pinned outside the `ScrollView` at the bottom of the sheet. It is always `disabled={true}` in TOW-76. TOW-78 will enable it.
+All steps complete. ✅
 
 ---
 
-## Remaining Steps
+## Completed (continued)
 
-- [ ] Step 6: Correct the grid and sheet structure (remove `onContinue`, add `ScrollView` wrapper, fix grid layout)
-- [ ] Step 7: Add the "Request Service Now" footer button (disabled stub)
-- [ ] Step 8: StyleSheet cleanup and additions
-- [ ] Step 9: Update `app/(commuter)/index.tsx` integration
-- [ ] Step 10: Manual testing checklist
+- [x] Step 6: Removed `onContinue`, wrapped FlatList in ScrollView with `scrollEnabled={false}`
+- [x] Step 7: Added "Request Service Now" footer button (`disabled={true}`)
+- [x] Step 8: StyleSheet complete
+- [x] Step 9: Updated `app/(commuter)/index.tsx` — opens sheet on button press, no Firebase call
+- [x] Step 10: Manual testing passed on iOS simulator
 
 ---
 

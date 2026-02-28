@@ -17,7 +17,14 @@
 - "Continue" button at bottom
 - Tapping the Drag Handle at top closes the modal
 - No back button
-- Modal fills ~95% of screen height when open
+- Modal fills ~95% of screen height when open (implemented at 90% — intentional decision by developer, preferred visually)
+
+---
+
+## INTENTIONAL DESIGN DEVIATIONS (Updated 2026-02-28)
+
+- **Sheet height**: Implemented at `0.9` (90%) instead of `0.95`. Developer preference — looks better on device.
+- **StepIndicator**: Omitted intentionally. The Location → Service → Vehicle progress indicator was evaluated and deemed unnecessary visual complexity for MVP. Deferred to a future polish sprint.
 
 ---
 

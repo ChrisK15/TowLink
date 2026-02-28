@@ -30,7 +30,7 @@ interface ServiceCardProps {
 	onPress: () => void;
 }
 
-const SHEET_HEIGHT = Dimensions.get('window').height * 0.95;
+const SHEET_HEIGHT = Dimensions.get('window').height * 0.9;
 const CARD_WIDTH = (Dimensions.get('window').width - 48) / 2;
 const SERVICE_OPTIONS: ServiceOption[] = [
 	{
