@@ -130,6 +130,11 @@ export function RequestServiceSheet({
 							)}
 						/>
 					</ScrollView>
+					<View style={styles.footer}>
+						<TouchableOpacity style={styles.submitButton} disabled={true}>
+							<Text style={styles.submitButtonText}>Request Service Now</Text>
+						</TouchableOpacity>
+					</View>
 				</View>
 			</View>
 		</Modal>
@@ -202,5 +207,23 @@ const styles = StyleSheet.create({
 	cardPrice: {
 		fontSize: 13,
 		color: '#555',
+	},
+	footer: {
+		backgroundColor: 'white',
+		borderTopWidth: 1,
+		borderTopColor: '#E0E0E0',
+		padding: 16,
+		paddingBottom: 32,
+	},
+	submitButton: {
+		backgroundColor: '#CCCCCC',
+		paddingVertical: 16,
+		borderRadius: 12,
+		alignItems: 'center',
+	},
+	submitButtonText: {
+		color: 'white',
+		fontSize: 18,
+		fontWeight: 'bold',
 	},
 });
