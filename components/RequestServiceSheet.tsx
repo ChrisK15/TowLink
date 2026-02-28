@@ -3,6 +3,7 @@ import {
 	Dimensions,
 	Modal,
 	StyleSheet,
+	Text,
 	TouchableOpacity,
 	View,
 } from 'react-native';
@@ -84,6 +85,7 @@ export function RequestServiceSheet({
 					<TouchableOpacity onPress={onClose} style={styles.handleContainer}>
 						<View style={styles.dragHandle} />
 					</TouchableOpacity>
+					<Text style={styles.sectionTitle}>Select Service Type</Text>
 				</View>
 			</View>
 		</Modal>
@@ -113,5 +115,13 @@ const styles = StyleSheet.create({
 		height: 4,
 		backgroundColor: '#CCCCCC',
 		borderRadius: 2,
+	},
+	sectionTitle: {
+		fontSize: 22,
+		fontWeight: 'bold',
+		color: '#000',
+		paddingHorizontal: 20,
+		paddingVertical: 16,
+		backgroundColor: 'white',
 	},
 });
