@@ -1,5 +1,5 @@
 import { useAuth } from '@/context/auth-context';
-import { createRequest } from '@/services/firebase/firestore';
+import { RequestServiceSheet } from '@/components/RequestServiceSheet';
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -12,8 +12,7 @@ export default function CommuterScreen() {
 		longitude: number;
 	} | null>(null);
 	const [mapRef, setMapRef] = useState<MapView | null>(null);
-	const [selectedService, setSelectedService] = useState('towing');
-	const [isCreatingRequest, setIsCreatingRequest] = useState(false);
+	const [showServiceSheet, setShowServiceSheet] = useState(false);
 
 	// Get location
 	useEffect(() => {
@@ -65,33 +64,7 @@ export default function CommuterScreen() {
 			return;
 		}
 
-		if (!user) {
-			Alert.alert('Error', 'You must be signed in to create a request');
-			return;
-		}
-
-		setIsCreatingRequest(true);
-		try {
-			const requestId = await createRequest(
-				user.uid, // Use the actual authenticated user's ID
-				userLocation,
-				{ latitude: 34.2407, longitude: -118.53 }, //CSUN coordinates, temporary will change later
-				'Test pickup address',
-				'Test dropoff address',
-				'Tesla',
-				80,
-				10,
-				'Hi',
-			);
-			Alert.alert('Request sent, searching for nearby drivers...');
-
-			console.log('Request created:', requestId);
-		} catch (error) {
-			Alert.alert('Error, failed to create a request. Please try again');
-			console.error(error);
-		} finally {
-			setIsCreatingRequest(false);
-		}
+		setShowServiceSheet(true);
 	}
 
 	return (
@@ -122,19 +95,16 @@ export default function CommuterScreen() {
 
 			{/* Request Button bottom */}
 			<TouchableOpacity
-				style={[
-					styles.requestButton,
-					isCreatingRequest && styles.requestButtonDisabled,
-				]}
+				style={styles.requestButton}
 				onPress={handleRequestAssistance}
-				disabled={isCreatingRequest}
 			>
-				<Text style={styles.requestButtonText}>
-					{isCreatingRequest
-						? 'Creating Request...'
-						: 'Request Roadside Assistance'}
-				</Text>
+				<Text style={styles.requestButtonText}>Request Roadside Assistance</Text>
 			</TouchableOpacity>
+
+			<RequestServiceSheet
+				visible={showServiceSheet}
+				onClose={() => setShowServiceSheet(false)}
+			/>
 
 			{/* Temporary Sign Out Button for Testing */}
 			<TouchableOpacity
@@ -154,35 +124,6 @@ export default function CommuterScreen() {
 			</TouchableOpacity>
 
 			<Text style={styles.title}>Commuter Screen</Text>
-
-			{/* Service type selector */}
-			<View style={styles.serviceSelector}>
-				<TouchableOpacity
-					style={[
-						styles.serviceOption,
-						selectedService === 'towing' && styles.serviceOptionActive,
-					]}
-					onPress={() => setSelectedService('towing')}
-				>
-					<Text style={styles.serviceIcon}>🚗</Text>
-					<Text style={styles.serviceText}>Towing</Text>
-				</TouchableOpacity>
-
-				<View style={[styles.serviceOption, styles.serviceOptionDisabled]}>
-					<Text style={styles.serviceIcon}>🔋</Text>
-					<Text style={styles.serviceText}>Battery</Text>
-				</View>
-
-				<View style={[styles.serviceOption, styles.serviceOptionDisabled]}>
-					<Text style={styles.serviceIcon}>⛽</Text>
-					<Text style={styles.serviceText}>Fuel</Text>
-				</View>
-
-				<View style={[styles.serviceOption, styles.serviceOptionDisabled]}>
-					<Text style={styles.serviceIcon}>🔧</Text>
-					<Text style={styles.serviceText}>Tire</Text>
-				</View>
-			</View>
 		</View>
 	);
 }
@@ -239,47 +180,10 @@ const styles = StyleSheet.create({
 		shadowRadius: 6,
 		elevation: 8,
 	},
-	requestButtonDisabled: {
-		opacity: 0.6,
-	},
 	requestButtonText: {
 		color: '#000',
 		fontSize: 18,
 		fontWeight: 'bold',
-	},
-	serviceSelector: {
-		position: 'absolute',
-		bottom: 20,
-		left: 20,
-		right: 20,
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-	},
-	serviceOption: {
-		backgroundColor: 'rgba(40, 40, 40, 0.9)',
-		padding: 12,
-		borderRadius: 12,
-		alignItems: 'center',
-		flex: 1,
-		marginHorizontal: 5,
-		borderWidth: 2,
-		borderColor: 'transparent',
-	},
-	serviceOptionActive: {
-		borderColor: '#00D9FF',
-		backgroundColor: 'rgba(0, 217, 255, 0.2)',
-	},
-	serviceOptionDisabled: {
-		opacity: 0.5,
-	},
-	serviceIcon: {
-		fontSize: 28,
-		marginBottom: 4,
-	},
-	serviceText: {
-		color: 'white',
-		fontSize: 12,
-		fontWeight: '600',
 	},
 	signOutButton: {
 		position: 'absolute',
