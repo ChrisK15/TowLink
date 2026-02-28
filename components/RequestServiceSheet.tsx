@@ -23,6 +23,7 @@ interface RequestServiceSheetProps {
 }
 
 const SHEET_HEIGHT = Dimensions.get('window').height * 0.95;
+const CARD_WIDTH = (Dimensions.get('window').width - 48) / 2;
 const SERVICE_OPTIONS: ServiceOption[] = [
 	{
 		id: 'tow',
@@ -67,6 +68,30 @@ const SERVICE_OPTIONS: ServiceOption[] = [
 		isEnabled: false,
 	},
 ];
+
+interface ServiceCardProps {
+	option: ServiceOption;
+	selected: boolean;
+	onPress: () => void;
+}
+
+function ServiceCard({ option, selected, onPress }: ServiceCardProps) {
+	return (
+		<TouchableOpacity
+			onPress={onPress}
+			disabled={!option.isEnabled}
+			style={[
+				styles.card,
+				selected && styles.cardSelected,
+				!option.isEnabled && styles.cardDisabled,
+			]}
+		>
+			<Text style={styles.cardIcon}>{option.icon}</Text>
+			<Text style={styles.cardLabel}>{option.label}</Text>
+			<Text style={styles.cardPrice}>{option.priceRange}</Text>
+		</TouchableOpacity>
+	);
+}
 
 export function RequestServiceSheet({
 	visible,
@@ -123,5 +148,37 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 20,
 		paddingVertical: 16,
 		backgroundColor: 'white',
+	},
+	card: {
+		width: CARD_WIDTH,
+		backgroundColor: 'white',
+		borderRadius: 12,
+		borderWidth: 2,
+		borderColor: 'transparent',
+		padding: 16,
+		margin: 8,
+		justifyContent: 'space-between',
+		minHeight: 120,
+	},
+	cardSelected: {
+		borderColor: '#1565C0',
+		backgroundColor: 'rgba(21, 101, 192, 0.05)',
+	},
+	cardDisabled: {
+		opacity: 0.4,
+	},
+	cardIcon: {
+		fontSize: 32,
+		marginBottom: 8,
+	},
+	cardLabel: {
+		fontSize: 15,
+		fontWeight: '600',
+		color: '#000',
+		marginBottom: 4,
+	},
+	cardPrice: {
+		fontSize: 13,
+		color: '#555',
 	},
 });
