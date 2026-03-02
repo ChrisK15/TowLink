@@ -1,8 +1,15 @@
 import { useAuth } from '@/context/auth-context';
-import { updateUserProfile } from '@/services/firebase/authService';
+import {
+	signUpWithEmail,
+	updateUserProfile,
+	updateUserRole,
+} from '@/services/firebase/authService';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
+	KeyboardAvoidingView,
+	Platform,
 	Pressable,
 	ScrollView,
 	StyleSheet,
@@ -12,48 +19,60 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-function validateProfileForm(name: string, phone: string): string | null {
-	if (!name.trim() || !phone.trim()) {
-		return 'Please fill in all fields.';
-	}
-	if (name.trim().length < 2) {
-		return 'Please enter your full name.';
-	}
+function validateCreateAccountForm(
+	name: string,
+	email: string,
+	phone: string,
+	password: string,
+	confirmPassword: string,
+	termsAccepted: boolean,
+): string | null {
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	const phoneRegex = /^[\+]?[\d\s\-\(\)]{7,15}$/;
-	if (!phoneRegex.test(phone.trim())) {
-		return 'Please enter a valid phone number.';
+	if (!name.trim() || !email.trim() || !phone.trim() || !password || !confirmPassword) {
+		return 'All fields are required.';
 	}
+	if (name.trim().length < 2) return 'Please enter your full name.';
+	if (!emailRegex.test(email.trim())) return 'Please enter a valid email address.';
+	if (!phoneRegex.test(phone.trim())) return 'Please enter a valid phone number.';
+	if (password.length < 8) return 'Password must be at least 8 characters.';
+	if (password !== confirmPassword) return 'Passwords do not match.';
+	if (!termsAccepted) return 'Please accept the Terms of Service to continue.';
 	return null;
 }
 
 export default function CommuterSetupScreen() {
-	const { user, refreshRole } = useAuth();
+	const { refreshRole } = useAuth();
+	const router = useRouter();
 
 	const [name, setName] = useState('');
+	const [email, setEmail] = useState('');
 	const [phone, setPhone] = useState('');
+	const [password, setPassword] = useState('');
+	const [confirmPassword, setConfirmPassword] = useState('');
+	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const [termsAccepted, setTermsAccepted] = useState(false);
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [isSaved, setIsSaved] = useState(false);
 
-	const handleSave = async () => {
-		const validationError = validateProfileForm(name, phone);
+	const clearError = () => setError('');
+
+	const handleCreateAccount = async () => {
+		const validationError = validateCreateAccountForm(
+			name, email, phone, password, confirmPassword, termsAccepted,
+		);
 		if (validationError) {
 			setError(validationError);
 			return;
 		}
-
-		if (!user) {
-			setError('Session expired. Please sign in again.');
-			return;
-		}
-
 		setLoading(true);
 		setError('');
 		try {
-			await updateUserProfile(user.uid, {
-				name: name.trim(),
-				phone: phone.trim(),
-			});
+			const { userId } = await signUpWithEmail(email, password);
+			await updateUserRole(userId, 'commuter');
+			await updateUserProfile(userId, { name: name.trim(), phone: phone.trim() });
 			setIsSaved(true);
 		} catch (err: any) {
 			setError(err.message);
@@ -74,6 +93,7 @@ export default function CommuterSetupScreen() {
 		return () => clearTimeout(timer);
 	}, [isSaved]);
 
+	// ── Success state ──────────────────────────────────────────────
 	if (isSaved) {
 		return (
 			<SafeAreaView style={styles.container}>
@@ -145,66 +165,173 @@ export default function CommuterSetupScreen() {
 		);
 	}
 
+	// ── Form state ─────────────────────────────────────────────────
 	return (
 		<SafeAreaView style={styles.container}>
-			<ScrollView
-				contentContainerStyle={styles.formContent}
-				keyboardShouldPersistTaps="handled"
-				showsVerticalScrollIndicator={false}
-			>
-				<View style={styles.iconCircle}>
-					<Text style={styles.iconEmoji}>🚗</Text>
-				</View>
-
-				<Text style={styles.heading}>Join TowLink</Text>
-				<Text style={styles.subtitle}>
-					Get roadside assistance when you need{' '}
-					<Text style={styles.highlightText}>it</Text>
-				</Text>
-
-				<View style={styles.formGroup}>
-					<Text style={styles.label}>Full Name</Text>
-					<TextInput
-						style={styles.input}
-						placeholder="John Doe"
-						placeholderTextColor="#9CA3AF"
-						value={name}
-						onChangeText={(text) => {
-							setName(text);
-							setError('');
-						}}
-						autoCapitalize="words"
-						autoCorrect={false}
-					/>
-				</View>
-
-				<View style={styles.formGroup}>
-					<Text style={styles.label}>Phone Number</Text>
-					<TextInput
-						style={styles.input}
-						placeholder="+1 (555) 123-4567"
-						placeholderTextColor="#9CA3AF"
-						value={phone}
-						onChangeText={(text) => {
-							setPhone(text);
-							setError('');
-						}}
-						keyboardType="phone-pad"
-					/>
-				</View>
-
-				{error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-				<Pressable
-					style={[styles.button, loading && styles.buttonDisabled]}
-					onPress={handleSave}
-					disabled={loading}
-				>
-					<Text style={styles.buttonText}>
-						{loading ? 'Saving...' : 'Create Account'}
-					</Text>
+			{/* Header */}
+			<View style={styles.header}>
+				<Pressable onPress={() => router.back()} style={styles.headerBack}>
+					<Ionicons name="arrow-back" size={22} color="#1A1A2E" />
 				</Pressable>
-			</ScrollView>
+				<Text style={styles.headerTitle}>Create Account</Text>
+				<View style={styles.headerRight}>
+					<Ionicons name="moon-outline" size={22} color="#1A1A2E" />
+				</View>
+			</View>
+
+			<KeyboardAvoidingView
+				style={{ flex: 1 }}
+				behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+			>
+				<ScrollView
+					contentContainerStyle={styles.formContent}
+					keyboardShouldPersistTaps="handled"
+					showsVerticalScrollIndicator={false}
+				>
+					{/* Icon */}
+					<View style={styles.iconCircle}>
+						<Text style={styles.iconEmoji}>🚗</Text>
+					</View>
+
+					<Text style={styles.heading}>Join TowLink</Text>
+					<Text style={styles.subtitle}>
+						Get roadside assistance when you need{' '}
+						<Text style={styles.highlightText}>it</Text>
+					</Text>
+
+					{/* Full Name */}
+					<View style={styles.formGroup}>
+						<Text style={styles.label}>Full Name</Text>
+						<TextInput
+							style={styles.input}
+							placeholder="John Doe"
+							placeholderTextColor="#9CA3AF"
+							value={name}
+							onChangeText={(t) => { setName(t); clearError(); }}
+							autoCapitalize="words"
+							autoCorrect={false}
+						/>
+					</View>
+
+					{/* Email */}
+					<View style={styles.formGroup}>
+						<Text style={styles.label}>Email Address</Text>
+						<TextInput
+							style={styles.input}
+							placeholder="you@example.com"
+							placeholderTextColor="#9CA3AF"
+							value={email}
+							onChangeText={(t) => { setEmail(t); clearError(); }}
+							keyboardType="email-address"
+							autoCapitalize="none"
+							autoCorrect={false}
+						/>
+					</View>
+
+					{/* Phone */}
+					<View style={styles.formGroup}>
+						<Text style={styles.label}>Phone Number</Text>
+						<TextInput
+							style={styles.input}
+							placeholder="+1 (555) 123-4567"
+							placeholderTextColor="#9CA3AF"
+							value={phone}
+							onChangeText={(t) => { setPhone(t); clearError(); }}
+							keyboardType="phone-pad"
+						/>
+					</View>
+
+					{/* Password */}
+					<View style={styles.formGroup}>
+						<Text style={styles.label}>Password</Text>
+						<View style={styles.passwordContainer}>
+							<TextInput
+								style={styles.passwordInput}
+								placeholder="••••••••"
+								placeholderTextColor="#9CA3AF"
+								value={password}
+								onChangeText={(t) => { setPassword(t); clearError(); }}
+								secureTextEntry={!showPassword}
+								autoCapitalize="none"
+							/>
+							<Pressable
+								onPress={() => setShowPassword(!showPassword)}
+								style={styles.eyeButton}
+							>
+								<Ionicons
+									name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+									size={20}
+									color="#9CA3AF"
+								/>
+							</Pressable>
+						</View>
+					</View>
+
+					{/* Confirm Password */}
+					<View style={styles.formGroup}>
+						<Text style={styles.label}>Confirm Password</Text>
+						<View style={styles.passwordContainer}>
+							<TextInput
+								style={styles.passwordInput}
+								placeholder="••••••••"
+								placeholderTextColor="#9CA3AF"
+								value={confirmPassword}
+								onChangeText={(t) => { setConfirmPassword(t); clearError(); }}
+								secureTextEntry={!showConfirmPassword}
+								autoCapitalize="none"
+							/>
+							<Pressable
+								onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+								style={styles.eyeButton}
+							>
+								<Ionicons
+									name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
+									size={20}
+									color="#9CA3AF"
+								/>
+							</Pressable>
+						</View>
+					</View>
+
+					{/* Terms */}
+					<Pressable
+						style={styles.termsRow}
+						onPress={() => setTermsAccepted(!termsAccepted)}
+					>
+						<View style={[styles.checkbox, termsAccepted && styles.checkboxChecked]}>
+							{termsAccepted && (
+								<Ionicons name="checkmark" size={12} color="#FFFFFF" />
+							)}
+						</View>
+						<Text style={styles.termsText}>
+							I agree to the{' '}
+							<Text style={styles.termsLink}>Terms of Service</Text>
+							{' '}and{' '}
+							<Text style={styles.termsLink}>Privacy Policy</Text>
+						</Text>
+					</Pressable>
+
+					{error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+					<Pressable
+						style={[styles.button, loading && styles.buttonDisabled]}
+						onPress={handleCreateAccount}
+						disabled={loading}
+					>
+						<Text style={styles.buttonText}>
+							{loading ? 'Creating Account...' : 'Create Account'}
+						</Text>
+					</Pressable>
+
+					{/* Sign in link */}
+					<View style={styles.signInRow}>
+						<Text style={styles.signInText}>Already have an account? </Text>
+						<Pressable onPress={() => router.back()}>
+							<Text style={styles.signInLink}>Sign In</Text>
+						</Pressable>
+					</View>
+				</ScrollView>
+			</KeyboardAvoidingView>
 		</SafeAreaView>
 	);
 }
@@ -214,19 +341,41 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: '#FFFFFF',
 	},
+	// ── Header ─────────────────────────────────────────────────────
+	header: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		paddingHorizontal: 16,
+		paddingVertical: 12,
+		borderBottomWidth: 1,
+		borderBottomColor: '#F3F4F6',
+	},
+	headerBack: {
+		width: 36,
+		height: 36,
+		justifyContent: 'center',
+		alignItems: 'flex-start',
+	},
+	headerTitle: {
+		flex: 1,
+		textAlign: 'center',
+		fontSize: 17,
+		fontWeight: '600',
+		color: '#1A1A2E',
+	},
+	headerRight: {
+		width: 36,
+		height: 36,
+		justifyContent: 'center',
+		alignItems: 'flex-end',
+	},
+	// ── Form screen ────────────────────────────────────────────────
 	formContent: {
 		paddingHorizontal: 24,
 		paddingTop: 32,
 		paddingBottom: 40,
 		alignItems: 'center',
 	},
-	successContent: {
-		paddingHorizontal: 24,
-		paddingTop: 32,
-		paddingBottom: 40,
-		alignItems: 'center',
-	},
-	// ── Form screen ────────────────────────────────────────────────
 	iconCircle: {
 		width: 72,
 		height: 72,
@@ -276,6 +425,58 @@ const styles = StyleSheet.create({
 		color: '#1A1A2E',
 		backgroundColor: '#FFFFFF',
 	},
+	passwordContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		borderWidth: 1,
+		borderColor: '#D1D5DB',
+		borderRadius: 30,
+		backgroundColor: '#FFFFFF',
+	},
+	passwordInput: {
+		flex: 1,
+		paddingVertical: 14,
+		paddingHorizontal: 18,
+		fontSize: 15,
+		color: '#1A1A2E',
+	},
+	eyeButton: {
+		paddingRight: 16,
+		paddingVertical: 14,
+	},
+	termsRow: {
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		width: '100%',
+		marginBottom: 20,
+		marginTop: 4,
+	},
+	checkbox: {
+		width: 20,
+		height: 20,
+		borderRadius: 4,
+		borderWidth: 1.5,
+		borderColor: '#D1D5DB',
+		marginRight: 10,
+		marginTop: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		flexShrink: 0,
+	},
+	checkboxChecked: {
+		backgroundColor: '#2B7AFF',
+		borderColor: '#2B7AFF',
+	},
+	termsText: {
+		flex: 1,
+		fontSize: 13,
+		color: '#6B7280',
+		lineHeight: 20,
+	},
+	termsLink: {
+		color: '#2B7AFF',
+		fontWeight: '600',
+	},
 	errorText: {
 		color: '#EF4444',
 		fontSize: 14,
@@ -299,7 +500,27 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: '700',
 	},
+	signInRow: {
+		flexDirection: 'row',
+		marginTop: 24,
+		alignItems: 'center',
+	},
+	signInText: {
+		fontSize: 14,
+		color: '#6B7280',
+	},
+	signInLink: {
+		fontSize: 14,
+		color: '#2B7AFF',
+		fontWeight: '600',
+	},
 	// ── Success screen ─────────────────────────────────────────────
+	successContent: {
+		paddingHorizontal: 24,
+		paddingTop: 32,
+		paddingBottom: 40,
+		alignItems: 'center',
+	},
 	successIconCircle: {
 		width: 96,
 		height: 96,
