@@ -293,7 +293,7 @@ Also verify the full manual testing checklist from the spec:
 - [x] Step 3: Create `commuter-setup.tsx` — full implementation (form + success state, validation, save logic, auto-redirect)
 - [x] Step 5: Build the Form state UI and save logic (completed as part of Step 3)
 - [x] Step 6: Build the Success state UI and auto-redirect (completed as part of Step 3)
-- [ ] Step 4: Wire navigation in `role-selection.tsx` — route commuter path to commuter-setup
+- [x] Step 4: Wire navigation in `role-selection.tsx` — route commuter path to commuter-setup
 
 ---
 
