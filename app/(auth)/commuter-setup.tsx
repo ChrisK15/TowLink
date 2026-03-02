@@ -82,7 +82,7 @@ export default function CommuterSetupScreen() {
 					showsVerticalScrollIndicator={false}
 				>
 					<View style={styles.successIconCircle}>
-						<Ionicons name="checkmark-circle" size={80} color="#22C55E" />
+						<Ionicons name="checkmark-circle" size={64} color="#22C55E" />
 					</View>
 
 					<Text style={styles.successHeading}>Welcome to TowLink!</Text>
@@ -93,7 +93,7 @@ export default function CommuterSetupScreen() {
 					<View style={styles.card}>
 						<View style={styles.bulletRow}>
 							<View style={styles.bulletIconCircle}>
-								<Ionicons name="checkmark" size={18} color="#2B7AFF" />
+								<Ionicons name="checkmark" size={16} color="#6B7280" />
 							</View>
 							<View style={styles.bulletText}>
 								<Text style={styles.bulletTitle}>Account Verified</Text>
@@ -112,19 +112,22 @@ export default function CommuterSetupScreen() {
 									Request Assistance Anytime
 								</Text>
 								<Text style={styles.bulletDescription}>
-									Get help whenever and wherever you need it
+									Get help whenever and{' '}
+									<Text style={styles.highlightText}>wherever</Text>
+									{' '}you need it
 								</Text>
 							</View>
 						</View>
 
 						<View style={[styles.bulletRow, styles.bulletRowLast]}>
 							<View style={styles.bulletIconCircle}>
-								<Ionicons name="flash" size={18} color="#2B7AFF" />
+								<Text style={styles.bulletEmoji}>⚡</Text>
 							</View>
 							<View style={styles.bulletText}>
 								<Text style={styles.bulletTitle}>Fast Response Times</Text>
 								<Text style={styles.bulletDescription}>
-									Get connected to nearby drivers in seconds
+									Get connected to nearby drivers{' '}
+									<Text style={styles.highlightText}>in seconds</Text>
 								</Text>
 							</View>
 						</View>
@@ -153,10 +156,13 @@ export default function CommuterSetupScreen() {
 					<Text style={styles.iconEmoji}>🚗</Text>
 				</View>
 
-				<Text style={styles.heading}>Complete Your Profile</Text>
-				<Text style={styles.subtitle}>Tell us a bit about yourself</Text>
+				<Text style={styles.heading}>Join TowLink</Text>
+				<Text style={styles.subtitle}>
+					Get roadside assistance when you need{' '}
+					<Text style={styles.highlightText}>it</Text>
+				</Text>
 
-				<View style={styles.card}>
+				<View style={styles.formGroup}>
 					<Text style={styles.label}>Full Name</Text>
 					<TextInput
 						style={styles.input}
@@ -170,8 +176,10 @@ export default function CommuterSetupScreen() {
 						autoCapitalize="words"
 						autoCorrect={false}
 					/>
+				</View>
 
-					<Text style={[styles.label, styles.labelSpacing]}>Phone Number</Text>
+				<View style={styles.formGroup}>
+					<Text style={styles.label}>Phone Number</Text>
 					<TextInput
 						style={styles.input}
 						placeholder="+1 (555) 123-4567"
@@ -193,7 +201,7 @@ export default function CommuterSetupScreen() {
 					disabled={loading}
 				>
 					<Text style={styles.buttonText}>
-						{loading ? 'Saving...' : 'Save & Continue'}
+						{loading ? 'Saving...' : 'Create Account'}
 					</Text>
 				</Pressable>
 			</ScrollView>
@@ -207,25 +215,29 @@ const styles = StyleSheet.create({
 		backgroundColor: '#FFFFFF',
 	},
 	formContent: {
-		padding: 24,
+		paddingHorizontal: 24,
+		paddingTop: 32,
+		paddingBottom: 40,
 		alignItems: 'center',
 	},
 	successContent: {
-		padding: 24,
+		paddingHorizontal: 24,
+		paddingTop: 32,
+		paddingBottom: 40,
 		alignItems: 'center',
 	},
+	// ── Form screen ────────────────────────────────────────────────
 	iconCircle: {
-		width: 80,
-		height: 80,
-		borderRadius: 40,
+		width: 72,
+		height: 72,
+		borderRadius: 36,
 		backgroundColor: '#EBF4FD',
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginBottom: 20,
-		marginTop: 16,
 	},
 	iconEmoji: {
-		fontSize: 36,
+		fontSize: 32,
 	},
 	heading: {
 		fontSize: 26,
@@ -236,39 +248,33 @@ const styles = StyleSheet.create({
 	},
 	subtitle: {
 		fontSize: 15,
-		color: '#555555',
+		color: '#6B7280',
 		textAlign: 'center',
-		marginBottom: 28,
+		marginBottom: 32,
 	},
-	card: {
+	highlightText: {
+		color: '#2B7AFF',
+	},
+	formGroup: {
 		width: '100%',
-		backgroundColor: '#FFFFFF',
-		borderRadius: 16,
-		padding: 20,
-		shadowColor: '#000',
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.08,
-		shadowRadius: 8,
-		elevation: 3,
 		marginBottom: 16,
 	},
 	label: {
 		fontSize: 14,
 		fontWeight: '600',
 		color: '#1A1A2E',
-		marginBottom: 6,
-	},
-	labelSpacing: {
-		marginTop: 16,
+		marginBottom: 8,
 	},
 	input: {
+		width: '100%',
 		borderWidth: 1,
-		borderColor: '#E5E7EB',
-		borderRadius: 10,
-		padding: 14,
+		borderColor: '#D1D5DB',
+		borderRadius: 30,
+		paddingVertical: 14,
+		paddingHorizontal: 18,
 		fontSize: 15,
 		color: '#1A1A2E',
-		backgroundColor: '#FAFAFA',
+		backgroundColor: '#FFFFFF',
 	},
 	errorText: {
 		color: '#EF4444',
@@ -281,7 +287,7 @@ const styles = StyleSheet.create({
 		width: '100%',
 		backgroundColor: '#2B7AFF',
 		borderRadius: 50,
-		padding: 16,
+		paddingVertical: 16,
 		alignItems: 'center',
 		marginTop: 8,
 	},
@@ -293,18 +299,18 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: '700',
 	},
+	// ── Success screen ─────────────────────────────────────────────
 	successIconCircle: {
-		width: 120,
-		height: 120,
-		borderRadius: 60,
+		width: 96,
+		height: 96,
+		borderRadius: 48,
 		backgroundColor: '#DCFCE7',
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginBottom: 24,
-		marginTop: 32,
 	},
 	successHeading: {
-		fontSize: 28,
+		fontSize: 26,
 		fontWeight: 'bold',
 		color: '#1A1A2E',
 		textAlign: 'center',
@@ -312,9 +318,18 @@ const styles = StyleSheet.create({
 	},
 	successSubtitle: {
 		fontSize: 15,
-		color: '#555555',
+		color: '#6B7280',
 		textAlign: 'center',
 		marginBottom: 28,
+	},
+	card: {
+		width: '100%',
+		backgroundColor: '#FFFFFF',
+		borderRadius: 16,
+		padding: 20,
+		borderWidth: 1,
+		borderColor: '#E5E7EB',
+		marginBottom: 24,
 	},
 	bulletRow: {
 		flexDirection: 'row',
@@ -333,14 +348,14 @@ const styles = StyleSheet.create({
 		width: 36,
 		height: 36,
 		borderRadius: 18,
-		backgroundColor: '#EBF4FD',
+		backgroundColor: '#F3F4F6',
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginRight: 14,
 		flexShrink: 0,
 	},
 	bulletEmoji: {
-		fontSize: 18,
+		fontSize: 16,
 	},
 	bulletText: {
 		flex: 1,
@@ -353,13 +368,13 @@ const styles = StyleSheet.create({
 	},
 	bulletDescription: {
 		fontSize: 13,
-		color: '#555555',
+		color: '#6B7280',
 		lineHeight: 18,
 	},
 	redirectText: {
 		fontSize: 13,
 		color: '#9CA3AF',
-		marginTop: 16,
+		marginTop: 4,
 		textAlign: 'center',
 	},
 });
