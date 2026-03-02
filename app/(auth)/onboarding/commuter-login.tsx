@@ -52,7 +52,7 @@ export default function CommuterLoginScreen() {
 		<SafeAreaView style={styles.container}>
 			{/* Header */}
 			<View style={styles.header}>
-				<Pressable onPress={() => router.back()} style={styles.headerBack}>
+				<Pressable onPress={() => router.replace('/(auth)/onboarding/role-selection' as any)} style={styles.headerBack}>
 					<Ionicons name="arrow-back" size={22} color="#1A1A2E" />
 				</Pressable>
 				<Text style={styles.headerTitle}>Commuter Login</Text>
