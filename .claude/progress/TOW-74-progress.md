@@ -288,12 +288,12 @@ Also verify the full manual testing checklist from the spec:
 
 ## Progress Tracker
 
-- [ ] Step 1: Understand the flow — read role-selection, auth-context, and \_layout before writing any code
-- [ ] Step 2: Add `updateUserProfile` to `authService.ts`
-- [ ] Step 3: Create `commuter-setup.tsx` skeleton (placeholder screen)
+- [x] Step 1: Understand the flow — read role-selection, auth-context, and \_layout before writing any code
+- [x] Step 2: Add `updateUserProfile` to `authService.ts`
+- [x] Step 3: Create `commuter-setup.tsx` — full implementation (form + success state, validation, save logic, auto-redirect)
+- [x] Step 5: Build the Form state UI and save logic (completed as part of Step 3)
+- [x] Step 6: Build the Success state UI and auto-redirect (completed as part of Step 3)
 - [ ] Step 4: Wire navigation in `role-selection.tsx` — route commuter path to commuter-setup
-- [ ] Step 5: Build the Form state UI and save logic
-- [ ] Step 6: Build the Success state UI and auto-redirect
 
 ---
 
