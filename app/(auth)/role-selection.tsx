@@ -1,11 +1,13 @@
 import { useAuth } from '@/context/auth-context';
 import { updateUserRole } from '@/services/firebase/authService';
 import { auth } from '@/services/firebase/config';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function RoleSelectionScreen() {
 	const { refreshRole } = useAuth();
+	const router = useRouter();
 
 	const [selectedRole, setSelectedRole] = useState<
 		'commuter' | 'driver' | null
@@ -29,7 +31,11 @@ export default function RoleSelectionScreen() {
 		try {
 			await updateUserRole(currentUser.uid, selectedRole);
 			console.log('Role saved successfully!', selectedRole);
-			await refreshRole();
+			if (selectedRole === 'commuter') {
+				router.replace('/(auth)/commuter-setup' as any);
+			} else {
+				await refreshRole();
+			}
 		} catch (error: any) {
 			setError(error.message);
 		} finally {
