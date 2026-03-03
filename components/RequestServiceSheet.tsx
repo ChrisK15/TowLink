@@ -204,6 +204,22 @@ export function RequestServiceSheet({
 							</View>
 						</View>
 
+						{/* Drop-off Location */}
+						<View style={styles.formSection}>
+							<Text style={styles.formSectionTitle}>Drop-off Location</Text>
+							<View style={styles.inputRow}>
+								<Text style={styles.inputIcon}>🔴</Text>
+								<TextInput
+									style={styles.textInput}
+									placeholder="Enter destination address"
+									placeholderTextColor="#999"
+									value={dropoffAddress}
+									onChangeText={setDropoffAddress}
+									returnKeyType="next"
+								/>
+							</View>
+						</View>
+
 						{/* Vehicle Details */}
 						<View style={styles.formSection}>
 							<Text style={styles.formSectionTitle}>Vehicle Details</Text>
@@ -250,22 +266,6 @@ export function RequestServiceSheet({
 								numberOfLines={4}
 								textAlignVertical="top"
 							/>
-						</View>
-
-						{/* Drop-off Location */}
-						<View style={styles.formSection}>
-							<Text style={styles.formSectionTitle}>Drop-off Location</Text>
-							<View style={styles.inputRow}>
-								<Text style={styles.inputIcon}>🔴</Text>
-								<TextInput
-									style={styles.textInput}
-									placeholder="Enter destination address"
-									placeholderTextColor="#999"
-									value={dropoffAddress}
-									onChangeText={setDropoffAddress}
-									returnKeyType="next"
-								/>
-							</View>
 						</View>
 
 						</ScrollView>
