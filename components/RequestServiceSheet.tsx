@@ -11,6 +11,7 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
+	TextInput,
 	TouchableOpacity,
 	View,
 } from 'react-native';
@@ -198,6 +199,22 @@ export function RequestServiceSheet({
 									placeholderTextColor="#999"
 									value={pickupAddress}
 									onChangeText={setPickupAddress}
+									returnKeyType="next"
+								/>
+							</View>
+						</View>
+
+						{/* Drop-off Location */}
+						<View style={styles.formSection}>
+							<Text style={styles.formSectionTitle}>Drop-off Location</Text>
+							<View style={styles.inputRow}>
+								<Text style={styles.inputIcon}>🔴</Text>
+								<TextInput
+									style={styles.textInput}
+									placeholder="Enter destination address"
+									placeholderTextColor="#999"
+									value={dropoffAddress}
+									onChangeText={setDropoffAddress}
 									returnKeyType="next"
 								/>
 							</View>
