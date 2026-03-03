@@ -1,6 +1,6 @@
+import { reverseGeocode } from '@/services/geoLocationUtils';
 import { ServiceType } from '@/types/models';
 import * as Location from 'expo-location';
-import { reverseGeocode } from '@/services/geoLocationUtils';
 import { useState } from 'react';
 import {
 	Alert,
@@ -131,7 +131,10 @@ export function RequestServiceSheet({
 				accuracy: Location.Accuracy.Balanced,
 			});
 
-			const address = await reverseGeocode(location.coords.latitude, location.coords.longitude);
+			const address = await reverseGeocode(
+				location.coords.latitude,
+				location.coords.longitude,
+			);
 			setPickupAddress(address);
 		} catch (error) {
 			Alert.alert(
@@ -179,96 +182,104 @@ export function RequestServiceSheet({
 								)}
 							/>
 
-						{/* Pickup Location */}
-						<View style={styles.formSection}>
-							<Text style={styles.formSectionTitle}>Pickup Location</Text>
-							<TouchableOpacity
-								style={styles.detectButton}
-								onPress={handleDetectLocation}
-								disabled={isDetectingLocation}
-							>
-								<Text style={styles.detectButtonIcon}>📍</Text>
-								<Text style={styles.detectButtonText}>
-									{isDetectingLocation ? 'Detecting...' : 'Detect My Location'}
+							{/* Pickup Location */}
+							<View style={styles.formSection}>
+								<Text style={styles.formSectionTitle}>Pickup Location</Text>
+								<TouchableOpacity
+									style={styles.detectButton}
+									onPress={handleDetectLocation}
+									disabled={isDetectingLocation}
+								>
+									<Text style={styles.detectButtonIcon}>📍</Text>
+									<Text style={styles.detectButtonText}>
+										{isDetectingLocation
+											? 'Detecting...'
+											: 'Detect My Location'}
+									</Text>
+								</TouchableOpacity>
+								<View style={styles.inputRow}>
+									<Text style={styles.inputIcon}>📍</Text>
+									<TextInput
+										style={styles.textInput}
+										placeholder="Enter pickup address"
+										placeholderTextColor="#999"
+										value={pickupAddress}
+										onChangeText={setPickupAddress}
+										returnKeyType="next"
+									/>
+								</View>
+							</View>
+
+							{/* Drop-off Location */}
+							<View style={styles.formSection}>
+								<Text style={styles.formSectionTitle}>Drop-off Location</Text>
+								<View style={styles.inputRow}>
+									<Text style={styles.inputIcon}>🔴</Text>
+									<TextInput
+										style={styles.textInput}
+										placeholder="Enter destination address"
+										placeholderTextColor="#999"
+										value={dropoffAddress}
+										onChangeText={setDropoffAddress}
+										returnKeyType="next"
+									/>
+								</View>
+							</View>
+
+							{/* Vehicle Details */}
+							<View style={styles.formSection}>
+								<Text style={styles.formSectionTitle}>Vehicle Details</Text>
+								<View style={styles.vehicleRow}>
+									<TextInput
+										style={[
+											styles.textInputStandalone,
+											styles.vehicleInputHalf,
+										]}
+										placeholder="Year"
+										placeholderTextColor="#999"
+										value={vehicleYear}
+										onChangeText={setVehicleYear}
+										keyboardType="numeric"
+										maxLength={4}
+									/>
+									<TextInput
+										style={[
+											styles.textInputStandalone,
+											styles.vehicleInputHalf,
+										]}
+										placeholder="Make"
+										placeholderTextColor="#999"
+										value={vehicleMake}
+										onChangeText={setVehicleMake}
+										returnKeyType="next"
+									/>
+								</View>
+								<TextInput
+									style={[styles.textInputStandalone, styles.vehicleInputFull]}
+									placeholder="Model"
+									placeholderTextColor="#999"
+									value={vehicleModel}
+									onChangeText={setVehicleModel}
+									returnKeyType="done"
+								/>
+							</View>
+
+							{/* Additional Notes */}
+							<View style={styles.formSection}>
+								<Text style={styles.formSectionTitle}>
+									Additional Notes (Optional)
 								</Text>
-							</TouchableOpacity>
-							<View style={styles.inputRow}>
-								<Text style={styles.inputIcon}>📍</Text>
 								<TextInput
-									style={styles.textInput}
-									placeholder="Enter pickup address"
+									style={styles.notesInput}
+									placeholder="e.g., Special instructions, parking details..."
 									placeholderTextColor="#999"
-									value={pickupAddress}
-									onChangeText={setPickupAddress}
-									returnKeyType="next"
+									value={additionalNotes}
+									onChangeText={setAdditionalNotes}
+									multiline={true}
+									numberOfLines={4}
+									textAlignVertical="top"
 								/>
 							</View>
-						</View>
-
-						{/* Drop-off Location */}
-						<View style={styles.formSection}>
-							<Text style={styles.formSectionTitle}>Drop-off Location</Text>
-							<View style={styles.inputRow}>
-								<Text style={styles.inputIcon}>🔴</Text>
-								<TextInput
-									style={styles.textInput}
-									placeholder="Enter destination address"
-									placeholderTextColor="#999"
-									value={dropoffAddress}
-									onChangeText={setDropoffAddress}
-									returnKeyType="next"
-								/>
-							</View>
-						</View>
-
-						{/* Vehicle Details */}
-						<View style={styles.formSection}>
-							<Text style={styles.formSectionTitle}>Vehicle Details</Text>
-							<View style={styles.vehicleRow}>
-								<TextInput
-									style={[styles.textInputStandalone, styles.vehicleInputHalf]}
-									placeholder="Year"
-									placeholderTextColor="#999"
-									value={vehicleYear}
-									onChangeText={setVehicleYear}
-									keyboardType="numeric"
-									maxLength={4}
-									returnKeyType="next"
-								/>
-								<TextInput
-									style={[styles.textInputStandalone, styles.vehicleInputHalf]}
-									placeholder="Make"
-									placeholderTextColor="#999"
-									value={vehicleMake}
-									onChangeText={setVehicleMake}
-									returnKeyType="next"
-								/>
-							</View>
-							<TextInput
-								style={[styles.textInputStandalone, styles.vehicleInputFull]}
-								placeholder="Model"
-								placeholderTextColor="#999"
-								value={vehicleModel}
-								onChangeText={setVehicleModel}
-								returnKeyType="done"
-							/>
-						</View>
-
-						{/* Additional Notes */}
-						<View style={styles.formSection}>
-							<Text style={styles.formSectionTitle}>Additional Notes (Optional)</Text>
-							<TextInput
-								style={styles.notesInput}
-								placeholder="e.g., Special instructions, parking details..."
-								placeholderTextColor="#999"
-								value={additionalNotes}
-								onChangeText={setAdditionalNotes}
-								multiline={true}
-								numberOfLines={4}
-								textAlignVertical="top"
-							/>
-						</View>
-
 						</ScrollView>
 						<View style={styles.footer}>
 							<TouchableOpacity style={styles.submitButton} disabled={true}>
