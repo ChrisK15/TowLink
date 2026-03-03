@@ -176,6 +176,33 @@ export function RequestServiceSheet({
 									/>
 								)}
 							/>
+
+						{/* Pickup Location */}
+						<View style={styles.formSection}>
+							<Text style={styles.formSectionTitle}>Pickup Location</Text>
+							<TouchableOpacity
+								style={styles.detectButton}
+								onPress={handleDetectLocation}
+								disabled={isDetectingLocation}
+							>
+								<Text style={styles.detectButtonIcon}>📍</Text>
+								<Text style={styles.detectButtonText}>
+									{isDetectingLocation ? 'Detecting...' : 'Detect My Location'}
+								</Text>
+							</TouchableOpacity>
+							<View style={styles.inputRow}>
+								<Text style={styles.inputIcon}>📍</Text>
+								<TextInput
+									style={styles.textInput}
+									placeholder="Enter pickup address"
+									placeholderTextColor="#999"
+									value={pickupAddress}
+									onChangeText={setPickupAddress}
+									returnKeyType="next"
+								/>
+							</View>
+						</View>
+
 						</ScrollView>
 						<View style={styles.footer}>
 							<TouchableOpacity style={styles.submitButton} disabled={true}>
