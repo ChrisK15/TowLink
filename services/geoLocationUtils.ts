@@ -1,4 +1,5 @@
 import { Location } from '@/types/models';
+import * as ExpoLocation from 'expo-location';
 import {
 	distanceBetween,
 	geohashForLocation,
@@ -25,4 +26,13 @@ export function getGeohashQueryBounds(center: Location, radiusInKm: number) {
 		[center.latitude, center.longitude],
 		radiusInKm * 1000,
 	);
+}
+
+export async function reverseGeocode(latitude: number, longitude: number): Promise<string> {
+	const [place] = await ExpoLocation.reverseGeocodeAsync({ latitude, longitude });
+	if (place?.city && place?.region) {
+		const streetPart = [place.streetNumber, place.street].filter(Boolean).join(' ');
+		return `${streetPart}, ${place.city}, ${place.region}`;
+	}
+	return `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`;
 }

@@ -1,5 +1,6 @@
 import { ServiceType } from '@/types/models';
 import * as Location from 'expo-location';
+import { reverseGeocode } from '@/services/geoLocationUtils';
 import { useState } from 'react';
 import {
 	Alert,
@@ -130,8 +131,8 @@ export function RequestServiceSheet({
 				accuracy: Location.Accuracy.Balanced,
 			});
 
-			const coords = `Lat: ${location.coords.latitude.toFixed(4)}, Lng: ${location.coords.longitude.toFixed(4)}`;
-			setPickupAddress(coords);
+			const address = await reverseGeocode(location.coords.latitude, location.coords.longitude);
+			setPickupAddress(address);
 		} catch (error) {
 			Alert.alert(
 				'Location Error',
