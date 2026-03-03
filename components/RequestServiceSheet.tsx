@@ -1,4 +1,5 @@
 import { ServiceType } from '@/types/models';
+import * as Location from 'expo-location';
 import { useState } from 'react';
 import {
 	Alert,
@@ -10,11 +11,9 @@ import {
 	ScrollView,
 	StyleSheet,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from 'react-native';
-import * as Location from 'expo-location';
 
 export interface ServiceOption {
 	id: ServiceType;
@@ -119,7 +118,10 @@ export function RequestServiceSheet({
 
 			const { status } = await Location.requestForegroundPermissionsAsync();
 			if (status !== 'granted') {
-				Alert.alert('Permission Denied', 'Location access is needed to detect your position.');
+				Alert.alert(
+					'Permission Denied',
+					'Location access is needed to detect your position.',
+				);
 				return;
 			}
 
@@ -129,9 +131,11 @@ export function RequestServiceSheet({
 
 			const coords = `Lat: ${location.coords.latitude.toFixed(4)}, Lng: ${location.coords.longitude.toFixed(4)}`;
 			setPickupAddress(coords);
-
 		} catch (error) {
-			Alert.alert('Location Error', 'Could not detect location. Please enter your address manually.');
+			Alert.alert(
+				'Location Error',
+				'Could not detect location. Please enter your address manually.',
+			);
 		} finally {
 			setIsDetectingLocation(false);
 		}
@@ -144,35 +148,43 @@ export function RequestServiceSheet({
 			transparent={true}
 			onRequestClose={onClose}
 		>
-			<View style={styles.overlay}>
-				<View style={styles.sheet}>
-					<TouchableOpacity onPress={onClose} style={styles.handleContainer}>
-						<View style={styles.dragHandle} />
-					</TouchableOpacity>
-					<ScrollView style={styles.scrollView}>
-						<Text style={styles.sectionTitle}>Select Service Type</Text>
-						<FlatList
-							data={SERVICE_OPTIONS}
-							numColumns={2}
-							scrollEnabled={false}
-							contentContainerStyle={{ padding: 8 }}
-							keyExtractor={(item) => item.id}
-							renderItem={({ item }) => (
-								<ServiceCard
-									option={item}
-									selected={selectedService === item.id}
-									onPress={() => setSelectedService(item.id)}
-								/>
-							)}
-						/>
-					</ScrollView>
-					<View style={styles.footer}>
-						<TouchableOpacity style={styles.submitButton} disabled={true}>
-							<Text style={styles.submitButtonText}>Request Service Now</Text>
+			<KeyboardAvoidingView
+				behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+				style={{ flex: 1 }}
+			>
+				<View style={styles.overlay}>
+					<View style={styles.sheet}>
+						<TouchableOpacity onPress={onClose} style={styles.handleContainer}>
+							<View style={styles.dragHandle} />
 						</TouchableOpacity>
+						<ScrollView
+							style={styles.scrollView}
+							keyboardShouldPersistTaps="handled"
+						>
+							<Text style={styles.sectionTitle}>Select Service Type</Text>
+							<FlatList
+								data={SERVICE_OPTIONS}
+								numColumns={2}
+								scrollEnabled={false}
+								contentContainerStyle={{ padding: 8 }}
+								keyExtractor={(item) => item.id}
+								renderItem={({ item }) => (
+									<ServiceCard
+										option={item}
+										selected={selectedService === item.id}
+										onPress={() => setSelectedService(item.id)}
+									/>
+								)}
+							/>
+						</ScrollView>
+						<View style={styles.footer}>
+							<TouchableOpacity style={styles.submitButton} disabled={true}>
+								<Text style={styles.submitButtonText}>Request Service Now</Text>
+							</TouchableOpacity>
+						</View>
 					</View>
 				</View>
-			</View>
+			</KeyboardAvoidingView>
 		</Modal>
 	);
 }
