@@ -113,6 +113,30 @@ export function RequestServiceSheet({
 	const [additionalNotes, setAdditionalNotes] = useState('');
 	const [isDetectingLocation, setIsDetectingLocation] = useState(false);
 
+	const handleDetectLocation = async () => {
+		try {
+			setIsDetectingLocation(true);
+
+			const { status } = await Location.requestForegroundPermissionsAsync();
+			if (status !== 'granted') {
+				Alert.alert('Permission Denied', 'Location access is needed to detect your position.');
+				return;
+			}
+
+			const location = await Location.getCurrentPositionAsync({
+				accuracy: Location.Accuracy.Balanced,
+			});
+
+			const coords = `Lat: ${location.coords.latitude.toFixed(4)}, Lng: ${location.coords.longitude.toFixed(4)}`;
+			setPickupAddress(coords);
+
+		} catch (error) {
+			Alert.alert('Location Error', 'Could not detect location. Please enter your address manually.');
+		} finally {
+			setIsDetectingLocation(false);
+		}
+	};
+
 	return (
 		<Modal
 			visible={visible}
