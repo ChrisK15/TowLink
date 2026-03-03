@@ -204,6 +204,39 @@ export function RequestServiceSheet({
 							</View>
 						</View>
 
+						{/* Vehicle Details */}
+						<View style={styles.formSection}>
+							<Text style={styles.formSectionTitle}>Vehicle Details</Text>
+							<View style={styles.vehicleRow}>
+								<TextInput
+									style={[styles.textInputStandalone, styles.vehicleInputHalf]}
+									placeholder="Year"
+									placeholderTextColor="#999"
+									value={vehicleYear}
+									onChangeText={setVehicleYear}
+									keyboardType="numeric"
+									maxLength={4}
+									returnKeyType="next"
+								/>
+								<TextInput
+									style={[styles.textInputStandalone, styles.vehicleInputHalf]}
+									placeholder="Make"
+									placeholderTextColor="#999"
+									value={vehicleMake}
+									onChangeText={setVehicleMake}
+									returnKeyType="next"
+								/>
+							</View>
+							<TextInput
+								style={[styles.textInputStandalone, styles.vehicleInputFull]}
+								placeholder="Model"
+								placeholderTextColor="#999"
+								value={vehicleModel}
+								onChangeText={setVehicleModel}
+								returnKeyType="done"
+							/>
+						</View>
+
 						{/* Drop-off Location */}
 						<View style={styles.formSection}>
 							<Text style={styles.formSectionTitle}>Drop-off Location</Text>
