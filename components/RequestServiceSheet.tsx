@@ -1,15 +1,20 @@
 import { ServiceType } from '@/types/models';
 import { useState } from 'react';
 import {
+	Alert,
 	Dimensions,
 	FlatList,
+	KeyboardAvoidingView,
 	Modal,
+	Platform,
 	ScrollView,
 	StyleSheet,
 	Text,
+	TextInput,
 	TouchableOpacity,
 	View,
 } from 'react-native';
+import * as Location from 'expo-location';
 
 export interface ServiceOption {
 	id: ServiceType;
@@ -100,6 +105,13 @@ export function RequestServiceSheet({
 	onClose,
 }: RequestServiceSheetProps) {
 	const [selectedService, setSelectedService] = useState<ServiceType>('tow');
+	const [pickupAddress, setPickupAddress] = useState('');
+	const [dropoffAddress, setDropoffAddress] = useState('');
+	const [vehicleYear, setVehicleYear] = useState('');
+	const [vehicleMake, setVehicleMake] = useState('');
+	const [vehicleModel, setVehicleModel] = useState('');
+	const [additionalNotes, setAdditionalNotes] = useState('');
+	const [isDetectingLocation, setIsDetectingLocation] = useState(false);
 
 	return (
 		<Modal
