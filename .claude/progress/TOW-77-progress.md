@@ -14,29 +14,37 @@ No Firestore write happens here - all data stays in component state. TOW-78 hand
 
 ## Completed Steps
 
-_(none yet)_
+- [x] Step 1: Read and understand the existing component
+- [x] Step 2: Update imports (TextInput, Alert, KeyboardAvoidingView, Platform + expo-location)
+- [x] Step 3: Add new state variables for the form fields
+- [x] Step 4: Write the `handleDetectLocation` async function
+- [x] Step 5: Wrap the Modal content in `KeyboardAvoidingView` and update `ScrollView`
+- [x] Step 6: Add the Pickup Location section inside the ScrollView
+- [x] Step 7: Add the Drop-off Location section
+- [x] Step 8: Add the Vehicle Details section (with side-by-side Year/Make row)
+- [x] Step 9: Add the Additional Notes section
+- [x] Step 10: Add all new styles to the StyleSheet
+- [x] Step 11: Manual test checklist on simulator ✅
 
 ---
 
 ## Current Step
 
-- [ ] Step 1: Read the existing component and understand its structure
+_All steps complete_
 
 ---
 
 ## Remaining Steps
 
-- [ ] Step 1: Read and understand the existing component
-- [ ] Step 2: Update imports (TextInput, Alert, KeyboardAvoidingView, Platform + expo-location)
-- [ ] Step 3: Add new state variables for the form fields
-- [ ] Step 4: Write the `handleDetectLocation` async function
-- [ ] Step 5: Wrap the Modal content in `KeyboardAvoidingView` and update `ScrollView`
-- [ ] Step 6: Add the Pickup Location section inside the ScrollView
-- [ ] Step 7: Add the Drop-off Location section
-- [ ] Step 8: Add the Vehicle Details section (with side-by-side Year/Make row)
-- [ ] Step 9: Add the Additional Notes section
-- [ ] Step 10: Add all new styles to the StyleSheet
-- [ ] Step 11: Manual test checklist on simulator
+_None_
+
+---
+
+## Additional Changes (beyond original spec)
+
+- Reordered sections: Drop-off now appears before Vehicle Details (matches UX intent)
+- Added `reverseGeocode()` to `services/geoLocationUtils.ts` — converts GPS coordinates to a human-readable street address (e.g. "5432 Moorpark St, Los Angeles, CA") with a coordinate fallback for rural areas
+- `handleDetectLocation` now calls `reverseGeocode` instead of formatting raw coordinates inline
 
 ---
 
