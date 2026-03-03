@@ -1,5 +1,5 @@
-import { useAuth } from '@/context/auth-context';
 import { RequestServiceSheet } from '@/components/RequestServiceSheet';
+import { useAuth } from '@/context/auth-context';
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -98,7 +98,9 @@ export default function CommuterScreen() {
 				style={styles.requestButton}
 				onPress={handleRequestAssistance}
 			>
-				<Text style={styles.requestButtonText}>Request Roadside Assistance</Text>
+				<Text style={styles.requestButtonText}>
+					Request Roadside Assistance
+				</Text>
 			</TouchableOpacity>
 
 			<RequestServiceSheet
