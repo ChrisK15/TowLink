@@ -237,6 +237,21 @@ export function RequestServiceSheet({
 							/>
 						</View>
 
+						{/* Additional Notes */}
+						<View style={styles.formSection}>
+							<Text style={styles.formSectionTitle}>Additional Notes (Optional)</Text>
+							<TextInput
+								style={styles.notesInput}
+								placeholder="e.g., Special instructions, parking details..."
+								placeholderTextColor="#999"
+								value={additionalNotes}
+								onChangeText={setAdditionalNotes}
+								multiline={true}
+								numberOfLines={4}
+								textAlignVertical="top"
+							/>
+						</View>
+
 						{/* Drop-off Location */}
 						<View style={styles.formSection}>
 							<Text style={styles.formSectionTitle}>Drop-off Location</Text>
