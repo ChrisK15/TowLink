@@ -113,6 +113,12 @@ export function RequestServiceSheet({
 	const [vehicleModel, setVehicleModel] = useState('');
 	const [additionalNotes, setAdditionalNotes] = useState('');
 	const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+	const [pickupCoords, setPickupCoords] = useState<{ latitude: number; longitude: number } | null>(null);
+	const [dropoffCoords, setDropoffCoords] = useState<{ latitude: number; longitude: number } | null>(null);
+	const [distanceMiles, setDistanceMiles] = useState<number | null>(null);
+	const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null);
+	const [isCalculatingPrice, setIsCalculatingPrice] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const handleDetectLocation = async () => {
 		try {
