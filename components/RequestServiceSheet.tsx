@@ -1,4 +1,5 @@
-import { reverseGeocode } from '@/services/geoLocationUtils';
+import { geocodeAddress, reverseGeocode } from '@/services/geoLocationUtils';
+import { calculateDistanceMiles, calculateFare } from '@/services/requestCalculations';
 import { ServiceType } from '@/types/models';
 import * as Location from 'expo-location';
 import { useState } from 'react';
@@ -157,6 +158,25 @@ export function RequestServiceSheet({
 		}
 	};
 
+	const handleDropoffEndEditing = async () => {
+		if (!dropoffAddress.trim() || !pickupCoords) return;
+
+		try {
+			setIsCalculatingPrice(true);
+			const coords = await geocodeAddress(dropoffAddress);
+			if (!coords) return;
+
+			setDropoffCoords(coords);
+			const miles = calculateDistanceMiles(pickupCoords, coords);
+			setDistanceMiles(miles);
+			setEstimatedPrice(calculateFare(miles));
+		} catch (error) {
+			console.error('Price calculation error:', error);
+		} finally {
+			setIsCalculatingPrice(false);
+		}
+	};
+
 	return (
 		<Modal
 			visible={visible}
@@ -233,6 +253,7 @@ export function RequestServiceSheet({
 										value={dropoffAddress}
 										onChangeText={setDropoffAddress}
 										returnKeyType="next"
+										onEndEditing={handleDropoffEndEditing}
 									/>
 								</View>
 							</View>
