@@ -1,72 +1,74 @@
-# Current Story: TOW-77
+# Current Story: TOW-78
 
 ## Story Details
 
-- **ID**: TOW-77
-- **Title**: Multi-Step Form - Location/Vehicle
+- **ID**: TOW-78
+- **Title**: Price Breakdown & Request Confirmation
 - **Epic**: EPIC 2: Commuter Request Flow (TOW-2)
 - **Priority**: Medium
 - **Sprint**: TOW Sprint 3 (active, Feb 25 - Mar 11, 2026)
-- **Story Points**: 5
+- **Story Points**: 3
 - **Status**: In Progress
-- **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-77
+- **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-78
 
 ## Description
 
 **As a** commuter
-**I want to** provide my location and vehicle information
-**So that** drivers know where to find me and what vehicle needs service
+**I want to** see the price before confirming my request
+**So that** I know what I'll pay
 
 ## Acceptance Criteria
 
-**Inside `RequestServiceSheet` (created in TOW-76), add three sections below service selection:**
-
-**Pickup Location Section:**
-
-- "Detect My Location" button (uses GPS to fill field)
-- Manual address input field
-- Tapping "Detect" populates the input with current GPS coordinates
-- Field is required
-
-**Drop-off Location Section:**
-
-- Address input field
-- Field is required
-- Can type manually or use map picker (future enhancement)
-
-**Vehicle Details Section:**
-
-- Year input (numeric)
-- Make input (text)
-- Model input (text)
-- All three required
-
-**Additional Notes:**
-
-- Optional text area for special instructions
-- All sections are in one scrollable modal - no navigation between sections, user scrolls down
-- Form validation prevents proceeding if required fields are empty
-- Matches Figma design (`commuter_request_flow_2b.png`)
+- [ ] When dropoff location AND vehicle details are filled, price section appears dynamically below the form
+- [ ] Price breakdown card shows:
+  - Base Fare: $50.00
+  - Distance Charge: (miles × $5/mile)
+  - Subtotal
+  - **Total Price** (large blue text, minimum $65)
+- [ ] Distance calculated using Google Distance Matrix API
+- [ ] "Request Service Now" button appears below price breakdown
+- [ ] Tapping button:
+  - Creates request in Firestore with ALL collected data
+  - Closes `RequestServiceSheet` modal
+  - Opens `FindingDriverModal` (created in TOW-16)
+- [ ] Matches Figma design (`commuter_request_flow_2c.png`)
 
 ## Technical Notes (from Jira)
 
-- Add sections to the existing `RequestServiceSheet` component (do NOT create a new component)
-- "Detect My Location" reuses GPS code from `commuter/index.tsx`
-- Store form data in component state
-- No Firestore write yet - that happens in TOW-78
-- Design References:
-  - `.claude/design/screens/commuter_request_flow_2b.png`
+- Price calculation: `Math.max($50 + (miles * $5), $65)`
+- Use Google Distance Matrix API for distance
+- **REFACTOR**: Remove old request creation from `commuter/index.tsx` button
+- **NEW**: Request creation happens in `RequestServiceSheet`'s "Request Service Now" button
+- Navigate to `FindingDriverModal` after creating request
+- Design Reference: `.claude/design/screens/commuter_request_flow_2c.png`
+
+## Key Notes from TOW-77 Review (for TOW-78 to address)
+
+1. **Form validation**: Enable "Request Service Now" only when all required fields pass:
+   - `pickupAddress` not empty
+   - `dropoffAddress` not empty
+   - `vehicleYear` not empty, 4 digits, numeric (note: Android paste can bypass `keyboardType="numeric"`)
+   - `vehicleMake` not empty
+   - `vehicleModel` not empty
+
+2. **vehicleYear type conversion**: Parse string → number with `parseInt(vehicleYear, 10)` when building `VehicleInfo`
+
+3. **Coordinates for Firestore**: `Request` interface requires `location: Location` (pickup) and `dropoffLocation: Location` (drop-off). Current state only holds address strings. Either:
+   - (Simpler) Store raw lat/lng alongside the address when GPS is used
+   - Drop-off can remain address-only for now (no coordinates until map-picker story)
+
+4. **Form state reset on close**: Consider adding a `handleClose` wrapper that resets all state when sheet closes
 
 ## Dependencies
 
-- **Blocked by**: TOW-76 (Multi-Step Request Form - Service Selection) - status is **Done**, blocker is cleared
-- **Blocks**: TOW-78 (Price Breakdown & Request Confirmation) - cannot start until TOW-77 is done
-- **Note**: No Firestore write happens in this story - data is held in component state until TOW-78
+- **Blocked by**: TOW-77 (Multi-Step Form - Location/Vehicle) — status is **Done**, blocker is cleared
+- **Blocks**: TOW-16 (See Assigned Driver Details) — To Do
+- **Note**: TOW-16 (FindingDriverModal) is NOT yet implemented. For TOW-78, the navigation to FindingDriverModal can be stubbed (e.g., log or simple alert) until TOW-16 is done. Confirm this approach with the student.
 
 ## Sprint Context
 
-TOW-77 is part of TOW Sprint 3 (Feb 25 - Mar 11, 2026). The story is currently In Progress. The blocking dependency (TOW-76) is Done, meaning this story is fully unblocked and ready for implementation. The git branch `TOW-77-multi-step-form-location-vehicle` already exists and is the current working branch.
+TOW-78 is part of TOW Sprint 3 (Feb 25 - Mar 11, 2026). The story is In Progress. The git branch `TOW-78-price-breakdown-request-confirmation` already exists and is the current working branch. TOW-77 is Done, so this story is fully unblocked.
 
 ## Next Steps
 
-Invoke the `technical-architect` agent to create a detailed implementation spec at `.claude/specs/TOW-77.md`.
+Invoke the `technical-architect` agent to create a detailed implementation spec at `.claude/specs/TOW-78.md`.

@@ -28,6 +28,17 @@ export function getGeohashQueryBounds(center: Location, radiusInKm: number) {
 	);
 }
 
+export async function geocodeAddress(
+	address: string,
+): Promise<{ latitude: number; longitude: number } | null> {
+	const results = await ExpoLocation.geocodeAsync(address);
+	if (results.length === 0) return null;
+	return {
+		latitude: results[0].latitude,
+		longitude: results[0].longitude,
+	};
+}
+
 export async function reverseGeocode(latitude: number, longitude: number): Promise<string> {
 	const [place] = await ExpoLocation.reverseGeocodeAsync({ latitude, longitude });
 	if (place?.city && place?.region) {
