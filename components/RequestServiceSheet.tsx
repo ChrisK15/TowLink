@@ -137,6 +137,11 @@ export function RequestServiceSheet({
 				accuracy: Location.Accuracy.Balanced,
 			});
 
+			setPickupCoords({
+				latitude: location.coords.latitude,
+				longitude: location.coords.longitude,
+			});
+
 			const address = await reverseGeocode(
 				location.coords.latitude,
 				location.coords.longitude,

@@ -10,7 +10,7 @@ Add price calculation and request submission to `RequestServiceSheet.tsx`. When 
 
 - [x] Step 1: Add `geocodeAddress()` helper to `services/geoLocationUtils.ts`
 - [x] Step 2: Add new state variables to `RequestServiceSheet`
-- [ ] Step 3: Update `handleDetectLocation` to save `pickupCoords`
+- [x] Step 3: Update `handleDetectLocation` to save `pickupCoords`
 - [ ] Step 4: Add `handleDropoffEndEditing` and wire it to the dropoff TextInput
 - [ ] Step 5: Add `isFormValid` computed value
 - [ ] Step 6: Add price breakdown card UI
