@@ -356,8 +356,14 @@ export function RequestServiceSheet({
 						)}
 						</ScrollView>
 						<View style={styles.footer}>
-							<TouchableOpacity style={styles.submitButton} disabled={true}>
-								<Text style={styles.submitButtonText}>Request Service Now</Text>
+							<TouchableOpacity
+								style={[styles.submitButton, isFormValid && styles.submitButtonEnabled]}
+								onPress={handleSubmit}
+								disabled={!isFormValid || isSubmitting}
+							>
+								<Text style={styles.submitButtonText}>
+									{isSubmitting ? 'Requesting...' : 'Request Service Now'}
+								</Text>
 							</TouchableOpacity>
 						</View>
 					</View>
@@ -446,6 +452,9 @@ const styles = StyleSheet.create({
 		paddingVertical: 16,
 		borderRadius: 12,
 		alignItems: 'center',
+	},
+	submitButtonEnabled: {
+		backgroundColor: '#1565C0',
 	},
 	submitButtonText: {
 		color: 'white',
