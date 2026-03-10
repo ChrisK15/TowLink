@@ -1,3 +1,5 @@
+import { useAuth } from '@/context/auth-context';
+import { createRequest } from '@/services/firebase/firestore';
 import { geocodeAddress, reverseGeocode } from '@/services/geoLocationUtils';
 import { calculateDistanceMiles, calculateFare } from '@/services/requestCalculations';
 import { ServiceType } from '@/types/models';
@@ -106,6 +108,7 @@ export function RequestServiceSheet({
 	visible,
 	onClose,
 }: RequestServiceSheetProps) {
+	const { user } = useAuth();
 	const [selectedService, setSelectedService] = useState<ServiceType>('tow');
 	const [pickupAddress, setPickupAddress] = useState('');
 	const [dropoffAddress, setDropoffAddress] = useState('');
@@ -165,6 +168,73 @@ export function RequestServiceSheet({
 			);
 		} finally {
 			setIsDetectingLocation(false);
+		}
+	};
+
+	const handleSubmit = async () => {
+		if (!isFormValid) return;
+
+		try {
+			setIsSubmitting(true);
+
+			// Resolve pickup coords — use GPS-stored value or geocode manual entry
+			let finalPickupCoords = pickupCoords;
+			if (!finalPickupCoords) {
+				finalPickupCoords = await geocodeAddress(pickupAddress);
+				if (!finalPickupCoords) {
+					Alert.alert(
+						'Address Error',
+						'Could not find your pickup address. Try using the Detect My Location button or enter a more specific address.',
+					);
+					return;
+				}
+			}
+
+			// Resolve dropoff coords — use cached value from onEndEditing or geocode now
+			let finalDropoffCoords = dropoffCoords;
+			if (!finalDropoffCoords) {
+				finalDropoffCoords = await geocodeAddress(dropoffAddress);
+				if (!finalDropoffCoords) {
+					Alert.alert(
+						'Address Error',
+						'Could not find your drop-off address. Please enter a more specific address.',
+					);
+					return;
+				}
+			}
+
+			const miles = calculateDistanceMiles(finalPickupCoords, finalDropoffCoords);
+			const price = calculateFare(miles);
+
+			const vehicleInfo = {
+				year: parseInt(vehicleYear, 10),
+				make: vehicleMake.trim(),
+				model: vehicleModel.trim(),
+				licensePlate: '',
+				towingCapacity: '',
+			};
+
+			await createRequest(
+				user?.uid ?? 'PLACEHOLDER_USER_ID',
+				finalPickupCoords,
+				finalDropoffCoords,
+				pickupAddress,
+				dropoffAddress,
+				JSON.stringify(vehicleInfo),
+				price,
+				miles,
+				additionalNotes || undefined,
+			);
+
+			handleClose();
+
+			// TODO TOW-16: Replace with FindingDriverModal navigation
+			Alert.alert('Request Submitted!', 'Looking for a driver near you...');
+		} catch (error) {
+			console.error('Error submitting request:', error);
+			Alert.alert('Error', 'Failed to submit request. Please try again.');
+		} finally {
+			setIsSubmitting(false);
 		}
 	};
 
