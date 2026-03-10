@@ -127,7 +127,7 @@ export function RequestPopup({
 							<Text style={styles.locationLabel}>Pickup Location</Text>
 							<Text style={styles.address}>{request.pickupAddress}</Text>
 							<Text style={styles.distance}>
-								{request.estimatedPickupDistance
+								{request.estimatedPickupDistance != null
 									? `${request.estimatedPickupDistance} miles away`
 									: 'Distance Calculating...'}
 							</Text>
@@ -143,7 +143,7 @@ export function RequestPopup({
 							<Text style={styles.locationLabel}>Drop-off Location</Text>
 							<Text style={styles.address}>{request.dropoffAddress}</Text>
 							<Text style={styles.distance}>
-								{request.totalTripDistance
+								{request.totalTripDistance != null
 									? `${request.totalTripDistance} miles total trip`
 									: 'Distance Calculating...'}
 							</Text>
@@ -204,7 +204,7 @@ export function RequestPopup({
 							<Text style={styles.infoIcon}>✈️</Text>
 							<Text style={styles.infoLabel}>Total Distance</Text>
 							<Text style={styles.infoValue}>
-								{request.totalJobDistance
+								{request.totalJobDistance != null
 									? `${request.totalJobDistance} mi`
 									: '--'}
 							</Text>
