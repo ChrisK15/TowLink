@@ -361,10 +361,12 @@ export async function cancelRequest(requestId: string): Promise<void> {
 
 export async function getTripByRequestId(
 	requestId: string,
+	commuterId: string,
 ): Promise<Trip | null> {
 	const q = query(
 		collection(db, 'trips'),
 		where('requestId', '==', requestId),
+		where('commuterId', '==', commuterId),
 	);
 	const snapshot = await getDocs(q);
 	if (snapshot.empty) return null;

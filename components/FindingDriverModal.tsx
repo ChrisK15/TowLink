@@ -69,13 +69,14 @@ export function FindingDriverModal({
 		if (!request || !requestId) return;
 
 		if (request.status === 'accepted') {
-			getTripByRequestId(requestId).then(async (trip) => {
+			const commuterId = request.commuterId;
+			getTripByRequestId(requestId, commuterId).then(async (trip) => {
 				if (trip) {
 					onDriverFound(trip.id);
 				} else {
 					// Brief Firestore lag — retry once after 1 second
 					await new Promise((resolve) => setTimeout(resolve, 1000));
-					const retryTrip = await getTripByRequestId(requestId);
+					const retryTrip = await getTripByRequestId(requestId, commuterId);
 					if (retryTrip) {
 						onDriverFound(retryTrip.id);
 					} else {

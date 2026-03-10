@@ -237,25 +237,30 @@ service cloud.firestore {
         && request.resource.data.distance == 0;
 
       // Drivers can update their trips to advance the state machine.
-      // Commuters cannot update trips (read-only for them).
+      // Commuters can only cancel their own trip.
       allow update: if isAuthenticated()
-        && resource.data.driverId == request.auth.uid
-        // Cannot change core identity fields
-        && request.resource.data.requestId == resource.data.requestId
-        && request.resource.data.commuterId == resource.data.commuterId
-        && request.resource.data.driverId == resource.data.driverId
-        && request.resource.data.startTime == resource.data.startTime
-        // Status must be a valid value
-        && request.resource.data.status in ['en_route', 'arrived', 'in_progress', 'completed', 'cancelled']
-        // Status must follow the valid state machine progression (TOW-70)
-        && isValidTripTransition(resource.data.status, request.resource.data.status)
-        // Timestamp validation per state transition
-        && (request.resource.data.status != 'arrived'
-            || isValidTimestamp('arrivalTime'))
-        && (request.resource.data.status != 'in_progress'
-            || isValidTimestamp('startedAt'))
-        && (request.resource.data.status != 'completed'
-            || isValidTimestamp('completionTime'));
+        && (
+          // [1] Driver advancing the state machine
+          (resource.data.driverId == request.auth.uid
+            && request.resource.data.requestId == resource.data.requestId
+            && request.resource.data.commuterId == resource.data.commuterId
+            && request.resource.data.driverId == resource.data.driverId
+            && request.resource.data.startTime == resource.data.startTime
+            && request.resource.data.status in ['en_route', 'arrived', 'in_progress', 'completed', 'cancelled']
+            && isValidTripTransition(resource.data.status, request.resource.data.status)
+            && (request.resource.data.status != 'arrived'
+                || isValidTimestamp('arrivalTime'))
+            && (request.resource.data.status != 'in_progress'
+                || isValidTimestamp('startedAt'))
+            && (request.resource.data.status != 'completed'
+                || isValidTimestamp('completionTime')))
+
+          ||
+
+          // [2] Commuter cancelling their own trip
+          (resource.data.commuterId == request.auth.uid
+            && request.resource.data.status == 'cancelled')
+        );
 
       // No one can delete trips (keep for records)
       allow delete: if false;
