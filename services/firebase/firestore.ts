@@ -4,6 +4,7 @@ import {
 	arrayUnion,
 	collection,
 	doc,
+	getDocs,
 	getDoc,
 	onSnapshot,
 	query,
@@ -350,6 +351,33 @@ export function listenToRequest(
 		} as Request;
 		callback(request);
 	});
+}
+
+export async function cancelRequest(requestId: string): Promise<void> {
+	await updateDoc(doc(db, 'requests', requestId), {
+		status: 'cancelled',
+	});
+}
+
+export async function getTripByRequestId(
+	requestId: string,
+): Promise<Trip | null> {
+	const q = query(
+		collection(db, 'trips'),
+		where('requestId', '==', requestId),
+	);
+	const snapshot = await getDocs(q);
+	if (snapshot.empty) return null;
+	const docSnap = snapshot.docs[0];
+	const data = docSnap.data();
+	return {
+		id: docSnap.id,
+		...data,
+		startTime: data.startTime?.toDate() ?? new Date(),
+		arrivalTime: data.arrivalTime?.toDate(),
+		startedAt: data.startedAt?.toDate(),
+		completionTime: data.completionTime?.toDate(),
+	} as Trip;
 }
 
 export async function getRequestById(
