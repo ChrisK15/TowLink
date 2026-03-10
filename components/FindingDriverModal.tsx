@@ -97,7 +97,7 @@ export function FindingDriverModal({
 			);
 			onCancel();
 		}
-	}, [request?.status]);
+	}, [request?.status, requestId, onDriverFound, onCancel]);
 
 	const handleCancelRequest = async () => {
 		if (!requestId) return;
