@@ -121,6 +121,16 @@ export function RequestServiceSheet({
 	const [isCalculatingPrice, setIsCalculatingPrice] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
+	const yearIsValid =
+		vehicleYear.trim().length === 4 && /^\d{4}$/.test(vehicleYear.trim());
+
+	const isFormValid =
+		pickupAddress.trim() !== '' &&
+		dropoffAddress.trim() !== '' &&
+		yearIsValid &&
+		vehicleMake.trim() !== '' &&
+		vehicleModel.trim() !== '';
+
 	const handleDetectLocation = async () => {
 		try {
 			setIsDetectingLocation(true);

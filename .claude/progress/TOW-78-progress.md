@@ -12,7 +12,7 @@ Add price calculation and request submission to `RequestServiceSheet.tsx`. When 
 - [x] Step 2: Add new state variables to `RequestServiceSheet`
 - [x] Step 3: Update `handleDetectLocation` to save `pickupCoords`
 - [x] Step 4: Add `handleDropoffEndEditing` and wire it to the dropoff TextInput
-- [ ] Step 5: Add `isFormValid` computed value
+- [x] Step 5: Add `isFormValid` computed value
 - [ ] Step 6: Add price breakdown card UI
 - [ ] Step 7: Update submit button (style + enabled state)
 - [ ] Step 8: Write `handleSubmit` function
