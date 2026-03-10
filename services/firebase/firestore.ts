@@ -52,7 +52,7 @@ export async function createRequest(
 		pickupAddress: pickupAddress,
 		dropoffAddress: dropoffAddress,
 		vehicleInfo: vehicleInfo,
-		...(additionalNotes ? { additionalNotes } : {}),
+		...(additionalNotes ? { customerNotes: additionalNotes } : {}),
 		estimatedPrice: estimatedPrice,
 		totalTripDistance: distanceMiles,
 		serviceType: 'tow',

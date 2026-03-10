@@ -142,10 +142,10 @@ service cloud.firestore {
         && request.resource.data.estimatedPrice > 0
         && request.resource.data.totalTripDistance is number
         && request.resource.data.totalTripDistance > 0
-        // additionalNotes is optional; if present it must be a non-empty string
-        && (!request.resource.data.keys().hasAny(['additionalNotes'])
-            || (request.resource.data.additionalNotes is string
-                && request.resource.data.additionalNotes.size() > 0))
+        // customerNotes is optional; if present it must be a non-empty string
+        && (!request.resource.data.keys().hasAny(['customerNotes'])
+            || (request.resource.data.customerNotes is string
+                && request.resource.data.customerNotes.size() > 0))
         // Service type must be 'tow'
         && request.resource.data.serviceType == 'tow'
         // Initial status must be 'searching'
