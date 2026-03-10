@@ -16,7 +16,7 @@ Add price calculation and request submission to `RequestServiceSheet.tsx`. When 
 - [x] Step 6: Add price breakdown card UI
 - [x] Step 7: Update submit button (style + enabled state)
 - [x] Step 8: Write `handleSubmit` function
-- [ ] Step 9: Write `handleClose` reset wrapper
+- [x] Step 9: Write `handleClose` reset wrapper
 - [ ] Step 10: Manual test checklist
 
 ---

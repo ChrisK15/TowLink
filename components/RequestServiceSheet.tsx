@@ -171,6 +171,21 @@ export function RequestServiceSheet({
 		}
 	};
 
+	const handleClose = () => {
+		setPickupAddress('');
+		setDropoffAddress('');
+		setVehicleYear('');
+		setVehicleMake('');
+		setVehicleModel('');
+		setAdditionalNotes('');
+		setPickupCoords(null);
+		setDropoffCoords(null);
+		setDistanceMiles(null);
+		setEstimatedPrice(null);
+		setIsSubmitting(false);
+		onClose();
+	};
+
 	const handleSubmit = async () => {
 		if (!isFormValid) return;
 
@@ -262,7 +277,7 @@ export function RequestServiceSheet({
 			visible={visible}
 			animationType="slide"
 			transparent={true}
-			onRequestClose={onClose}
+			onRequestClose={handleClose}
 		>
 			<KeyboardAvoidingView
 				behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -270,7 +285,7 @@ export function RequestServiceSheet({
 			>
 				<View style={styles.overlay}>
 					<View style={styles.sheet}>
-						<TouchableOpacity onPress={onClose} style={styles.handleContainer}>
+						<TouchableOpacity onPress={handleClose} style={styles.handleContainer}>
 							<View style={styles.dragHandle} />
 						</TouchableOpacity>
 						<ScrollView
@@ -393,7 +408,12 @@ export function RequestServiceSheet({
 								/>
 							</View>
 						{/* Price Breakdown */}
-						{estimatedPrice !== null && distanceMiles !== null && (
+						{isCalculatingPrice && (
+							<View style={styles.priceCard}>
+								<Text style={styles.priceLabel}>Calculating price...</Text>
+							</View>
+						)}
+						{!isCalculatingPrice && estimatedPrice !== null && distanceMiles !== null && (
 							<View style={styles.priceCard}>
 								<Text style={styles.priceCardTitle}>Price Breakdown</Text>
 
