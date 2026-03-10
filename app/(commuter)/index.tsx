@@ -1,4 +1,6 @@
 import { RequestServiceSheet } from '@/components/RequestServiceSheet';
+import { FindingDriverModal } from '@/components/FindingDriverModal';
+import { CommuterTripSheet } from '@/components/CommuterTripSheet';
 import { useAuth } from '@/context/auth-context';
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
@@ -13,6 +15,9 @@ export default function CommuterScreen() {
 	} | null>(null);
 	const [mapRef, setMapRef] = useState<MapView | null>(null);
 	const [showServiceSheet, setShowServiceSheet] = useState(false);
+	const [activeRequestId, setActiveRequestId] = useState<string | null>(null);
+	const [showFindingModal, setShowFindingModal] = useState(false);
+	const [activeTripId, setActiveTripId] = useState<string | null>(null);
 
 	// Get location
 	useEffect(() => {
@@ -94,19 +99,48 @@ export default function CommuterScreen() {
 			)}
 
 			{/* Request Button bottom */}
-			<TouchableOpacity
-				style={styles.requestButton}
-				onPress={handleRequestAssistance}
-			>
-				<Text style={styles.requestButtonText}>
-					Request Roadside Assistance
-				</Text>
-			</TouchableOpacity>
+			{!activeTripId && (
+				<TouchableOpacity
+					style={styles.requestButton}
+					onPress={handleRequestAssistance}
+				>
+					<Text style={styles.requestButtonText}>
+						Request Roadside Assistance
+					</Text>
+				</TouchableOpacity>
+			)}
 
 			<RequestServiceSheet
 				visible={showServiceSheet}
 				onClose={() => setShowServiceSheet(false)}
+				onRequestCreated={(requestId) => {
+					setActiveRequestId(requestId);
+					setShowFindingModal(true);
+				}}
 			/>
+
+			<FindingDriverModal
+				visible={showFindingModal}
+				requestId={activeRequestId}
+				onDriverFound={(tripId) => {
+					setShowFindingModal(false);
+					setActiveTripId(tripId);
+				}}
+				onCancel={() => {
+					setShowFindingModal(false);
+					setActiveRequestId(null);
+				}}
+			/>
+
+			{activeTripId && (
+				<CommuterTripSheet
+					tripId={activeTripId}
+					onTripCompleted={() => {
+						setActiveTripId(null);
+						setActiveRequestId(null);
+					}}
+				/>
+			)}
 
 			{/* Temporary Sign Out Button for Testing */}
 			<TouchableOpacity

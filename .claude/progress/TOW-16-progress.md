@@ -14,9 +14,11 @@ Branch: `TOW-16-us-2-4-see-assigned-driver-details`
   - Also added `cancelRequest` and `getTripByRequestId` to `firestore.ts`
   - Also added `getDocs` to firestore imports
 - [x] Step 5: Create `CommuterTripSheet` component (`components/CommuterTripSheet.tsx`)
+- [x] Step 6: Wire `RequestServiceSheet` — added `onRequestCreated` prop, replaced Alert stub
+- [x] Step 7: Wire `app/(commuter)/index.tsx` — mounted `FindingDriverModal` and `CommuterTripSheet`
 
 ## Current Step
-- [ ] Step 6: Wire `RequestServiceSheet` — replace the Alert stub
+- [ ] Step 8: Manual end-to-end test
 
 ## Remaining Steps
 - [ ] Step 4: Create `FindingDriverModal` component

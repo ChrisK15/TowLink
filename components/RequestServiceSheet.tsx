@@ -34,6 +34,7 @@ export interface ServiceOption {
 interface RequestServiceSheetProps {
 	visible: boolean;
 	onClose: () => void;
+	onRequestCreated: (requestId: string) => void;
 }
 
 interface ServiceCardProps {
@@ -110,6 +111,7 @@ function ServiceCard({ option, selected, onPress }: ServiceCardProps) {
 export function RequestServiceSheet({
 	visible,
 	onClose,
+	onRequestCreated,
 }: RequestServiceSheetProps) {
 	const { user } = useAuth();
 	const [selectedService, setSelectedService] = useState<ServiceType>('tow');
@@ -241,7 +243,7 @@ export function RequestServiceSheet({
 				towingCapacity: '',
 			};
 
-			await createRequest(
+			const requestId = await createRequest(
 				user?.uid ?? 'PLACEHOLDER_USER_ID',
 				finalPickupCoords,
 				finalDropoffCoords,
@@ -254,9 +256,7 @@ export function RequestServiceSheet({
 			);
 
 			handleClose();
-
-			// TODO TOW-16: Replace with FindingDriverModal navigation
-			Alert.alert('Request Submitted!', 'Looking for a driver near you...');
+			onRequestCreated(requestId);
 		} catch (error) {
 			console.error('Error submitting request:', error);
 			Alert.alert('Error', 'Failed to submit request. Please try again.');
