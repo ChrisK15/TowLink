@@ -114,7 +114,7 @@ export async function acceptRequest(
 			arrivalTime: null,
 			completionTime: null,
 			distance: 0,
-			estimatedPrice: 75,
+			estimatedPrice: requestData?.estimatedPrice ?? 65,
 			finalPrice: null,
 			driverPath: [],
 		};
@@ -268,7 +268,7 @@ export async function acceptClaimedRequest(
 		arrivalTime: null,
 		completionTime: null,
 		distance: 0,
-		estimatedPrice: 75,
+		estimatedPrice: requestData?.estimatedPrice ?? 65,
 		finalPrice: null,
 		driverPath: [],
 	};
