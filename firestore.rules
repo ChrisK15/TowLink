@@ -129,8 +129,14 @@ service cloud.firestore {
         // Address must be valid
         && isValidString('pickupAddress')
         && isValidString('dropoffAddress')
-        // Vehicle info must be a non-empty string
-        && isValidString('vehicleInfo')
+        // Vehicle info must be a valid object with required fields
+        && request.resource.data.vehicleInfo is map
+        && request.resource.data.vehicleInfo.keys().hasAll(['year', 'make', 'model'])
+        && request.resource.data.vehicleInfo.year is number
+        && request.resource.data.vehicleInfo.make is string
+        && request.resource.data.vehicleInfo.make.size() > 0
+        && request.resource.data.vehicleInfo.model is string
+        && request.resource.data.vehicleInfo.model.size() > 0
         // Price and distance must be positive numbers
         && request.resource.data.estimatedPrice is number
         && request.resource.data.estimatedPrice > 0

@@ -1,4 +1,4 @@
-import { Location, Request, Trip } from '@/types/models';
+import { Location, Request, Trip, VehicleInfo } from '@/types/models';
 import {
 	addDoc,
 	arrayUnion,
@@ -21,7 +21,7 @@ export async function createRequest(
 	dropoffLocation: Location,
 	pickupAddress: string,
 	dropoffAddress: string,
-	vehicleInfo: string,
+	vehicleInfo: VehicleInfo,
 	estimatedPrice: number,
 	distanceMiles: number,
 	additionalNotes?: string,

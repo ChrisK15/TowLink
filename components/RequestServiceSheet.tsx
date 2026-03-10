@@ -247,7 +247,7 @@ export function RequestServiceSheet({
 				finalDropoffCoords,
 				pickupAddress,
 				dropoffAddress,
-				JSON.stringify(vehicleInfo),
+				vehicleInfo,
 				price,
 				miles,
 				additionalNotes.trim() || undefined,
