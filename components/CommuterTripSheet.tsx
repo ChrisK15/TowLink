@@ -1,5 +1,5 @@
-import { updateTripStatus } from '@/services/firebase/firestore';
 import { useCommuterTrip } from '@/hooks/use-commuter-trip';
+import { updateTripStatus } from '@/services/firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -15,8 +15,8 @@ import {
 } from 'react-native';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const COLLAPSED_HEIGHT = SCREEN_HEIGHT * 0.25;
-const EXPANDED_HEIGHT = SCREEN_HEIGHT * 0.90;
+const COLLAPSED_HEIGHT = SCREEN_HEIGHT * 0.11;
+const EXPANDED_HEIGHT = SCREEN_HEIGHT * 0.75;
 
 const STATUS_BANNER_TEXT: Record<string, string> = {
 	en_route: 'Driver en route to your location',
@@ -111,9 +111,9 @@ export function CommuterTripSheet({
 		return () => loop.stop();
 	}, [pulseAnim]);
 
-	// Fire onTripCompleted when trip finishes
+	// Fire onTripCompleted when trip finishes or is cancelled
 	useEffect(() => {
-		if (trip?.status === 'completed') {
+		if (trip?.status === 'completed' || trip?.status === 'cancelled') {
 			onTripCompleted();
 		}
 	}, [trip?.status]);
@@ -144,24 +144,20 @@ export function CommuterTripSheet({
 	};
 
 	const handleCancelTrip = () => {
-		Alert.alert(
-			'Cancel Trip',
-			'Are you sure you want to cancel this trip?',
-			[
-				{ text: 'No', style: 'cancel' },
-				{
-					text: 'Yes, Cancel',
-					style: 'destructive',
-					onPress: async () => {
-						try {
-							await updateTripStatus(tripId, 'cancelled');
-						} catch (error: any) {
-							Alert.alert('Error', error.message);
-						}
-					},
+		Alert.alert('Cancel Trip', 'Are you sure you want to cancel this trip?', [
+			{ text: 'No', style: 'cancel' },
+			{
+				text: 'Yes, Cancel',
+				style: 'destructive',
+				onPress: async () => {
+					try {
+						await updateTripStatus(tripId, 'cancelled');
+					} catch (error: any) {
+						Alert.alert('Error', error.message);
+					}
 				},
-			],
-		);
+			},
+		]);
 	};
 
 	const initials =
@@ -212,10 +208,7 @@ export function CommuterTripSheet({
 			<View style={styles.statusBanner}>
 				<View style={styles.statusLeft}>
 					<Animated.View
-						style={[
-							styles.statusDot,
-							{ transform: [{ scale: pulseAnim }] },
-						]}
+						style={[styles.statusDot, { transform: [{ scale: pulseAnim }] }]}
 					/>
 					<View>
 						<Text style={styles.statusText}>
@@ -239,10 +232,16 @@ export function CommuterTripSheet({
 				<View style={styles.contactButtons}>
 					{driverPhone && (
 						<>
-							<TouchableOpacity style={styles.contactButton} onPress={handleSMS}>
+							<TouchableOpacity
+								style={styles.contactButton}
+								onPress={handleSMS}
+							>
 								<Ionicons name="chatbubble-outline" size={18} color="#333" />
 							</TouchableOpacity>
-							<TouchableOpacity style={styles.contactButton} onPress={handleCall}>
+							<TouchableOpacity
+								style={styles.contactButton}
+								onPress={handleCall}
+							>
 								<Ionicons name="call-outline" size={18} color="#333" />
 							</TouchableOpacity>
 						</>
@@ -262,7 +261,9 @@ export function CommuterTripSheet({
 						</View>
 						<View style={styles.vehicleColumn}>
 							<Text style={styles.vehicleLabel}>License</Text>
-							<Text style={styles.vehicleValue}>{driverVehicle.licensePlate}</Text>
+							<Text style={styles.vehicleValue}>
+								{driverVehicle.licensePlate}
+							</Text>
 						</View>
 					</View>
 				)}

@@ -16,9 +16,10 @@ Branch: `TOW-16-us-2-4-see-assigned-driver-details`
 - [x] Step 5: Create `CommuterTripSheet` component (`components/CommuterTripSheet.tsx`)
 - [x] Step 6: Wire `RequestServiceSheet` — added `onRequestCreated` prop, replaced Alert stub
 - [x] Step 7: Wire `app/(commuter)/index.tsx` — mounted `FindingDriverModal` and `CommuterTripSheet`
+- [x] Step 8: Manual end-to-end test — all flows verified working
 
 ## Current Step
-- [ ] Step 8: Manual end-to-end test
+_All steps complete. TOW-16 done._
 
 ## Remaining Steps
 - [ ] Step 4: Create `FindingDriverModal` component
