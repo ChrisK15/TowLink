@@ -1,74 +1,127 @@
-# Current Story: TOW-78
+# Current Story: TOW-16
 
 ## Story Details
-
-- **ID**: TOW-78
-- **Title**: Price Breakdown & Request Confirmation
+- **ID**: TOW-16
+- **Title**: US-2.4: See Assigned Driver Details
 - **Epic**: EPIC 2: Commuter Request Flow (TOW-2)
 - **Priority**: Medium
-- **Sprint**: TOW Sprint 3 (active, Feb 25 - Mar 11, 2026)
-- **Story Points**: 3
+- **Sprint**: TOW Sprint 3 (active, ends 2026-03-11)
+- **Story Points**: 8
 - **Status**: In Progress
-- **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-78
+- **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-16
 
 ## Description
 
 **As a** commuter
-**I want to** see the price before confirming my request
-**So that** I know what I'll pay
+**I want to** see when a driver accepts my request and track their arrival
+**So that** I know who is coming and when they'll arrive
+
+This story covers the full post-request flow on the commuter side: the "Finding Driver" loading state, the transition when a driver accepts, and the CommuterTripSheet component that tracks the trip through completion.
 
 ## Acceptance Criteria
 
-- [ ] When dropoff location AND vehicle details are filled, price section appears dynamically below the form
-- [ ] Price breakdown card shows:
-  - Base Fare: $50.00
-  - Distance Charge: (miles × $5/mile)
-  - Subtotal
-  - **Total Price** (large blue text, minimum $65)
-- [ ] Distance calculated using Google Distance Matrix API
-- [ ] "Request Service Now" button appears below price breakdown
-- [ ] Tapping button:
-  - Creates request in Firestore with ALL collected data
-  - Closes `RequestServiceSheet` modal
-  - Opens `FindingDriverModal` (created in TOW-16)
-- [ ] Matches Figma design (`commuter_request_flow_2c.png`)
+### Part 1: Finding Driver Modal
+- After creating request (TOW-78), `FindingDriverModal` appears
+- Loading spinner with pulsing animation
+- Text: "Finding the Best Available Driver"
+- Subtext: "We're matching you with a qualified driver near your location. This usually takes a few seconds."
+- Three-dot loading indicator
+- "Cancel Request" button at bottom
+- Real-time Firestore listener watching request document for status change
 
-## Technical Notes (from Jira)
+### Part 2: Driver Matched - Transition
+- When status changes from 'searching' to 'accepted':
+  - FindingDriverModal dismisses
+  - Return to commuter home screen (map visible)
+  - CommuterTripSheet component appears at bottom (similar to ActiveTripSheet on driver side)
 
-- Price calculation: `Math.max($50 + (miles * $5), $65)`
-- Use Google Distance Matrix API for distance
-- **REFACTOR**: Remove old request creation from `commuter/index.tsx` button
-- **NEW**: Request creation happens in `RequestServiceSheet`'s "Request Service Now" button
-- Navigate to `FindingDriverModal` after creating request
-- Design Reference: `.claude/design/screens/commuter_request_flow_2c.png`
+### Part 3: CommuterTripSheet - Collapsed View (Initial State)
+- Sheet starts at ~25% height (collapsed)
+- Blue status banner at top:
+  - Text: "Driver en route to your location"
+  - ETA: "8 min away" (dynamic, calculated)
+  - "Live" indicator with refresh icon
+- Driver info row below banner:
+  - Avatar with initials (circular, blue background)
+  - Driver name (e.g., "Mike Johnson")
+  - No Ratings (out of scope for MVP)
+- Tappable drag handle to expand
 
-## Key Notes from TOW-77 Review (for TOW-78 to address)
+### Part 4: CommuterTripSheet - Expanded View (90% height)
+- Same collapsed content at top
+- Vehicle information card:
+  - Label "Vehicle" and "License"
+  - e.g. "2023 Freightliner M2" | "TW-4892"
+- Call and message icon buttons (circular, outlined)
+- Progress checklist:
+  - "Driver en route to your location" (active when status = 'en_route')
+    - Subtitle: pickup address (e.g. "123 Main St, Downtown")
+  - "Driver arrived" (active when status = 'arrived')
+  - "Waiting to start service"
+  - "Service in progress" (active when status = 'in_progress')
+  - "Estimated 15-20 minutes"
+  - "Complete"
+  - "Rate your experience"
+- Blue info banner at bottom: "Safety First - Stay in a safe location and keep your phone on..."
+- Red "Cancel Trip" button at very bottom
+- All content scrollable when expanded
 
-1. **Form validation**: Enable "Request Service Now" only when all required fields pass:
-   - `pickupAddress` not empty
-   - `dropoffAddress` not empty
-   - `vehicleYear` not empty, 4 digits, numeric (note: Android paste can bypass `keyboardType="numeric"`)
-   - `vehicleMake` not empty
-   - `vehicleModel` not empty
+### Part 5: Real-Time Updates
+- Listen to trip document for status changes
+- Update checklist when driver progresses (arrived -> in_progress -> completed)
+- Update ETA as driver moves (Sprint 4 will add live location; for now use static estimate)
+- Sheet persists through all trip states until completion
 
-2. **vehicleYear type conversion**: Parse string → number with `parseInt(vehicleYear, 10)` when building `VehicleInfo`
+### Part 6: Trip Completion
+- When trip status = 'completed', show completion UI (future story)
+- For MVP: dismiss sheet and return to normal home screen
 
-3. **Coordinates for Firestore**: `Request` interface requires `location: Location` (pickup) and `dropoffLocation: Location` (drop-off). Current state only holds address strings. Either:
-   - (Simpler) Store raw lat/lng alongside the address when GPS is used
-   - Drop-off can remain address-only for now (no coordinates until map-picker story)
+## Technical Notes
 
-4. **Form state reset on close**: Consider adding a `handleClose` wrapper that resets all state when sheet closes
+### FindingDriverModal Implementation
+- Use same Modal pattern as `RequestPopup.tsx`
+- Full-screen modal with semi-transparent backdrop
+- Real-time listener on request document
+
+### CommuterTripSheet Implementation
+- Model after `ActiveTripSheet.tsx` (driver-side component)
+- Same expandable modal pattern (Animated.View with height animation)
+- Starts collapsed at ~25% height; tapping drag handle expands to 90%
+- Uses ScrollView for expanded content
+- Real-time listener on trip document (same hook pattern as driver side)
+
+### Hook for Trip Data
+- Reuse or create similar to `useActiveTrip` (driver-side hook)
+- Fetches trip data, driver name, phone, and vehicle info
+- Returns all data for CommuterTripSheet to display
+
+### Call/Message Buttons
+- Same implementation as `ActiveTripSheet`
+
+### Progress Checklist
+- Same component structure as `ActiveTripSheet`
+- Different step labels (commuter perspective vs driver perspective)
+- Steps update based on `trip.status`
+
+### Design References
+- Finding Driver: `.claude/design/screens/commuter_request_flow_3.png`
+- Driver Matched: `.claude/design/screens/commuter_request_flow_4.png`
+- Tracking (Collapsed & Expanded): `.claude/design/screens/commuter_request_flow_5.png`
+
+## Out of Scope (MVP)
+- Live driver location tracking on map
+- Route polyline from driver to pickup
+- Real-time ETA calculation based on driver movement
+- Driver marker animation on map
+- Ratings display
 
 ## Dependencies
-
-- **Blocked by**: TOW-77 (Multi-Step Form - Location/Vehicle) — status is **Done**, blocker is cleared
-- **Blocks**: TOW-16 (See Assigned Driver Details) — To Do
-- **Note**: TOW-16 (FindingDriverModal) is NOT yet implemented. For TOW-78, the navigation to FindingDriverModal can be stubbed (e.g., log or simple alert) until TOW-16 is done. Confirm this approach with the student.
+- **Blocked by**: TOW-78 (Price Breakdown & Request Confirmation) - status is **Done**, blocker is cleared
+- **Blocks**: nothing downstream in current sprint
+- No other blockers. This story is fully unblocked.
 
 ## Sprint Context
-
-TOW-78 is part of TOW Sprint 3 (Feb 25 - Mar 11, 2026). The story is In Progress. The git branch `TOW-78-price-breakdown-request-confirmation` already exists and is the current working branch. TOW-77 is Done, so this story is fully unblocked.
+TOW Sprint 3 ends 2026-03-11. TOW-16 is the only story currently In Progress assigned to Chris. The git branch `TOW-16-us-2-4-see-assigned-driver-details` is the active branch. TOW-78 (the direct predecessor) is Done, so all dependencies are cleared.
 
 ## Next Steps
-
-Invoke the `technical-architect` agent to create a detailed implementation spec at `.claude/specs/TOW-78.md`.
+Invoke the `technical-architect` agent to create a detailed implementation spec at `.claude/specs/TOW-16.md`, covering component architecture, hook design, Firestore listener patterns, and animation implementation plan.
