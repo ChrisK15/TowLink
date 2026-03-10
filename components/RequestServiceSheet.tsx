@@ -322,6 +322,38 @@ export function RequestServiceSheet({
 									textAlignVertical="top"
 								/>
 							</View>
+						{/* Price Breakdown */}
+						{estimatedPrice !== null && distanceMiles !== null && (
+							<View style={styles.priceCard}>
+								<Text style={styles.priceCardTitle}>Price Breakdown</Text>
+
+								<View style={styles.priceRow}>
+									<Text style={styles.priceLabel}>Base Fare</Text>
+									<Text style={styles.priceValue}>$50.00</Text>
+								</View>
+
+								<View style={styles.priceRow}>
+									<Text style={styles.priceLabel}>
+										Distance Charge ({distanceMiles.toFixed(1)} mi)
+									</Text>
+									<Text style={styles.priceValue}>
+										${(distanceMiles * 5).toFixed(2)}
+									</Text>
+								</View>
+
+								<View style={[styles.priceRow, styles.subtotalRow]}>
+									<Text style={styles.priceLabel}>Subtotal</Text>
+									<Text style={styles.priceValue}>
+										${(50 + distanceMiles * 5).toFixed(2)}
+									</Text>
+								</View>
+
+								<View style={styles.priceRow}>
+									<Text style={styles.priceTotalLabel}>Total Price</Text>
+									<Text style={styles.priceTotalValue}>${estimatedPrice}.00</Text>
+								</View>
+							</View>
+						)}
 						</ScrollView>
 						<View style={styles.footer}>
 							<TouchableOpacity style={styles.submitButton} disabled={true}>
@@ -494,6 +526,36 @@ const styles = StyleSheet.create({
 	vehicleInputFull: {
 		width: '100%',
 	},
+	priceCard: {
+		backgroundColor: 'white',
+		marginTop: 8,
+		marginHorizontal: 16,
+		borderRadius: 12,
+		padding: 16,
+		borderWidth: 1,
+		borderColor: '#E0E0E0',
+	},
+	priceCardTitle: {
+		fontSize: 18,
+		fontWeight: 'bold',
+		color: '#000',
+		marginBottom: 12,
+	},
+	priceRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		paddingVertical: 6,
+	},
+	subtotalRow: {
+		borderTopWidth: 1,
+		borderTopColor: '#E0E0E0',
+		marginTop: 4,
+		paddingTop: 10,
+	},
+	priceLabel: { fontSize: 15, color: '#555' },
+	priceValue: { fontSize: 15, color: '#000' },
+	priceTotalLabel: { fontSize: 17, fontWeight: 'bold', color: '#000' },
+	priceTotalValue: { fontSize: 22, fontWeight: 'bold', color: '#1565C0' },
 	notesInput: {
 		borderWidth: 1,
 		borderColor: '#D0D0D0',
