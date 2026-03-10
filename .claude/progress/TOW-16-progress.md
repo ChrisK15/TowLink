@@ -7,14 +7,13 @@ Branch: `TOW-16-us-2-4-see-assigned-driver-details`
 ---
 
 ## Completed Steps
-_(none yet)_
+- [x] Step 1: Add Firestore helper functions (`listenToRequest` written and verified)
+- [x] Step 2: Create `useWatchRequest` hook (`hooks/use-watch-request.ts`)
 
 ## Current Step
-- [ ] Step 1: Add Firestore helper functions
+- [ ] Step 3: Create `useCommuterTrip` hook
 
 ## Remaining Steps
-- [ ] Step 2: Create `useWatchRequest` hook
-- [ ] Step 3: Create `useCommuterTrip` hook
 - [ ] Step 4: Create `FindingDriverModal` component
 - [ ] Step 5: Create `CommuterTripSheet` component
 - [ ] Step 6: Wire `RequestServiceSheet` — replace the Alert stub
