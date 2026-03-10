@@ -266,15 +266,24 @@ export function RequestServiceSheet({
 	};
 
 	const handleDropoffEndEditing = async () => {
-		if (!dropoffAddress.trim() || !pickupCoords) return;
+		if (!dropoffAddress.trim() || !pickupAddress.trim()) return;
 
 		try {
 			setIsCalculatingPrice(true);
+
+			// Resolve pickup coords — use GPS if available, otherwise geocode the typed address
+			let resolvedPickupCoords = pickupCoords;
+			if (!resolvedPickupCoords) {
+				resolvedPickupCoords = await geocodeAddress(pickupAddress);
+				if (!resolvedPickupCoords) return;
+				setPickupCoords(resolvedPickupCoords);
+			}
+
 			const coords = await geocodeAddress(dropoffAddress);
 			if (!coords) return;
 
 			setDropoffCoords(coords);
-			const miles = calculateDistanceMiles(pickupCoords, coords);
+			const miles = calculateDistanceMiles(resolvedPickupCoords, coords);
 			setDistanceMiles(miles);
 			setEstimatedPrice(calculateFare(miles));
 		} catch (error) {
