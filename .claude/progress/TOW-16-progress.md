@@ -10,9 +10,12 @@ Branch: `TOW-16-us-2-4-see-assigned-driver-details`
 - [x] Step 1: Add Firestore helper functions (`listenToRequest` written and verified)
 - [x] Step 2: Create `useWatchRequest` hook (`hooks/use-watch-request.ts`)
 - [x] Step 3: Create `useCommuterTrip` hook (`hooks/use-commuter-trip.ts`)
+- [x] Step 4: Create `FindingDriverModal` component (`components/FindingDriverModal.tsx`)
+  - Also added `cancelRequest` and `getTripByRequestId` to `firestore.ts`
+  - Also added `getDocs` to firestore imports
 
 ## Current Step
-- [ ] Step 4: Create `FindingDriverModal` component
+- [ ] Step 5: Create `CommuterTripSheet` component
 
 ## Remaining Steps
 - [ ] Step 4: Create `FindingDriverModal` component
