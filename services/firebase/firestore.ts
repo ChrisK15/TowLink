@@ -331,6 +331,27 @@ export function listenToTrip(
 	});
 }
 
+export function listenToRequest(
+	requestId: string,
+	callback: (request: Request | null) => void,
+) {
+	return onSnapshot(doc(db, 'requests', requestId), (snapshot) => {
+		if (!snapshot.exists()) {
+			callback(null);
+			return;
+		}
+		const data = snapshot.data();
+		const request = {
+			id: snapshot.id,
+			...data,
+			createdAt: data.createdAt?.toDate(),
+			expiresAt: data.expiresAt?.toDate(),
+			claimExpiresAt: data.claimExpiresAt?.toDate(),
+		} as Request;
+		callback(request);
+	});
+}
+
 export async function getRequestById(
 	requestId: string,
 ): Promise<Request | null> {
