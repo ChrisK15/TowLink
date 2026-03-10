@@ -1,7 +1,10 @@
 import { useAuth } from '@/context/auth-context';
 import { createRequest } from '@/services/firebase/firestore';
 import { geocodeAddress, reverseGeocode } from '@/services/geoLocationUtils';
-import { calculateDistanceMiles, calculateFare } from '@/services/requestCalculations';
+import {
+	calculateDistanceMiles,
+	calculateFare,
+} from '@/services/requestCalculations';
 import { ServiceType } from '@/types/models';
 import * as Location from 'expo-location';
 import { useState } from 'react';
@@ -117,8 +120,14 @@ export function RequestServiceSheet({
 	const [vehicleModel, setVehicleModel] = useState('');
 	const [additionalNotes, setAdditionalNotes] = useState('');
 	const [isDetectingLocation, setIsDetectingLocation] = useState(false);
-	const [pickupCoords, setPickupCoords] = useState<{ latitude: number; longitude: number } | null>(null);
-	const [dropoffCoords, setDropoffCoords] = useState<{ latitude: number; longitude: number } | null>(null);
+	const [pickupCoords, setPickupCoords] = useState<{
+		latitude: number;
+		longitude: number;
+	} | null>(null);
+	const [dropoffCoords, setDropoffCoords] = useState<{
+		latitude: number;
+		longitude: number;
+	} | null>(null);
 	const [distanceMiles, setDistanceMiles] = useState<number | null>(null);
 	const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null);
 	const [isCalculatingPrice, setIsCalculatingPrice] = useState(false);
@@ -218,7 +227,10 @@ export function RequestServiceSheet({
 				}
 			}
 
-			const miles = calculateDistanceMiles(finalPickupCoords, finalDropoffCoords);
+			const miles = calculateDistanceMiles(
+				finalPickupCoords,
+				finalDropoffCoords,
+			);
 			const price = calculateFare(miles);
 
 			const vehicleInfo = {
@@ -238,7 +250,7 @@ export function RequestServiceSheet({
 				JSON.stringify(vehicleInfo),
 				price,
 				miles,
-				additionalNotes || undefined,
+				additionalNotes.trim() || undefined,
 			);
 
 			handleClose();
@@ -285,7 +297,10 @@ export function RequestServiceSheet({
 			>
 				<View style={styles.overlay}>
 					<View style={styles.sheet}>
-						<TouchableOpacity onPress={handleClose} style={styles.handleContainer}>
+						<TouchableOpacity
+							onPress={handleClose}
+							style={styles.handleContainer}
+						>
 							<View style={styles.dragHandle} />
 						</TouchableOpacity>
 						<ScrollView
@@ -407,47 +422,54 @@ export function RequestServiceSheet({
 									textAlignVertical="top"
 								/>
 							</View>
-						{/* Price Breakdown */}
-						{isCalculatingPrice && (
-							<View style={styles.priceCard}>
-								<Text style={styles.priceLabel}>Calculating price...</Text>
-							</View>
-						)}
-						{!isCalculatingPrice && estimatedPrice !== null && distanceMiles !== null && (
-							<View style={styles.priceCard}>
-								<Text style={styles.priceCardTitle}>Price Breakdown</Text>
-
-								<View style={styles.priceRow}>
-									<Text style={styles.priceLabel}>Base Fare</Text>
-									<Text style={styles.priceValue}>$50.00</Text>
+							{/* Price Breakdown */}
+							{isCalculatingPrice && (
+								<View style={styles.priceCard}>
+									<Text style={styles.priceLabel}>Calculating price...</Text>
 								</View>
+							)}
+							{!isCalculatingPrice &&
+								estimatedPrice !== null &&
+								distanceMiles !== null && (
+									<View style={styles.priceCard}>
+										<Text style={styles.priceCardTitle}>Price Breakdown</Text>
 
-								<View style={styles.priceRow}>
-									<Text style={styles.priceLabel}>
-										Distance Charge ({distanceMiles.toFixed(1)} mi)
-									</Text>
-									<Text style={styles.priceValue}>
-										${(distanceMiles * 5).toFixed(2)}
-									</Text>
-								</View>
+										<View style={styles.priceRow}>
+											<Text style={styles.priceLabel}>Base Fare</Text>
+											<Text style={styles.priceValue}>$50.00</Text>
+										</View>
 
-								<View style={[styles.priceRow, styles.subtotalRow]}>
-									<Text style={styles.priceLabel}>Subtotal</Text>
-									<Text style={styles.priceValue}>
-										${(50 + distanceMiles * 5).toFixed(2)}
-									</Text>
-								</View>
+										<View style={styles.priceRow}>
+											<Text style={styles.priceLabel}>
+												Distance Charge ({distanceMiles.toFixed(1)} mi)
+											</Text>
+											<Text style={styles.priceValue}>
+												${(distanceMiles * 5).toFixed(2)}
+											</Text>
+										</View>
 
-								<View style={styles.priceRow}>
-									<Text style={styles.priceTotalLabel}>Total Price</Text>
-									<Text style={styles.priceTotalValue}>${estimatedPrice}.00</Text>
-								</View>
-							</View>
-						)}
+										<View style={[styles.priceRow, styles.subtotalRow]}>
+											<Text style={styles.priceLabel}>Subtotal</Text>
+											<Text style={styles.priceValue}>
+												${(50 + distanceMiles * 5).toFixed(2)}
+											</Text>
+										</View>
+
+										<View style={styles.priceRow}>
+											<Text style={styles.priceTotalLabel}>Total Price</Text>
+											<Text style={styles.priceTotalValue}>
+												${estimatedPrice}.00
+											</Text>
+										</View>
+									</View>
+								)}
 						</ScrollView>
 						<View style={styles.footer}>
 							<TouchableOpacity
-								style={[styles.submitButton, isFormValid && styles.submitButtonEnabled]}
+								style={[
+									styles.submitButton,
+									isFormValid && styles.submitButtonEnabled,
+								]}
 								onPress={handleSubmit}
 								disabled={!isFormValid || isSubmitting}
 							>
