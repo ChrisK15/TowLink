@@ -20,27 +20,28 @@
 
 ### Done
 
-| Key | Title | Type | Points | Status |
-|-----|-------|------|--------|--------|
-| TOW-57 | Update Firebase Security Rules | Task | 1 | Done |
-| TOW-79 | Update Request Data Model for New Fields | Story | 2 | Done |
-| TOW-76 | Multi-Step Request Form - Service Selection | Story | 3 | Done |
-| TOW-77 | Multi-Step Form - Location/Vehicle | Story | 5 | Done |
-| TOW-78 | Price Breakdown & Request Confirmation | Story | 3 | Done |
-| TOW-74 | FE Sprint 3A - Commuter Account Setup Screen | Task | 3 | Done |
+| Key    | Title                                        | Type  | Points | Status |
+| ------ | -------------------------------------------- | ----- | ------ | ------ |
+| TOW-57 | Update Firebase Security Rules               | Task  | 1      | Done   |
+| TOW-79 | Update Request Data Model for New Fields     | Story | 2      | Done   |
+| TOW-76 | Multi-Step Request Form - Service Selection  | Story | 3      | Done   |
+| TOW-77 | Multi-Step Form - Location/Vehicle           | Story | 5      | Done   |
+| TOW-78 | Price Breakdown & Request Confirmation       | Story | 3      | Done   |
+| TOW-74 | FE Sprint 3A - Commuter Account Setup Screen | Task  | 3      | Done   |
+| TOW-16 | See Assigned Driver Details                  | Story | 8      | Done   |
 
 ### In Progress
 
-| Key | Title | Type | Points | Status |
-|-----|-------|------|--------|--------|
-| TOW-16 | US-2.4: See Assigned Driver Details | Story | 8 | **In Progress** (ACTIVE) |
+|     |     |     |     |     |
+| --- | --- | --- | --- | --- |
+|     |     |     |
 
 ### To Do
 
-| Key | Title | Type | Points | Status |
-|-----|-------|------|--------|--------|
-| TOW-75 | FE Sprint 3B - Driver Account Setup Screen | Task | 3 | To Do |
-| TOW-24 | US-4.5: Location Permission Handling | Story | 2 | To Do |
+| Key    | Title                                      | Type  | Points | Status |
+| ------ | ------------------------------------------ | ----- | ------ | ------ |
+| TOW-75 | FE Sprint 3B - Driver Account Setup Screen | Task  | 3      | To Do  |
+| TOW-24 | US-4.5: Location Permission Handling       | Story | 2      | To Do  |
 
 ---
 
@@ -56,9 +57,9 @@ Based on dependencies and current state:
 
 ## Current Focus
 
-**Active Story**: TOW-16 - US-2.4: See Assigned Driver Details
-**Active Branch**: `TOW-16-us-2-4-see-assigned-driver-details`
-**Next Agent**: Invoke `technical-architect` to create implementation spec at `.claude/specs/TOW-16.md`
+**Active Story**:
+**Active Branch**: main
+**Next Agent**:
 
 ---
 
