@@ -96,6 +96,22 @@ export async function updateUserRole(
 	}
 }
 
+export async function updateUserProfile(
+	userId: string,
+	profile: { name: string; phone: string },
+): Promise<void> {
+	const docRef = doc(db, 'users', userId);
+	try {
+		await updateDoc(docRef, {
+			name: profile.name,
+			phone: profile.phone,
+		});
+	} catch (error: any) {
+		console.error('Profile update error:', error);
+		throw new Error('Failed to save profile. Please try again.');
+	}
+}
+
 export async function signOut() {
 	try {
 		await firebaseSignOut(auth);

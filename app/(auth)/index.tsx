@@ -31,7 +31,7 @@ export default function AuthIndex() {
 	}
 
 	if (onboardingComplete) {
-		return <Redirect href="/(auth)/signup" />;
+		return <Redirect href="/(auth)/onboarding/commuter-login" />;
 	}
 
 	return <Redirect href={"/(auth)/onboarding" as any} />;

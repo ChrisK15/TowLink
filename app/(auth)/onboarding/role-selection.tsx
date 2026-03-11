@@ -10,7 +10,7 @@ export default function RoleSelectionScreen() {
 
 	const handleCustomer = async () => {
 		await AsyncStorage.setItem('onboarding_complete', 'true');
-		router.replace('/(auth)/signup');
+		router.replace('/(auth)/onboarding/commuter-login' as any);
 	};
 
 	const handleDriver = async () => {

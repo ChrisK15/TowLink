@@ -36,7 +36,7 @@ function RootLayoutNav() {
 		return <Redirect href="/(driver)" />;
 	}
 	if (role === null) {
-		return <Redirect href="/role-selection" />; //role: null is expected during signup so we route to role-selection instead of signing out.
+		return <Redirect href="/(auth)/onboarding/commuter-login" />;
 	}
 }
 

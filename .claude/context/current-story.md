@@ -1,127 +1,98 @@
-# Current Story: TOW-16
+# Current Story: TOW-74
 
 ## Story Details
-- **ID**: TOW-16
-- **Title**: US-2.4: See Assigned Driver Details
-- **Epic**: EPIC 2: Commuter Request Flow (TOW-2)
+
+- **ID**: TOW-74
+- **Title**: FE Sprint 3A - Commuter Account Setup Screen
+- **Epic**: FE Sprint 3 - Account Setup Flow
 - **Priority**: Medium
 - **Sprint**: TOW Sprint 3 (active, ends 2026-03-11)
-- **Story Points**: 8
+- **Story Points**: 3
 - **Status**: In Progress
-- **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-16
+- **Jira Link**: https://chriskelamyan115.atlassian.net/browse/TOW-74
 
 ## Description
 
-**As a** commuter
-**I want to** see when a driver accepts my request and track their arrival
-**So that** I know who is coming and when they'll arrive
+Build the commuter profile setup screen that appears **after** the signup + role selection flow, before the commuter first lands on their home screen. This is a **pure frontend story** — the Firestore write patterns already exist in the codebase; the goal is to match the Figma design exactly.
 
-This story covers the full post-request flow on the commuter side: the "Finding Driver" loading state, the transition when a driver accepts, and the CommuterTripSheet component that tracks the trip through completion.
+This screen collects the commuter's personal details (name, phone number) to complete their profile after account creation. Today, new commuter accounts land on the home screen with no name or phone on their Firestore document — this screen fills that gap.
+
+**Where it fits in the flow:**
+
+```
+Onboarding → Role Selection → Signup → [THIS SCREEN] → Commuter Home
+```
+
+### Before Starting
+
+**Step 1 — Screenshot Figma designs:** Take screenshots of the following screens from Figma and place them in `.claude/design/screens/commuter_account_setup/`.
+
+Reference these PNGs side-by-side with the simulator as you build, exactly like you did with the onboarding screens.
+
+**Step 2 — Review the existing data model before coding:**
+
+- `types/models.ts` — The `User` interface has `name?: string` and `phone?: string` optional fields already defined. These are what this screen writes to.
+- `services/firebase/authService.ts` — Look at how `updateUserRole()` uses `updateDoc()` to write to Firestore. The profile save will follow the exact same pattern.
+- `app/(auth)/onboarding/role-selection.tsx` — This is the screen that navigates TO this new screen. You will add a navigation call here when role is `'commuter'`.
 
 ## Acceptance Criteria
 
-### Part 1: Finding Driver Modal
-- After creating request (TOW-78), `FindingDriverModal` appears
-- Loading spinner with pulsing animation
-- Text: "Finding the Best Available Driver"
-- Subtext: "We're matching you with a qualified driver near your location. This usually takes a few seconds."
-- Three-dot loading indicator
-- "Cancel Request" button at bottom
-- Real-time Firestore listener watching request document for status change
+- [ ] **Screen layout matches Figma**
+- [ ] **Form validation** — name and phone fields validated before save
+- [ ] **Save to Firestore** — writes `name` and `phone` to the authenticated user's Firestore document
+- [ ] **Navigation** — on successful save, navigates to Commuter Home
+- [ ] **Wired into the existing flow** — role-selection.tsx navigates to this screen for the commuter path
+- [ ] No TypeScript errors
+- [ ] No console errors during normal use
 
-### Part 2: Driver Matched - Transition
-- When status changes from 'searching' to 'accepted':
-  - FindingDriverModal dismisses
-  - Return to commuter home screen (map visible)
-  - CommuterTripSheet component appears at bottom (similar to ActiveTripSheet on driver side)
+## Out of Scope
 
-### Part 3: CommuterTripSheet - Collapsed View (Initial State)
-- Sheet starts at ~25% height (collapsed)
-- Blue status banner at top:
-  - Text: "Driver en route to your location"
-  - ETA: "8 min away" (dynamic, calculated)
-  - "Live" indicator with refresh icon
-- Driver info row below banner:
-  - Avatar with initials (circular, blue background)
-  - Driver name (e.g., "Mike Johnson")
-  - No Ratings (out of scope for MVP)
-- Tappable drag handle to expand
+- Profile photo upload
+- Address or location fields
+- Editing the profile after setup (that is a separate settings story)
 
-### Part 4: CommuterTripSheet - Expanded View (90% height)
-- Same collapsed content at top
-- Vehicle information card:
-  - Label "Vehicle" and "License"
-  - e.g. "2023 Freightliner M2" | "TW-4892"
-- Call and message icon buttons (circular, outlined)
-- Progress checklist:
-  - "Driver en route to your location" (active when status = 'en_route')
-    - Subtitle: pickup address (e.g. "123 Main St, Downtown")
-  - "Driver arrived" (active when status = 'arrived')
-  - "Waiting to start service"
-  - "Service in progress" (active when status = 'in_progress')
-  - "Estimated 15-20 minutes"
-  - "Complete"
-  - "Rate your experience"
-- Blue info banner at bottom: "Safety First - Stay in a safe location and keep your phone on..."
-- Red "Cancel Trip" button at very bottom
-- All content scrollable when expanded
+## Key Files to Reference
 
-### Part 5: Real-Time Updates
-- Listen to trip document for status changes
-- Update checklist when driver progresses (arrived -> in_progress -> completed)
-- Update ETA as driver moves (Sprint 4 will add live location; for now use static estimate)
-- Sheet persists through all trip states until completion
+- **Data model:** `types/models.ts` — `User` interface (`name`, `phone` fields)
+- **Write pattern:** `services/firebase/authService.ts` — `updateUserRole()` function
+- **Navigation pattern:** `app/(auth)/onboarding/role-selection.tsx` — how `router.replace()` is used
+- **Screen to modify:** `app/(auth)/onboarding/role-selection.tsx` — add navigation to this new screen for commuter path
+- **Architecture:** `.claude/docs/ARCHITECTURE.md`
+- **Patterns:** `.claude/docs/PATTERNS.md`
+- **Design files:** `.claude/design/screens/commuter_account_setup/`
 
-### Part 6: Trip Completion
-- When trip status = 'completed', show completion UI (future story)
-- For MVP: dismiss sheet and return to normal home screen
+## Suggested File to Create
 
-## Technical Notes
-
-### FindingDriverModal Implementation
-- Use same Modal pattern as `RequestPopup.tsx`
-- Full-screen modal with semi-transparent backdrop
-- Real-time listener on request document
-
-### CommuterTripSheet Implementation
-- Model after `ActiveTripSheet.tsx` (driver-side component)
-- Same expandable modal pattern (Animated.View with height animation)
-- Starts collapsed at ~25% height; tapping drag handle expands to 90%
-- Uses ScrollView for expanded content
-- Real-time listener on trip document (same hook pattern as driver side)
-
-### Hook for Trip Data
-- Reuse or create similar to `useActiveTrip` (driver-side hook)
-- Fetches trip data, driver name, phone, and vehicle info
-- Returns all data for CommuterTripSheet to display
-
-### Call/Message Buttons
-- Same implementation as `ActiveTripSheet`
-
-### Progress Checklist
-- Same component structure as `ActiveTripSheet`
-- Different step labels (commuter perspective vs driver perspective)
-- Steps update based on `trip.status`
-
-### Design References
-- Finding Driver: `.claude/design/screens/commuter_request_flow_3.png`
-- Driver Matched: `.claude/design/screens/commuter_request_flow_4.png`
-- Tracking (Collapsed & Expanded): `.claude/design/screens/commuter_request_flow_5.png`
-
-## Out of Scope (MVP)
-- Live driver location tracking on map
-- Route polyline from driver to pickup
-- Real-time ETA calculation based on driver movement
-- Driver marker animation on map
-- Ratings display
+```
+app/
+  (auth)/
+    onboarding/
+      commuter-setup.tsx     <- CREATE THIS FILE
+```
 
 ## Dependencies
+
 - **Blocked by**: TOW-78 (Price Breakdown & Request Confirmation) - status is **Done**, blocker is cleared
 - **Blocks**: nothing downstream in current sprint
 - No other blockers. This story is fully unblocked.
 
+<<<<<<< HEAD
+
 ## Sprint Context
+
 TOW Sprint 3 ends 2026-03-11. TOW-16 is the only story currently In Progress assigned to Chris. The git branch `TOW-16-us-2-4-see-assigned-driver-details` is the active branch. TOW-78 (the direct predecessor) is Done, so all dependencies are cleared.
 
 ## Next Steps
-Invoke the `technical-architect` agent to create a detailed implementation spec at `.claude/specs/TOW-16.md`, covering component architecture, hook design, Firestore listener patterns, and animation implementation plan.
+
+# Invoke the `technical-architect` agent to create a detailed implementation spec at `.claude/specs/TOW-16.md`, covering component architecture, hook design, Firestore listener patterns, and animation implementation plan.
+
+- **Blocks**: TOW-75 — FE Sprint 3B: Driver Account Setup Screen (that story cannot begin until this one is complete)
+- Depends on `types/models.ts` `User` interface already having `name` and `phone` optional fields
+- Depends on `services/firebase/authService.ts` `updateUserRole()` write pattern
+- Depends on `app/(auth)/onboarding/role-selection.tsx` navigation structure
+
+## Next Steps
+
+Invoke the `technical-architect` agent to create a detailed implementation spec at `.claude/specs/TOW-74.md`.
+
+> > > > > > > e172289f2e9ea9bd2c7602c6fe39092cdcf4b49a
