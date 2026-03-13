@@ -112,47 +112,47 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PAY-01 | Phase 1 | Pending |
-| PAY-02 | Phase 1 | Pending |
-| PAY-03 | Phase 1 | Pending |
-| PAY-04 | Phase 1 | Pending |
-| PAY-05 | Phase 1 | Pending |
-| PAY-06 | Phase 1 | Pending |
-| PAY-07 | Phase 1 | Pending |
-| PAY-08 | Phase 1 | Pending |
-| NOTF-01 | Phase 2 | Pending |
-| NOTF-02 | Phase 2 | Pending |
-| NOTF-03 | Phase 2 | Pending |
-| NOTF-04 | Phase 2 | Pending |
-| NOTF-05 | Phase 2 | Pending |
-| NOTF-06 | Phase 2 | Pending |
-| DRVR-01 | Phase 3 | Pending |
-| DRVR-02 | Phase 3 | Pending |
-| DRVR-03 | Phase 3 | Pending |
-| DRVR-04 | Phase 3 | Pending |
-| DRVR-05 | Phase 3 | Pending |
-| DRVR-06 | Phase 3 | Pending |
-| MAP-01 | Phase 3 | Pending |
-| MAP-02 | Phase 3 | Pending |
-| MAP-03 | Phase 3 | Pending |
-| MAP-04 | Phase 3 | Pending |
-| MAP-05 | Phase 3 | Pending |
-| COMM-01 | Phase 3 | Pending |
-| COMM-02 | Phase 3 | Pending |
-| SEC-01 | Phase 1 | Pending |
-| SEC-02 | Phase 1 | Pending |
-| SEC-03 | Phase 1 | Pending |
-| SEC-04 | Phase 4 | Pending |
-| SEC-05 | Phase 4 | Pending |
-| SEC-06 | Phase 4 | Pending |
-| TEST-01 | Phase 4 | Pending |
+| PAY-01 | Phase 1 — Payments | Pending |
+| PAY-02 | Phase 1 — Payments | Pending |
+| PAY-03 | Phase 1 — Payments | Pending |
+| PAY-04 | Phase 1 — Payments | Pending |
+| PAY-05 | Phase 1 — Payments | Pending |
+| PAY-06 | Phase 1 — Payments | Pending |
+| PAY-07 | Phase 1 — Payments | Pending |
+| PAY-08 | Phase 1 — Payments | Pending |
+| SEC-01 | Phase 1 — Payments | Pending |
+| SEC-02 | Phase 1 — Payments | Pending |
+| SEC-03 | Phase 1 — Payments | Pending |
+| NOTF-01 | Phase 2 — Notifications | Pending |
+| NOTF-02 | Phase 2 — Notifications | Pending |
+| NOTF-03 | Phase 2 — Notifications | Pending |
+| NOTF-04 | Phase 2 — Notifications | Pending |
+| NOTF-05 | Phase 2 — Notifications | Pending |
+| NOTF-06 | Phase 2 — Notifications | Pending |
+| DRVR-01 | Phase 3 — Driver Flow & Maps | Pending |
+| DRVR-02 | Phase 3 — Driver Flow & Maps | Pending |
+| DRVR-03 | Phase 3 — Driver Flow & Maps | Pending |
+| DRVR-04 | Phase 3 — Driver Flow & Maps | Pending |
+| DRVR-05 | Phase 3 — Driver Flow & Maps | Pending |
+| DRVR-06 | Phase 3 — Driver Flow & Maps | Pending |
+| MAP-01 | Phase 3 — Driver Flow & Maps | Pending |
+| MAP-02 | Phase 3 — Driver Flow & Maps | Pending |
+| MAP-03 | Phase 3 — Driver Flow & Maps | Pending |
+| MAP-04 | Phase 3 — Driver Flow & Maps | Pending |
+| MAP-05 | Phase 3 — Driver Flow & Maps | Pending |
+| COMM-01 | Phase 3 — Driver Flow & Maps | Pending |
+| COMM-02 | Phase 3 — Driver Flow & Maps | Pending |
+| SEC-04 | Phase 4 — Hardening | Pending |
+| SEC-05 | Phase 4 — Hardening | Pending |
+| SEC-06 | Phase 4 — Hardening | Pending |
+| TEST-01 | Phase 4 — Hardening | Pending |
 
 **Coverage:**
 - v1 requirements: 34 total
 - Mapped to phases: 34
-- Unmapped: 0 ✓
+- Unmapped: 0
 
 ---
 
 *Requirements defined: 2026-03-13*
-*Last updated: 2026-03-13 after initial definition*
+*Last updated: 2026-03-13 after roadmap creation*
