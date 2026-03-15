@@ -1,7 +1,8 @@
 # Requirements: TowLink
 
 **Defined:** 2026-03-13
-**Core Value:** A stranded commuter can get a tow truck dispatched to their exact GPS location within minutes, with live tracking until the driver arrives.
+**Revised:** 2026-03-15 — B2B dispatch pivot (company-based model replaces independent driver marketplace)
+**Core Value:** A stranded commuter can get a tow truck from a local affiliated tow yard dispatched to their exact GPS location in minutes, without the tow yard needing a manual dispatcher.
 
 ---
 
@@ -9,60 +10,56 @@
 
 Requirements for MVP release. Each maps to a roadmap phase.
 
-### Payments
+### Companies & Admin
 
-- [ ] **PAY-01**: User sees distance-based fare estimate before confirming tow request
-- [ ] **PAY-02**: Stripe SDK integrated and `<StripeProvider>` configured in app root
-- [ ] **PAY-03**: Cloud Function creates PaymentIntent server-side (secret key never on client)
-- [ ] **PAY-04**: Commuter can pay at trip completion using Stripe PaymentSheet (native card UI)
-- [ ] **PAY-05**: Payment receipt / trip summary shown to commuter after successful payment
-- [ ] **PAY-06**: Driver sees earnings amount for each completed trip
-- [ ] **PAY-07**: Payment errors (card decline, network failure) show user-friendly retry flow
-- [ ] **PAY-08**: `finalPrice` is set correctly on Trip at completion and used as the charge amount
+- [ ] **COMP-01**: Admin can register a tow yard company (name, address, service area)
+- [ ] **COMP-02**: Admin can add a driver to their company by registering the driver's company email address (no self-registration for drivers)
+- [ ] **COMP-03**: Admin can remove or deactivate a driver from their company
+- [ ] **COMP-04**: Admin can view all active jobs and their statuses in real-time
+- [ ] **COMP-05**: Admin can view which drivers are currently online
+
+### Authentication
+
+- [ ] **AUTH-01**: Driver logs in with their company-issued email address and is automatically associated with their affiliated tow yard
+
+### Dispatch
+
+- [ ] **DISP-01**: Incoming commuter request is auto-routed to the nearest affiliated tow yard
+- [ ] **DISP-02**: Within the matched company, job is assigned to an available driver using a fair distribution algorithm
+- [ ] **DISP-03**: If the assigned driver declines, job is re-assigned to the next available driver in the same company
+
+### Driver Flow
+
+- [ ] **DRVR-01**: Driver can accept or decline an assigned job
+- [ ] **DRVR-02**: Driver can navigate to commuter location using map directions during active trip
+- [ ] **DRVR-03**: Driver can advance trip status through all stages (en route → arrived → in progress → completed)
+- [ ] **DRVR-04**: Driver can cancel an accepted job before the trip starts
+
+### Maps & Location
+
+- [ ] **MAP-01**: Commuter sees real-time driver location on map during active trip
+- [ ] **MAP-02**: Route polyline and ETA are shown on commuter map once a driver is assigned
+- [ ] **MAP-03**: Location permissions handled gracefully on iOS and Android
 
 ### Notifications
 
-- [ ] **NOTF-01**: EAS development build configured for push notification testing (replaces Expo Go)
+- [ ] **NOTF-01**: EAS development build configured and push notifications testable on physical devices
 - [ ] **NOTF-02**: Push token registered on every app launch and stored to Firestore user doc
-- [ ] **NOTF-03**: Driver receives push notification when matched to a new tow request
+- [ ] **NOTF-03**: Driver receives push notification when assigned a new tow request
 - [ ] **NOTF-04**: Commuter receives push notification when driver accepts their request
 - [ ] **NOTF-05**: Commuter receives push notification when driver arrives on scene
 - [ ] **NOTF-06**: Tapping a push notification navigates to the correct in-app screen
 
-### Driver Flow
-
-- [ ] **DRVR-01**: Driver sees available pending requests on map (TOW-17)
-- [ ] **DRVR-02**: Driver can navigate to customer location with map directions (TOW-36)
-- [ ] **DRVR-03**: Driver has clear UI buttons to advance trip status (en route → arrived → in progress → complete) (TOW-37)
-- [ ] **DRVR-04**: Driver can cancel an accepted job before trip starts
-- [ ] **DRVR-05**: Driver account setup screen captures vehicle information (TOW-75)
-- [ ] **DRVR-06**: Driver completes trip and payment flow is triggered (TOW-40)
-
-### Maps & Location
-
-- [ ] **MAP-01**: Commuter map screen fully functional with current location display (TOW-46)
-- [ ] **MAP-02**: Real-time driver location tracked and updated on both commuter and driver maps (TOW-80)
-- [ ] **MAP-03**: Route polyline displayed on map during active trip (TOW-38)
-- [ ] **MAP-04**: ETA calculated and shown to commuter after driver accepts (TOW-42)
-- [ ] **MAP-05**: Location permissions handled gracefully on iOS and Android (TOW-24)
-
-### Commuter Flow
-
-- [ ] **COMM-01**: Commuter can cancel a request before driver arrives (TOW-39)
-- [ ] **COMM-02**: Vehicle details autofilled from user profile on request form (TOW-82)
-
 ### Security & Reliability
 
-- [ ] **SEC-01**: Firebase Security Rules lock `finalPrice`, `paymentStatus`, `paymentIntentId`, `driverPayoutStatus` as server-only writable (TOW-55/58/59)
-- [ ] **SEC-02**: Firebase Security Rules: user documents readable and writable only by owner
-- [ ] **SEC-03**: Firebase Security Rules: trip documents readable only by commuter and assigned driver
-- [ ] **SEC-04**: Loading states shown throughout all async operations (TOW-35)
-- [ ] **SEC-05**: Error handling with user-friendly messages across all Firebase and Stripe operations (TOW-34)
-- [ ] **SEC-06**: Fix route flickering on app startup for authenticated users (TOW-83)
+- [ ] **SEC-01**: Firestore rules enforce role-based access (admin writes company data, drivers write their own data, commuters write requests)
+- [ ] **SEC-02**: Loading states shown throughout all async operations
+- [ ] **SEC-03**: Error handling with user-friendly messages across all Firebase operations
+- [ ] **SEC-04**: Fix route flickering on app startup for authenticated users
 
 ### Testing
 
-- [ ] **TEST-01**: Maestro E2E test suite configured for core user flows (TOW-81)
+- [ ] **TEST-01**: Maestro E2E test suite covers commuter request and driver dispatch flows
 
 ---
 
@@ -72,37 +69,47 @@ Acknowledged but deferred past MVP.
 
 ### Payments
 
-- **PAY-V2-01**: Stripe Connect Express driver onboarding flow (real account setup, not test mode)
-- **PAY-V2-02**: Driver payout dashboard showing earnings history
-- **PAY-V2-03**: Stripe webhook handler for payment event reliability
+- **PAY-01**: User sees distance-based fare estimate before confirming tow request
+- **PAY-02**: Stripe SDK integrated and `<StripeProvider>` configured in app root
+- **PAY-03**: Cloud Function creates PaymentIntent server-side (secret key never on client)
+- **PAY-04**: Commuter can pay at trip completion using Stripe PaymentSheet (native card UI)
+- **PAY-05**: Payment receipt / trip summary shown to commuter after successful payment
+- **PAY-06**: Driver sees earnings amount for each completed trip
+- **PAY-07**: Payment errors (card decline, network failure) show user-friendly retry flow
+- **PAY-08**: `finalPrice` is set correctly on Trip at completion and used as the charge amount
 
-### Maps
+### Web & Referral
 
-- **MAP-V2-01**: Google Distance Matrix API for road distance (replaces straight-line × factor)
+- **WEB-01**: Mobile web fallback form captures GPS location and service details
+- **WEB-02**: Web form includes a prompt to download the native app
+- **WEB-03**: Source-tagging locks web form requests to the referring tow yard company
 
-### Reliability
+### Commuter
 
-- **REL-V2-01**: Performance optimization audit (TOW-43)
+- **COMM-01**: Commuter can cancel a request before driver arrives
 
-### Social
+### Infrastructure
 
-- **SOC-V2-01**: Ratings and reviews after trip completion
-- **SOC-V2-02**: Driver background check integration
+- **INF-01**: Stripe Connect Express driver onboarding flow (real account setup)
+- **INF-02**: Stripe webhook handler for payment event reliability
 
 ---
 
 ## Out of Scope
 
+Explicitly excluded. Documented to prevent scope creep.
+
 | Feature | Reason |
 |---------|--------|
-| In-app chat between commuter and driver | High complexity; phone call via shared number is sufficient for v1 |
-| Surge/dynamic pricing | Algorithmic complexity; distance-based fixed rate sufficient |
+| In-app chat between commuter and driver | High complexity; phone call sufficient for v1 |
+| Surge/dynamic pricing | Algorithmic complexity; straightforward pricing sufficient |
 | OAuth login (Google, Apple) | Email/password sufficient for capstone scope |
-| Scheduled/future tows | Real-time dispatch is the core model; scheduling is a separate product |
+| Scheduled/future tows | Real-time dispatch is the core model; scheduling is separate product |
 | Multiple simultaneous trips per driver | Single-job model for v1 |
-| Admin dashboard | Firebase console sufficient at capstone scale |
-| Web app | Mobile-first; web is not planned |
+| Admin earnings/analytics dashboard | Firebase console sufficient at capstone scale; v2 feature |
+| Web app as primary interface | Mobile-first; web deferred indefinitely |
 | Refunds | Handle manually; build automation later |
+| Driver background check integration | Manual process for launch |
 
 ---
 
@@ -112,47 +119,40 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PAY-01 | Phase 1 — Payments | Pending |
-| PAY-02 | Phase 1 — Payments | Pending |
-| PAY-03 | Phase 1 — Payments | Pending |
-| PAY-04 | Phase 1 — Payments | Pending |
-| PAY-05 | Phase 1 — Payments | Pending |
-| PAY-06 | Phase 1 — Payments | Pending |
-| PAY-07 | Phase 1 — Payments | Pending |
-| PAY-08 | Phase 1 — Payments | Pending |
-| SEC-01 | Phase 1 — Payments | Pending |
-| SEC-02 | Phase 1 — Payments | Pending |
-| SEC-03 | Phase 1 — Payments | Pending |
-| NOTF-01 | Phase 2 — Notifications | Pending |
-| NOTF-02 | Phase 2 — Notifications | Pending |
-| NOTF-03 | Phase 2 — Notifications | Pending |
-| NOTF-04 | Phase 2 — Notifications | Pending |
-| NOTF-05 | Phase 2 — Notifications | Pending |
-| NOTF-06 | Phase 2 — Notifications | Pending |
-| DRVR-01 | Phase 3 — Driver Flow & Maps | Pending |
-| DRVR-02 | Phase 3 — Driver Flow & Maps | Pending |
-| DRVR-03 | Phase 3 — Driver Flow & Maps | Pending |
-| DRVR-04 | Phase 3 — Driver Flow & Maps | Pending |
-| DRVR-05 | Phase 3 — Driver Flow & Maps | Pending |
-| DRVR-06 | Phase 3 — Driver Flow & Maps | Pending |
-| MAP-01 | Phase 3 — Driver Flow & Maps | Pending |
-| MAP-02 | Phase 3 — Driver Flow & Maps | Pending |
-| MAP-03 | Phase 3 — Driver Flow & Maps | Pending |
-| MAP-04 | Phase 3 — Driver Flow & Maps | Pending |
-| MAP-05 | Phase 3 — Driver Flow & Maps | Pending |
-| COMM-01 | Phase 3 — Driver Flow & Maps | Pending |
-| COMM-02 | Phase 3 — Driver Flow & Maps | Pending |
-| SEC-04 | Phase 4 — Hardening | Pending |
-| SEC-05 | Phase 4 — Hardening | Pending |
-| SEC-06 | Phase 4 — Hardening | Pending |
-| TEST-01 | Phase 4 — Hardening | Pending |
+| COMP-01 | TBD | Pending |
+| COMP-02 | TBD | Pending |
+| COMP-03 | TBD | Pending |
+| COMP-04 | TBD | Pending |
+| COMP-05 | TBD | Pending |
+| AUTH-01 | TBD | Pending |
+| DISP-01 | TBD | Pending |
+| DISP-02 | TBD | Pending |
+| DISP-03 | TBD | Pending |
+| DRVR-01 | TBD | Pending |
+| DRVR-02 | TBD | Pending |
+| DRVR-03 | TBD | Pending |
+| DRVR-04 | TBD | Pending |
+| MAP-01 | TBD | Pending |
+| MAP-02 | TBD | Pending |
+| MAP-03 | TBD | Pending |
+| NOTF-01 | TBD | Pending |
+| NOTF-02 | TBD | Pending |
+| NOTF-03 | TBD | Pending |
+| NOTF-04 | TBD | Pending |
+| NOTF-05 | TBD | Pending |
+| NOTF-06 | TBD | Pending |
+| SEC-01 | TBD | Pending |
+| SEC-02 | TBD | Pending |
+| SEC-03 | TBD | Pending |
+| SEC-04 | TBD | Pending |
+| TEST-01 | TBD | Pending |
 
 **Coverage:**
-- v1 requirements: 34 total
-- Mapped to phases: 34
-- Unmapped: 0
+- v1 requirements: 27 total
+- Mapped to phases: TBD (roadmapper to fill)
+- Unmapped: TBD
 
 ---
 
 *Requirements defined: 2026-03-13*
-*Last updated: 2026-03-13 after roadmap creation*
+*Last updated: 2026-03-15 after B2B dispatch pivot — company-based model replaces independent driver marketplace*
