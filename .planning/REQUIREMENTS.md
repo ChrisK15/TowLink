@@ -119,38 +119,38 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| COMP-01 | TBD | Pending |
-| COMP-02 | TBD | Pending |
-| COMP-03 | TBD | Pending |
-| COMP-04 | TBD | Pending |
-| COMP-05 | TBD | Pending |
-| AUTH-01 | TBD | Pending |
-| DISP-01 | TBD | Pending |
-| DISP-02 | TBD | Pending |
-| DISP-03 | TBD | Pending |
-| DRVR-01 | TBD | Pending |
-| DRVR-02 | TBD | Pending |
-| DRVR-03 | TBD | Pending |
-| DRVR-04 | TBD | Pending |
-| MAP-01 | TBD | Pending |
-| MAP-02 | TBD | Pending |
-| MAP-03 | TBD | Pending |
-| NOTF-01 | TBD | Pending |
-| NOTF-02 | TBD | Pending |
-| NOTF-03 | TBD | Pending |
-| NOTF-04 | TBD | Pending |
-| NOTF-05 | TBD | Pending |
-| NOTF-06 | TBD | Pending |
-| SEC-01 | TBD | Pending |
-| SEC-02 | TBD | Pending |
-| SEC-03 | TBD | Pending |
-| SEC-04 | TBD | Pending |
-| TEST-01 | TBD | Pending |
+| COMP-01 | Phase 1 | Pending |
+| COMP-02 | Phase 1 | Pending |
+| COMP-03 | Phase 1 | Pending |
+| COMP-04 | Phase 1 | Pending |
+| COMP-05 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Pending |
+| DISP-01 | Phase 2 | Pending |
+| DISP-02 | Phase 2 | Pending |
+| DISP-03 | Phase 2 | Pending |
+| DRVR-01 | Phase 3 | Pending |
+| DRVR-02 | Phase 3 | Pending |
+| DRVR-03 | Phase 3 | Pending |
+| DRVR-04 | Phase 3 | Pending |
+| MAP-01 | Phase 3 | Pending |
+| MAP-02 | Phase 3 | Pending |
+| MAP-03 | Phase 3 | Pending |
+| NOTF-01 | Phase 4 | Pending |
+| NOTF-02 | Phase 4 | Pending |
+| NOTF-03 | Phase 4 | Pending |
+| NOTF-04 | Phase 4 | Pending |
+| NOTF-05 | Phase 4 | Pending |
+| NOTF-06 | Phase 4 | Pending |
+| SEC-01 | Phase 5 | Pending |
+| SEC-02 | Phase 5 | Pending |
+| SEC-03 | Phase 5 | Pending |
+| SEC-04 | Phase 5 | Pending |
+| TEST-01 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 27 total
-- Mapped to phases: TBD (roadmapper to fill)
-- Unmapped: TBD
+- Mapped to phases: 27
+- Unmapped: 0
 
 ---
 

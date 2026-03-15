@@ -2,7 +2,7 @@
 
 ## Overview
 
-TowLink's core dispatch loop is already working. The remaining MVP work covers four delivery boundaries: making payments safe and functional, wiring up push notifications, polishing the driver and map experience, and hardening the app for real-device testing. Each phase leaves the app in a verifiably more complete state than when it started.
+This milestone (v1.0 Company-Based Dispatch Pivot) replaces the independent driver marketplace with a B2B company dispatch model. Tow yards register as companies, admins manage their driver fleet, and incoming commuter requests are auto-routed to the nearest affiliated tow yard with fair in-company job distribution. The milestone also wires up push notifications, locks down role-based Firestore security rules, and ships an E2E test suite — delivering a stable, deployable dispatch platform ready for real users.
 
 ## Phases
 
@@ -12,69 +12,100 @@ TowLink's core dispatch loop is already working. The remaining MVP work covers f
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Payments** - Fix the finalPrice bug, lock down security rules, and enable end-to-end Stripe payment collection
-- [ ] **Phase 2: Notifications** - Set up EAS builds and deliver push alerts to drivers and commuters at the right moments
-- [ ] **Phase 3: Driver Flow & Maps** - Complete the driver-side trip UI and polish the maps experience for both roles
-- [ ] **Phase 4: Hardening** - Make the app production-stable with loading states, error handling, and an E2E test suite
+- [ ] **Phase 1: Companies & Admin** - Establish the company entity, admin dashboard, and company-linked driver auth that the entire dispatch model depends on
+- [ ] **Phase 2: Company-Based Dispatch** - Replace individual driver matching with nearest-company routing and fair in-company job assignment
+- [ ] **Phase 3: Driver Flow & Maps** - Complete the driver job execution flow and map/location UX for active trips
+- [ ] **Phase 4: Push Notifications** - Configure EAS builds and implement push notifications for drivers and commuters
+- [ ] **Phase 5: Security, Reliability & Testing** - Harden Firestore rules, add loading/error states, fix startup flicker, and ship E2E test coverage
 
 ## Phase Details
 
-### Phase 1: Payments
-**Goal**: Commuter can pay for a completed trip via Stripe, driver sees their earnings, and payment fields are safe from client tampering
-**Depends on**: Nothing (builds on existing validated core)
-**Requirements**: PAY-01, PAY-02, PAY-03, PAY-04, PAY-05, PAY-06, PAY-07, PAY-08, SEC-01, SEC-02, SEC-03
+### Phase 1: Companies & Admin
+**Goal**: Tow yard admins can register their company and manage their driver roster; drivers authenticate via company email and are automatically linked to their tow yard
+**Depends on**: Nothing (first phase)
+**Requirements**: COMP-01, COMP-02, COMP-03, COMP-04, COMP-05, AUTH-01
 **Success Criteria** (what must be TRUE):
-  1. Commuter sees a fare estimate based on trip distance before confirming a request
-  2. At trip completion, commuter is presented with a native Stripe PaymentSheet and can successfully pay
-  3. After payment, commuter sees a trip summary screen showing total charged
-  4. Driver sees the earnings amount on their completed trip
-  5. Firestore rules prevent any client from writing to finalPrice, paymentStatus, paymentIntentId, or driverPayoutStatus — only Cloud Functions can write these fields
+  1. An admin can register a new tow yard company with name, address, and service area and see it persisted in Firestore
+  2. An admin can add a driver to their company by entering the driver's company email address, and that driver account is linked to the company
+  3. An admin can deactivate a driver so they no longer appear as available for dispatch
+  4. An admin dashboard shows all active jobs and their statuses updating in real-time
+  5. A driver who logs in with their company-issued email is automatically associated with the correct tow yard — no manual company selection required
 **Plans**: TBD
 
-### Phase 2: Notifications
-**Goal**: Driver receives a push alert when matched to a new job; commuter receives alerts when driver accepts and arrives
+Plans:
+- [ ] 01-01: TBD
+
+### Phase 2: Company-Based Dispatch
+**Goal**: Commuter requests are automatically routed to the nearest affiliated tow yard and fairly distributed to an available driver within that company
 **Depends on**: Phase 1
-**Requirements**: NOTF-01, NOTF-02, NOTF-03, NOTF-04, NOTF-05, NOTF-06
+**Requirements**: DISP-01, DISP-02, DISP-03
 **Success Criteria** (what must be TRUE):
-  1. App runs as an EAS development build (not Expo Go) and push notifications can be tested on a physical device
-  2. Driver receives a push notification when a request is matched to them, even with the app backgrounded
-  3. Commuter receives a push notification when the driver accepts their request
-  4. Commuter receives a push notification when the driver marks themselves as arrived
-  5. Tapping any push notification opens the app and navigates to the relevant screen
+  1. When a commuter submits a tow request, the system routes it to the geographically nearest affiliated tow yard without any manual dispatcher action
+  2. Within the matched company, the job is assigned to an available driver using a fair distribution algorithm — no single driver always gets first pick
+  3. If the assigned driver declines, the job is immediately re-assigned to the next available driver in the same company without any commuter action
 **Plans**: TBD
+
+Plans:
+- [ ] 02-01: TBD
 
 ### Phase 3: Driver Flow & Maps
-**Goal**: Driver can execute a complete trip from job offer to completion with map directions and clear status controls; both map screens are fully polished
-**Depends on**: Phase 1
-**Requirements**: DRVR-01, DRVR-02, DRVR-03, DRVR-04, DRVR-05, DRVR-06, MAP-01, MAP-02, MAP-03, MAP-04, MAP-05, COMM-01, COMM-02
+**Goal**: Drivers can execute the full job lifecycle from acceptance to completion, with live map navigation and real-time commuter visibility throughout the trip
+**Depends on**: Phase 2
+**Requirements**: DRVR-01, DRVR-02, DRVR-03, DRVR-04, MAP-01, MAP-02, MAP-03
 **Success Criteria** (what must be TRUE):
-  1. Driver sees pending requests on the map and can navigate to a customer's location with turn-by-turn directions
-  2. Driver can advance trip status through all stages (en route → arrived → in progress → completed) using clearly labelled UI buttons
-  3. Driver can cancel an accepted job before the trip starts; commuter is notified and request re-enters the pool
-  4. Commuter can cancel a request before the driver arrives; driver is notified and job is removed
-  5. Route polyline and ETA are displayed on the commuter map screen once a driver is assigned
+  1. A driver receives an assigned job and can accept or decline it from the driver dashboard
+  2. A driver navigating to a job sees map directions to the commuter's pickup location
+  3. A driver can advance the trip through all stages (en route → arrived → in progress → completed) with each tap updating the commuter's view in real-time
+  4. A driver who accepted a job can cancel it before the trip starts, returning the job to the dispatch queue
+  5. A commuter on the active trip screen sees the driver's live location on the map plus a route polyline and ETA once a driver is assigned
+  6. Location permission prompts appear gracefully on both iOS and Android and handle denial without crashing
 **Plans**: TBD
 
-### Phase 4: Hardening
-**Goal**: The app is stable, error-tolerant, and verified end-to-end on real iOS and Android devices
-**Depends on**: Phases 2 and 3
-**Requirements**: SEC-04, SEC-05, SEC-06, TEST-01
+Plans:
+- [ ] 03-01: TBD
+- [ ] 03-02: TBD
+
+### Phase 4: Push Notifications
+**Goal**: Drivers and commuters receive timely push notifications for key dispatch events, reliably testable on physical devices via EAS builds
+**Depends on**: Phase 3
+**Requirements**: NOTF-01, NOTF-02, NOTF-03, NOTF-04, NOTF-05, NOTF-06
 **Success Criteria** (what must be TRUE):
-  1. Every async operation shows a loading indicator and never leaves the user staring at a frozen screen
-  2. Firebase and Stripe errors surface as human-readable messages with a retry path (no raw error codes shown to user)
-  3. Authenticated users land directly on their home screen without a route flicker on app startup
-  4. Maestro E2E test suite covers commuter request and driver acceptance flows and passes on both iOS and Android
+  1. An EAS development build runs on a physical iOS or Android device and push notifications can be triggered and received
+  2. On every app launch the device's push token is registered and written to the user's Firestore document
+  3. A driver receives a push notification when a new tow request is assigned to them
+  4. A commuter receives a push notification when a driver accepts their request and again when the driver arrives on scene
+  5. Tapping a push notification from outside the app opens the app and navigates directly to the relevant job or request screen
 **Plans**: TBD
+
+Plans:
+- [ ] 04-01: TBD
+- [ ] 04-02: TBD
+
+### Phase 5: Security, Reliability & Testing
+**Goal**: The app is hardened with role-based Firestore rules, consistent loading/error states, and verified end-to-end on real devices via an automated test suite
+**Depends on**: Phase 4
+**Requirements**: SEC-01, SEC-02, SEC-03, SEC-04, TEST-01
+**Success Criteria** (what must be TRUE):
+  1. Firestore security rules enforce that only admins can write company data, only drivers can write their own status and location, and only commuters can create requests — rule violations are rejected
+  2. Every screen that triggers a Firebase operation shows a loading indicator while the operation is pending
+  3. When a Firebase operation fails, the user sees a readable error message rather than a raw exception or a silent failure
+  4. Authenticated users opening the app are routed directly to their correct dashboard without the startup route-flicker bug
+  5. A Maestro E2E test suite executes the commuter request flow and driver dispatch flow on a real device without manual intervention
+**Plans**: TBD
+
+Plans:
+- [ ] 05-01: TBD
+- [ ] 05-02: TBD
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
-Note: Phase 3 depends only on Phase 1 (not Phase 2) — notifications and driver flow can proceed in parallel if needed.
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Payments | 0/? | Not started | - |
-| 2. Notifications | 0/? | Not started | - |
-| 3. Driver Flow & Maps | 0/? | Not started | - |
-| 4. Hardening | 0/? | Not started | - |
+| 1. Companies & Admin | 0/TBD | Not started | - |
+| 2. Company-Based Dispatch | 0/TBD | Not started | - |
+| 3. Driver Flow & Maps | 0/TBD | Not started | - |
+| 4. Push Notifications | 0/TBD | Not started | - |
+| 5. Security, Reliability & Testing | 0/TBD | Not started | - |
