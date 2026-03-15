@@ -2,10 +2,12 @@ export interface User {
 	id: string;
 	email: string;
 	name?: string;
-	role: 'commuter' | 'driver' | 'both' | null;
+	role: 'commuter' | 'driver' | 'admin' | 'both' | null;
+	companyId?: string; // links driver/admin to their company
 	phone?: string;
 	createdAt: Date;
 	rating?: number; // <- question mark means might not exist
+	isActive?: boolean; // for driver deactivation state
 }
 
 export interface Driver {
@@ -96,4 +98,17 @@ export interface Trip {
 	estimatedPrice: number;
 	finalPrice?: number;
 	driverPath: Location[]; // array of location points
+	companyId?: string; // for Phase 2 dispatch routing and admin Jobs tab filtering
+}
+
+export interface Company {
+	id: string;
+	name: string;
+	address: string;
+	location: Location; // { latitude, longitude }
+	geohash: string; // for Phase 2 radius queries via geohashQueryBounds
+	serviceRadiusKm: number;
+	authorizedEmails: string[];
+	ownerUid: string;
+	createdAt: Date;
 }
