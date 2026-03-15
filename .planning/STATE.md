@@ -2,17 +2,17 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-13)
+See: .planning/PROJECT.md (updated 2026-03-15)
 
-**Core value:** A stranded commuter can get a tow truck dispatched to their exact GPS location within minutes, with live tracking until the driver arrives.
-**Current focus:** Phase 1 — Payments
+**Core value:** A stranded commuter can get a tow truck from a local affiliated tow yard dispatched to their exact GPS location in minutes, without the tow yard needing a manual dispatcher.
+**Current focus:** Phase 1 — TBD (roadmap being created)
 
 ## Current Position
 
-Phase: 1 of 4 (Payments)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-03-13 — Roadmap created; requirements mapped to 4 phases
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-15 — Milestone v1.0 started — B2B dispatch pivot; requirements revised
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -42,9 +42,10 @@ Progress: [░░░░░░░░░░] 0%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [Pre-work]: Use straight-line × 1.4 factor for distance pricing; document Google Distance Matrix as v2 upgrade
-- [Pre-work]: Stripe Connect in test mode for capstone; real driver onboarding deferred to v2
+- [2026-03-15]: Pivot from independent driver marketplace to company-based B2B dispatch — tow yards are the customers, drivers authenticate via company email, jobs route to nearest affiliated tow yard
+- [2026-03-15]: Defer Stripe payments entirely to v2 — focus on dispatch operations and company management first
 - [Pre-work]: Use expo-notifications + expo-server-sdk via Cloud Functions (NOT @react-native-firebase/messaging — conflicts with Firebase JS SDK v12)
+- [Pre-work]: New React Native Architecture enabled (newArchEnabled: true)
 
 ### Pending Todos
 
@@ -52,13 +53,12 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 1 blocker]: `finalPrice` is set to `null` in `acceptClaimedRequest` — must fix before any Stripe charge logic is written
-- [Phase 1 blocker]: Firestore security rules are fully open (`allow read, write: if true`) — must lock down payment fields before Stripe work begins
-- [Phase 1 risk]: `acceptRequest()` may be non-transactional — audit and remove or migrate to `runTransaction` before Phase 1 plans execute
-- [Phase 2 constraint]: push notifications require EAS development build (not Expo Go) — NOTF-01 must be first plan in Phase 2
+- [Architecture]: Existing data model has no "company" entity — new Firestore schema needed: `companies` collection, driver-company association field, company-level dispatch logic
+- [Auth]: Current driver auth is standalone; needs to be linked to company on login (email domain or admin-assigned)
+- [Dispatch]: Current geohash-based matching finds nearest individual driver — must be replaced with company-based routing (nearest company → fair distribution within company)
 
 ## Session Continuity
 
-Last session: 2026-03-13
-Stopped at: Roadmap created, files written — ready to run /gsd:plan-phase 1
+Last session: 2026-03-15
+Stopped at: Requirements revised for B2B pivot — ready to create roadmap
 Resume file: None
