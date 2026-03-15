@@ -36,8 +36,7 @@ Declared values (multiples of 4):
 | xs | 4px | Icon-to-label gap, badge internal padding (vertical) |
 | sm | 8px | Sibling element gap in a row, chip horizontal padding |
 | md | 16px | Card internal padding, screen horizontal margin (default) |
-| lg | 20px | Card internal padding where breathing room is needed (matches existing cards) |
-| xl | 24px | Section vertical separation |
+| xl | 24px | Section vertical separation, card internal padding where extra breathing room is needed |
 | 2xl | 32px | Bottom safe-area padding, header-to-content gap |
 | 3xl | 48px | Not used in this phase |
 
