@@ -30,10 +30,16 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. An admin can deactivate a driver so they no longer appear as available for dispatch
   4. An admin dashboard shows all active jobs and their statuses updating in real-time
   5. A driver who logs in with their company-issued email is automatically associated with the correct tow yard — no manual company selection required
-**Plans**: TBD
+**Plans**: 7 plans
 
 Plans:
-- [ ] 01-01: TBD
+- [ ] 01-01-PLAN.md — Data layer: Company type + Firestore company service (6 functions)
+- [ ] 01-02-PLAN.md — Auth extension: admin role + companyId in AuthContext + root layout routing
+- [ ] 01-03-PLAN.md — Driver signup: signUpDriverWithEmail + pre-authorization email check
+- [ ] 01-04-PLAN.md — Realtime hooks + admin route group scaffold (stubs for /(admin))
+- [ ] 01-05-PLAN.md — Admin Jobs tab: real-time FlatList with status badges
+- [ ] 01-06-PLAN.md — Admin Drivers tab: roster + swipe-to-deactivate + Add Driver sheet
+- [ ] 01-07-PLAN.md — Human verify: all 6 Phase 1 manual flows
 
 ### Phase 2: Company-Based Dispatch
 **Goal**: Commuter requests are automatically routed to the nearest affiliated tow yard and fairly distributed to an available driver within that company
@@ -104,7 +110,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Companies & Admin | 0/TBD | Not started | - |
+| 1. Companies & Admin | 0/7 | Not started | - |
 | 2. Company-Based Dispatch | 0/TBD | Not started | - |
 | 3. Driver Flow & Maps | 0/TBD | Not started | - |
 | 4. Push Notifications | 0/TBD | Not started | - |
