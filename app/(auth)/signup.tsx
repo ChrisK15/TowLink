@@ -1,4 +1,4 @@
-import { signUpWithEmail } from '@/services/firebase/authService';
+import { signUpDriverWithEmail } from '@/services/firebase/authService';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -47,9 +47,11 @@ export default function SignupScreen() {
 		setLoading(true);
 
 		try {
-			const result = await signUpWithEmail(email, password);
-			console.log('Account created successfully!', result.userId);
-			router.replace('/role-selection');
+			const result = await signUpDriverWithEmail(email, password);
+			console.log('Driver account created successfully!', result.userId, 'company:', result.companyId);
+			// AuthContext onAuthStateChanged will read role='driver' from Firestore
+			// and trigger the RootLayoutNav redirect to /(driver) automatically.
+			// No explicit router.replace needed here.
 		} catch (error: any) {
 			setError(error.message);
 		} finally {
