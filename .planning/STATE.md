@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-companies-admin/01-02-PLAN.md
-last_updated: "2026-03-15T20:42:39.647Z"
+stopped_at: Completed 01-companies-admin/01-03-PLAN.md
+last_updated: "2026-03-15T20:42:52.619Z"
 last_activity: 2026-03-15 — Roadmap created for v1.0 Company-Based Dispatch Pivot (5 phases, 27 requirements mapped)
 progress:
   total_phases: 5
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 *Updated after each plan completion*
 | Phase 01-companies-admin P01 | 6 | 2 tasks | 2 files |
 | Phase 01-companies-admin P02 | 2 | 2 tasks | 2 files |
+| Phase 01-companies-admin P03 | 2 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,9 @@ Recent decisions affecting current work:
 - [Phase 01-companies-admin]: listenToCompanyJobs() targets trips collection only — Jobs tab empty until Phase 2 dispatch populates companyId on trips
 - [Phase 01-companies-admin]: Admin role excluded from updateUserRole() — admin role set only via manual Firestore seed to prevent privilege escalation
 - [Phase 01-companies-admin]: companyId exposed in AuthContext alongside role — both onAuthStateChanged and refreshRole read and set companyId so admin dashboard hooks are unblocked
+- [Phase 01-companies-admin]: findCompanyByEmail called BEFORE createUserWithEmailAndPassword to prevent zombie auth accounts
+- [Phase 01-companies-admin]: signUpWithEmail() unchanged — commuter path unaffected; only driver signup uses new pre-auth function
+- [Phase 01-companies-admin]: No explicit router.replace after driver signup — AuthContext onAuthStateChanged reads role=driver and routes to /(driver)
 
 ### Pending Todos
 
@@ -82,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T20:42:25.089Z
-Stopped at: Completed 01-companies-admin/01-02-PLAN.md
+Last session: 2026-03-15T20:42:52.617Z
+Stopped at: Completed 01-companies-admin/01-03-PLAN.md
 Resume file: None
