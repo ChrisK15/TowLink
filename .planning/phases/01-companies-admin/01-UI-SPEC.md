@@ -53,10 +53,10 @@ Four sizes, two weights. Matches existing codebase conventions extracted from `A
 |------|------|--------|-------------|-------|
 | Caption | 12px | 400 (regular) | 1.4 | Badge labels, timestamp text, "N drivers online" count label |
 | Body | 14px | 400 (regular) | 1.5 | Row secondary text, driver email in roster, job address in list row |
-| Label | 16px | 600 (semibold) | 1.4 | Row primary text, driver name, tab bar label, section header, form field label |
-| Heading | 20px | 700 (bold) | 1.2 | Screen title, tab heading ("Jobs", "Drivers"), form screen heading ("Add Driver") |
+| Label | 16px | 600 (semibold) | 1.4 | Row primary text, driver name, tab bar label, section header, form field label, interactive button labels, status text |
+| Heading | 20px | 600 (semibold) | 1.2 | Screen title, tab heading ("Jobs", "Drivers"), form screen heading ("Add Driver") |
 
-Weight palette: regular (400) and bold (700). Semibold (600) used for interactive labels and status text only, consistent with existing component usage of `fontWeight: '600'`.
+Weight palette: regular (400) and semibold (600). These are the only two weights used across all type roles in this phase.
 
 ---
 
@@ -103,17 +103,20 @@ New components required by this phase. Reuses React Native primitives and establ
 ### Row Patterns
 
 **Job row** (Jobs tab):
-- Left: colored status badge chip (text: status label)
+
+The primary focal point on the Jobs tab is the colored status badge chip on the left of each row — it communicates job urgency and state at a glance before the user reads any text.
+
+- Left: colored status badge chip (text: status label) — primary visual anchor
 - Middle: commuter name (Label weight) + service type (Body)
 - Right: assigned driver name or "Unassigned" in muted text
 - Height: 64px minimum (touch target)
 - Separator: 1px `#E0E0E0` divider
 
 **Driver row** (Drivers tab):
-- Left: 36px avatar circle with initials (Body, bold)
+- Left: 36px avatar circle with initials (Body, semibold)
 - Middle: driver name (Label weight) + email (Caption, muted)
 - Right: Online/Offline status dot + chip label
-- Swipe-left: 44px-tall red "Deactivate" action cell
+- Swipe-left: 44px-tall red "Deactivate Driver" action cell
 - Height: 64px minimum
 
 ### Status Badges
@@ -132,7 +135,7 @@ Pill-shaped badge (border-radius 12, paddingHorizontal 8, paddingVertical 4):
 
 ### Driver Online/Offline Chip
 
-Dot (12×12, borderRadius 6) + text label beside it. No background fill on the chip itself — dot color communicates state.
+Dot (12x12, borderRadius 6) + text label beside it. No background fill on the chip itself — dot color communicates state.
 
 - Online: dot `#34C759`, text "Online", text color `#34C759`
 - Offline: dot `#8E8E93`, text "Offline", text color `#8E8E93`
@@ -159,13 +162,13 @@ Dot (12×12, borderRadius 6) + text label beside it. No background fill on the c
 
 - Swipe direction: left (left-to-right reading order; destructive action revealed on right)
 - Swipe threshold: 80px to reveal action cell; beyond 160px = auto-trigger
-- Action cell: `#FF3B30` background, white "Deactivate" label (16px, semibold), 44px min height
+- Action cell: `#FF3B30` background, white "Deactivate Driver" label (16px, semibold), 44px min height
 - On trigger: show `Alert.alert()` confirmation before committing (see Copywriting Contract below)
 - Deactivated drivers: remain visible in list with dimmed row (`opacity: 0.5`) and "Deactivated" chip replacing Online/Offline chip. Not hidden (Claude's discretion, rationale: admin needs audit trail of who was deactivated)
 
 ### Add Driver Flow
 
-- Trigger: "+" `TouchableOpacity` button in Drivers tab header (right side), 44px touch target
+- Trigger: "+" `TouchableOpacity` button in Drivers tab header (right side), 44px touch target, `accessibilityLabel="Add driver"`
 - Opens: `@gorhom/bottom-sheet` (already installed) with single-field form
 - Form field: email text input (`autoCapitalize: 'none'`, `keyboardType: 'email-address'`, `autoComplete: 'email'`)
 - CTA: "Add Driver" button (full-width, `#007AFF`, disabled until valid email format entered)
@@ -203,8 +206,8 @@ Dot (12×12, borderRadius 6) + text label beside it. No background fill on the c
 | Add Driver — server error | "Failed to add driver. Please try again." |
 | Deactivate confirmation — title | "Deactivate Driver" |
 | Deactivate confirmation — body | "This driver will no longer receive job assignments. You can reactivate them later." |
-| Deactivate confirmation — confirm button | "Deactivate" |
-| Deactivate confirmation — cancel button | "Cancel" |
+| Deactivate confirmation — confirm button | "Deactivate Driver" |
+| Deactivate confirmation — cancel button | "Keep Driver" |
 | Auth error — email not authorized | "This email isn't registered with a tow yard. Contact your company admin." |
 | Driver status indicator — online | "Online" |
 | Driver status indicator — offline | "Offline" |
