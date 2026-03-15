@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-03-15T19:45:33.085Z"
+stopped_at: Completed 01-companies-admin/01-01-PLAN.md
+last_updated: "2026-03-15T20:38:55.192Z"
 last_activity: 2026-03-15 — Roadmap created for v1.0 Company-Based Dispatch Pivot (5 phases, 27 requirements mapped)
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 7
+  completed_plans: 1
   percent: 0
 ---
 
@@ -50,6 +50,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: -
 
 *Updated after each plan completion*
+| Phase 01-companies-admin P01 | 6 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -62,6 +63,9 @@ Recent decisions affecting current work:
 - [2026-03-15]: Defer Stripe payments entirely to v2 — focus on dispatch operations and company management first
 - [Pre-work]: Use expo-notifications + expo-server-sdk via Cloud Functions (NOT @react-native-firebase/messaging — conflicts with Firebase JS SDK v12)
 - [Pre-work]: New React Native Architecture enabled (newArchEnabled: true)
+- [Phase 01-companies-admin]: Store geohash on company document at creation time using existing getGeohash() — avoids Phase 2 migration
+- [Phase 01-companies-admin]: Separate companies.ts service file (not appended to firestore.ts) — domain-scoped separation
+- [Phase 01-companies-admin]: listenToCompanyJobs() targets trips collection only — Jobs tab empty until Phase 2 dispatch populates companyId on trips
 
 ### Pending Todos
 
@@ -75,6 +79,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T19:45:33.074Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-companies-admin/01-CONTEXT.md
+Last session: 2026-03-15T20:38:55.190Z
+Stopped at: Completed 01-companies-admin/01-01-PLAN.md
+Resume file: None

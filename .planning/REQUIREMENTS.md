@@ -12,15 +12,15 @@ Requirements for MVP release. Each maps to a roadmap phase.
 
 ### Companies & Admin
 
-- [ ] **COMP-01**: Admin can register a tow yard company (name, address, service area)
-- [ ] **COMP-02**: Admin can add a driver to their company by registering the driver's company email address (no self-registration for drivers)
-- [ ] **COMP-03**: Admin can remove or deactivate a driver from their company
-- [ ] **COMP-04**: Admin can view all active jobs and their statuses in real-time
-- [ ] **COMP-05**: Admin can view which drivers are currently online
+- [x] **COMP-01**: Admin can register a tow yard company (name, address, service area)
+- [x] **COMP-02**: Admin can add a driver to their company by registering the driver's company email address (no self-registration for drivers)
+- [x] **COMP-03**: Admin can remove or deactivate a driver from their company
+- [x] **COMP-04**: Admin can view all active jobs and their statuses in real-time
+- [x] **COMP-05**: Admin can view which drivers are currently online
 
 ### Authentication
 
-- [ ] **AUTH-01**: Driver logs in with their company-issued email address and is automatically associated with their affiliated tow yard
+- [x] **AUTH-01**: Driver logs in with their company-issued email address and is automatically associated with their affiliated tow yard
 
 ### Dispatch
 
@@ -119,12 +119,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| COMP-01 | Phase 1 | Pending |
-| COMP-02 | Phase 1 | Pending |
-| COMP-03 | Phase 1 | Pending |
-| COMP-04 | Phase 1 | Pending |
-| COMP-05 | Phase 1 | Pending |
-| AUTH-01 | Phase 1 | Pending |
+| COMP-01 | Phase 1 | Complete |
+| COMP-02 | Phase 1 | Complete |
+| COMP-03 | Phase 1 | Complete |
+| COMP-04 | Phase 1 | Complete |
+| COMP-05 | Phase 1 | Complete |
+| AUTH-01 | Phase 1 | Complete |
 | DISP-01 | Phase 2 | Pending |
 | DISP-02 | Phase 2 | Pending |
 | DISP-03 | Phase 2 | Pending |
