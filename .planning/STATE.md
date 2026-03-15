@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-companies-admin/01-05-PLAN.md
-last_updated: "2026-03-15T20:51:12.195Z"
+stopped_at: Completed 01-companies-admin/01-06-PLAN.md
+last_updated: "2026-03-15T20:52:04.772Z"
 last_activity: 2026-03-15 — Roadmap created for v1.0 Company-Based Dispatch Pivot (5 phases, 27 requirements mapped)
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 6
   percent: 0
 ---
 
@@ -55,6 +55,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-companies-admin P03 | 2 | 2 tasks | 2 files |
 | Phase 01-companies-admin P04 | 3 | 3 tasks | 6 files |
 | Phase 01-companies-admin P05 | 64s | 1 tasks | 1 files |
+| Phase 01-companies-admin P06 | 1min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,7 @@ Recent decisions affecting current work:
 - [Phase 01-companies-admin]: Stub admin screens import hooks to validate full import chain via lint before Plans 05/06 replace the screen bodies
 - [Phase 01-companies-admin]: Display commuterId truncated to 8 chars as placeholder until Phase 2/3 adds commuterName resolution
 - [Phase 01-companies-admin]: StatusBadge inlined in index.tsx - single-use component not worth extracting to shared yet
+- [Phase 01-companies-admin]: Phase 1 shows Offline chip for all active drivers — isAvailable lives in drivers collection, not users collection; cross-collection join is Phase 2 enhancement
 
 ### Pending Todos
 
@@ -92,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T20:51:12.193Z
-Stopped at: Completed 01-companies-admin/01-05-PLAN.md
+Last session: 2026-03-15T20:52:04.770Z
+Stopped at: Completed 01-companies-admin/01-06-PLAN.md
 Resume file: None
