@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-companies-admin/01-03-PLAN.md
-last_updated: "2026-03-15T20:42:52.619Z"
+stopped_at: Completed 01-companies-admin/01-04-PLAN.md
+last_updated: "2026-03-15T20:48:14.594Z"
 last_activity: 2026-03-15 — Roadmap created for v1.0 Company-Based Dispatch Pivot (5 phases, 27 requirements mapped)
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 7
-  completed_plans: 3
+  completed_plans: 4
   percent: 0
 ---
 
@@ -53,6 +53,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-companies-admin P01 | 6 | 2 tasks | 2 files |
 | Phase 01-companies-admin P02 | 2 | 2 tasks | 2 files |
 | Phase 01-companies-admin P03 | 2 | 2 tasks | 2 files |
+| Phase 01-companies-admin P04 | 3 | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,8 @@ Recent decisions affecting current work:
 - [Phase 01-companies-admin]: findCompanyByEmail called BEFORE createUserWithEmailAndPassword to prevent zombie auth accounts
 - [Phase 01-companies-admin]: signUpWithEmail() unchanged — commuter path unaffected; only driver signup uses new pre-auth function
 - [Phase 01-companies-admin]: No explicit router.replace after driver signup — AuthContext onAuthStateChanged reads role=driver and routes to /(driver)
+- [Phase 01-companies-admin]: Admin index.tsx checks authLoading before triggering company-setup redirect to prevent premature redirect during initial auth resolution
+- [Phase 01-companies-admin]: Stub admin screens import hooks to validate full import chain via lint before Plans 05/06 replace the screen bodies
 
 ### Pending Todos
 
@@ -86,6 +89,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T20:42:52.617Z
-Stopped at: Completed 01-companies-admin/01-03-PLAN.md
+Last session: 2026-03-15T20:48:14.592Z
+Stopped at: Completed 01-companies-admin/01-04-PLAN.md
 Resume file: None
