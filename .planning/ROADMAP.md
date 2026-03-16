@@ -12,7 +12,7 @@ This milestone (v1.0 Company-Based Dispatch Pivot) replaces the independent driv
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Companies & Admin** - Establish the company entity, admin dashboard, and company-linked driver auth that the entire dispatch model depends on
+- [x] **Phase 1: Companies & Admin** - Establish the company entity, admin dashboard, and company-linked driver auth that the entire dispatch model depends on (completed 2026-03-16)
 - [ ] **Phase 2: Company-Based Dispatch** - Replace individual driver matching with nearest-company routing and fair in-company job assignment
 - [ ] **Phase 3: Driver Flow & Maps** - Complete the driver job execution flow and map/location UX for active trips
 - [ ] **Phase 4: Push Notifications** - Configure EAS builds and implement push notifications for drivers and commuters
@@ -110,7 +110,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Companies & Admin | 0/7 | Not started | - |
+| 1. Companies & Admin | 7/7 | Complete   | 2026-03-16 |
 | 2. Company-Based Dispatch | 0/TBD | Not started | - |
 | 3. Driver Flow & Maps | 0/TBD | Not started | - |
 | 4. Push Notifications | 0/TBD | Not started | - |
