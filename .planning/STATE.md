@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-companies-admin/01-06-PLAN.md
-last_updated: "2026-03-15T20:52:04.772Z"
+stopped_at: Completed 01-companies-admin/01-07-PLAN.md — Phase 1 all plans done
+last_updated: "2026-03-16T04:37:40.600Z"
 last_activity: 2026-03-15 — Roadmap created for v1.0 Company-Based Dispatch Pivot (5 phases, 27 requirements mapped)
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 7
-  completed_plans: 6
+  completed_plans: 7
   percent: 0
 ---
 
@@ -56,6 +56,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-companies-admin P04 | 3 | 3 tasks | 6 files |
 | Phase 01-companies-admin P05 | 64s | 1 tasks | 1 files |
 | Phase 01-companies-admin P06 | 1min | 2 tasks | 1 files |
+| Phase 01-companies-admin P07 | N/A | 1 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,9 @@ Recent decisions affecting current work:
 - [Phase 01-companies-admin]: Display commuterId truncated to 8 chars as placeholder until Phase 2/3 adds commuterName resolution
 - [Phase 01-companies-admin]: StatusBadge inlined in index.tsx - single-use component not worth extracting to shared yet
 - [Phase 01-companies-admin]: Phase 1 shows Offline chip for all active drivers — isAvailable lives in drivers collection, not users collection; cross-collection join is Phase 2 enhancement
+- [Phase 01-companies-admin]: Replaced BottomSheetModal with React Native Modal — BottomSheetModal (Gorhom) was not responding to taps on iOS during verification; built-in Modal is simpler and works reliably
+- [Phase 01-companies-admin]: Firestore rules for companies collection were entirely absent (default deny) — added during Phase 1 verification; future phases should audit security rules as part of each feature plan
+- [Phase 01-companies-admin]: Used declarative <Redirect> component instead of useEffect/router.replace to fix navigator-not-ready timing warning
 
 ### Pending Todos
 
@@ -94,6 +98,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T20:52:04.770Z
-Stopped at: Completed 01-companies-admin/01-06-PLAN.md
+Last session: 2026-03-16T04:37:40.598Z
+Stopped at: Completed 01-companies-admin/01-07-PLAN.md — Phase 1 all plans done
 Resume file: None
