@@ -3,7 +3,9 @@
     "allow": [
       "mcp__claude_ai_Atlassian__getJiraIssue",
       "mcp__claude_ai_Atlassian__searchJiraIssuesUsingJql",
-      "mcp__claude_ai_Jira__getJiraIssue"
+      "mcp__claude_ai_Jira__getJiraIssue",
+      "Bash(cat \"/Users/chris/.claude/projects/-Users-chris-projects-towlink/41011c64-840d-4e9d-b499-a0a1a94e5a60/tool-results/mcp-claude_ai_Atlassian-searchJiraIssuesUsingJql-1773439835750.txt\" | python3 -c \"\nimport json, sys\ndata = json.load\\(sys.stdin\\)\ntext = data[0]['text']\nissues = json.loads\\(text\\)\nfor i in issues:\n    print\\(f\\\\\"[{i['key']}] [{i['fields']['status']['name']}] {i['fields']['summary']}\\\\\"\\)\n\" 2>&1)",
+      "Bash(node:*)"
     ]
   }
 }
