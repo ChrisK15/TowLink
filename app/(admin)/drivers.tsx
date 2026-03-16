@@ -1,15 +1,19 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
 	ActivityIndicator,
 	Alert,
 	FlatList,
+	KeyboardAvoidingView,
+	Modal,
+	Platform,
 	StyleSheet,
 	Text,
+	TextInput,
 	TouchableOpacity,
 	View,
 } from 'react-native';
-import BottomSheet, { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Swipeable } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/auth-context';
 import { useCompanyDrivers } from '@/hooks/use-company-drivers';
 import { addAuthorizedEmail, deactivateDriver } from '@/services/firebase/companies';
@@ -25,7 +29,6 @@ function getInitials(driver: User): string {
 		}
 		return parts[0].slice(0, 2).toUpperCase();
 	}
-	// Fall back to first 2 chars of email local part
 	const localPart = driver.email.split('@')[0];
 	return localPart.slice(0, 2).toUpperCase();
 }
@@ -97,12 +100,11 @@ function DriverRow({ driver, onDeactivatePress }: DriverRowProps) {
 // ─── Main Screen ─────────────────────────────────────────────────────────────
 
 export default function AdminDriversScreen() {
+	const { top } = useSafeAreaInsets();
 	const { companyId } = useAuth();
 	const { drivers, loading } = useCompanyDrivers(companyId);
 
-	// Bottom sheet state
-	const bottomSheetRef = useRef<BottomSheet>(null);
-	const snapPoints = ['40%'];
+	const [sheetVisible, setSheetVisible] = useState(false);
 
 	// Add Driver form state
 	const [email, setEmail] = useState('');
@@ -110,7 +112,6 @@ export default function AdminDriversScreen() {
 	const [submitting, setSubmitting] = useState(false);
 	const [successVisible, setSuccessVisible] = useState(false);
 
-	// ─── Email validation ──────────────────────────────────────────────────
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	const isEmailValid = emailRegex.test(email);
 
@@ -142,6 +143,16 @@ export default function AdminDriversScreen() {
 		if (emailError) setEmailError('');
 	}
 
+	function openSheet() {
+		setEmail('');
+		setEmailError('');
+		setSheetVisible(true);
+	}
+
+	function closeSheet() {
+		setSheetVisible(false);
+	}
+
 	async function handleAddDriver() {
 		if (!isEmailValid) {
 			setEmailError('Enter a valid email address.');
@@ -153,8 +164,7 @@ export default function AdminDriversScreen() {
 		setEmailError('');
 		try {
 			await addAuthorizedEmail(companyId, email);
-			bottomSheetRef.current?.close();
-			setEmail('');
+			closeSheet();
 			setSuccessVisible(true);
 			setTimeout(() => setSuccessVisible(false), 3000);
 		} catch (e: any) {
@@ -176,11 +186,11 @@ export default function AdminDriversScreen() {
 	return (
 		<View style={styles.screen}>
 			{/* Header */}
-			<View style={styles.header}>
+			<View style={[styles.header, { paddingTop: top + 16 }]}>
 				<Text style={styles.headerTitle}>Drivers</Text>
 				<TouchableOpacity
 					style={styles.addButton}
-					onPress={() => bottomSheetRef.current?.expand()}
+					onPress={openSheet}
 					accessibilityLabel="Add driver"
 				>
 					<Text style={styles.addButtonText}>+</Text>
@@ -215,46 +225,57 @@ export default function AdminDriversScreen() {
 				</View>
 			)}
 
-			{/* Add Driver bottom sheet */}
-			<BottomSheet
-				ref={bottomSheetRef}
-				index={-1}
-				snapPoints={snapPoints}
-				enablePanDownToClose
+			{/* Add Driver modal */}
+			<Modal
+				visible={sheetVisible}
+				animationType="slide"
+				transparent
+				onRequestClose={closeSheet}
 			>
-				<View style={styles.sheetContent}>
-					<Text style={styles.sheetHeading}>Add Driver</Text>
+				<TouchableOpacity
+					style={styles.backdrop}
+					activeOpacity={1}
+					onPress={closeSheet}
+				/>
+				<KeyboardAvoidingView
+					behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+					style={styles.sheetWrapper}
+				>
+					<View style={styles.sheetContent}>
+						<Text style={styles.sheetHeading}>Add Driver</Text>
 
-					<BottomSheetTextInput
-						style={styles.input}
-						placeholder="driver@yourcompany.com"
-						value={email}
-						onChangeText={handleEmailChange}
-						autoCapitalize="none"
-						keyboardType="email-address"
-						autoComplete="email"
-					/>
+						<TextInput
+							style={styles.input}
+							placeholder="driver@yourcompany.com"
+							placeholderTextColor="#999"
+							value={email}
+							onChangeText={handleEmailChange}
+							autoCapitalize="none"
+							keyboardType="email-address"
+							autoComplete="email"
+						/>
 
-					{emailError ? (
-						<Text style={styles.inputError}>{emailError}</Text>
-					) : null}
+						{emailError ? (
+							<Text style={styles.inputError}>{emailError}</Text>
+						) : null}
 
-					<TouchableOpacity
-						style={[
-							styles.addDriverButton,
-							(!isEmailValid || submitting) && styles.addDriverButtonDisabled,
-						]}
-						onPress={handleAddDriver}
-						disabled={!isEmailValid || submitting}
-					>
-						{submitting ? (
-							<ActivityIndicator size="small" color="#FFFFFF" />
-						) : (
-							<Text style={styles.addDriverButtonText}>Add Driver</Text>
-						)}
-					</TouchableOpacity>
-				</View>
-			</BottomSheet>
+						<TouchableOpacity
+							style={[
+								styles.addDriverButton,
+								(!isEmailValid || submitting) && styles.addDriverButtonDisabled,
+							]}
+							onPress={handleAddDriver}
+							disabled={!isEmailValid || submitting}
+						>
+							{submitting ? (
+								<ActivityIndicator size="small" color="#FFFFFF" />
+							) : (
+								<Text style={styles.addDriverButtonText}>Add Driver</Text>
+							)}
+						</TouchableOpacity>
+					</View>
+				</KeyboardAvoidingView>
+			</Modal>
 		</View>
 	);
 }
@@ -422,10 +443,20 @@ const styles = StyleSheet.create({
 		color: '#FFFFFF',
 	},
 
-	// Bottom sheet
+	// Modal sheet
+	backdrop: {
+		flex: 1,
+		backgroundColor: 'transparent',
+	},
+	sheetWrapper: {
+		backgroundColor: '#FFFFFF',
+		borderTopLeftRadius: 16,
+		borderTopRightRadius: 16,
+	},
 	sheetContent: {
 		paddingHorizontal: 16,
 		paddingTop: 16,
+		paddingBottom: 32,
 	},
 	sheetHeading: {
 		fontSize: 20,

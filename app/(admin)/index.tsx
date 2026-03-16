@@ -1,13 +1,16 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
 	ActivityIndicator,
 	FlatList,
 	StyleSheet,
 	Text,
+	TouchableOpacity,
 	View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Redirect } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/auth-context';
+import { signOut } from '@/services/firebase/authService';
 import { useCompanyJobs } from '@/hooks/use-company-jobs';
 import { Trip } from '@/types/models';
 
@@ -85,17 +88,23 @@ function EmptyState() {
 }
 
 export default function AdminJobsScreen() {
+	const { top } = useSafeAreaInsets();
 	const { companyId, loading: authLoading } = useAuth();
 	const { jobs, loading } = useCompanyJobs(companyId);
-	const { replace } = useRouter();
 
-	useEffect(() => {
-		if (!authLoading && companyId === null) {
-			replace('/(admin)/company-setup');
-		}
-	}, [companyId, authLoading]);
+	if (authLoading) {
+		return (
+			<View style={styles.center}>
+				<ActivityIndicator size="large" color="#007AFF" />
+			</View>
+		);
+	}
 
-	if (loading || authLoading) {
+	if (!companyId) {
+		return <Redirect href="/(admin)/company-setup" />;
+	}
+
+	if (loading) {
 		return (
 			<View style={styles.center}>
 				<ActivityIndicator size="large" color="#007AFF" />
@@ -106,8 +115,11 @@ export default function AdminJobsScreen() {
 	return (
 		<View style={styles.screen}>
 			{/* Screen header */}
-			<View style={styles.header}>
+			<View style={[styles.header, { paddingTop: top + 16 }]}>
 				<Text style={styles.headerTitle}>Jobs</Text>
+				<TouchableOpacity onPress={signOut}>
+					<Text style={styles.signOutText}>Sign Out</Text>
+				</TouchableOpacity>
 			</View>
 
 			{/* Job list */}
@@ -131,6 +143,9 @@ const styles = StyleSheet.create({
 
 	// Header
 	header: {
+		flexDirection: 'row' as const,
+		justifyContent: 'space-between' as const,
+		alignItems: 'center' as const,
 		paddingHorizontal: 16,
 		paddingTop: 16,
 		paddingBottom: 8,
@@ -140,6 +155,10 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		fontWeight: '600',
 		color: '#000000',
+	},
+	signOutText: {
+		fontSize: 14,
+		color: '#007AFF',
 	},
 
 	// List

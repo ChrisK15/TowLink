@@ -41,6 +41,12 @@ service cloud.firestore {
       return request.resource.data[field] is timestamp;
     }
 
+    // Check if user has admin role
+    function isAdmin() {
+      return isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
     // Check if user has driver role
     function isDriver() {
       return isAuthenticated()
@@ -81,7 +87,7 @@ service cloud.firestore {
         && (request.resource.data.role == null
             || request.resource.data.role in ['commuter', 'driver', 'both']);
 
-      // Users can only update their own profile
+      // Users can update their own profile
       allow update: if isAuthenticated()
         && isOwner(userId)
         // Cannot change critical fields
@@ -90,7 +96,16 @@ service cloud.firestore {
         && request.resource.data.createdAt == resource.data.createdAt
         // Role must remain valid
         && (request.resource.data.role == null
-            || request.resource.data.role in ['commuter', 'driver', 'both']);
+            || request.resource.data.role in ['commuter', 'driver', 'both', 'admin']);
+
+      // Admins can deactivate drivers in their company
+      allow update: if isAdmin()
+        && resource.data.companyId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId
+        // Can only change isActive
+        && request.resource.data.id == resource.data.id
+        && request.resource.data.email == resource.data.email
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.createdAt == resource.data.createdAt;
 
       // Users cannot delete their own profile (use Cloud Function for account deletion)
       allow delete: if false;
@@ -203,10 +218,13 @@ service cloud.firestore {
     // TRIPS COLLECTION
     // ============================================
     match /trips/{tripId} {
-      // Participants can read their own trips
+      // Participants can read their own trips.
+      // Admins can read all trips belonging to their company.
       allow read: if isAuthenticated()
         && (resource.data.commuterId == request.auth.uid
-            || resource.data.driverId == request.auth.uid);
+            || resource.data.driverId == request.auth.uid
+            || (isAdmin()
+                && resource.data.companyId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId));
 
       // Only drivers can create trips (when accepting a request)
       allow create: if isAuthenticated()
@@ -318,6 +336,25 @@ service cloud.firestore {
       // Drivers can delete their location (when going offline)
       allow delete: if isAuthenticated()
         && isOwner(driverId);
+    }
+
+    // ============================================
+    // COMPANIES COLLECTION
+    // ============================================
+    match /companies/{companyId} {
+      // Public read: needed so unauthenticated drivers can check authorizedEmails
+      // before creating their account (pre-auth signup flow).
+      allow read: if true;
+
+      // Only admins can create a company, and they must be the owner.
+      allow create: if isAdmin()
+        && request.resource.data.ownerUid == request.auth.uid;
+
+      // Only the company owner can update (e.g. add authorized emails).
+      allow update: if isAuthenticated()
+        && resource.data.ownerUid == request.auth.uid;
+
+      allow delete: if false;
     }
 
     // ============================================

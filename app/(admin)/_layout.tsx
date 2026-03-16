@@ -35,6 +35,10 @@ export default function AdminLayout() {
 					),
 				}}
 			/>
+			<Tabs.Screen
+				name="company-setup"
+				options={{ href: null }}
+			/>
 		</Tabs>
 	);
 }

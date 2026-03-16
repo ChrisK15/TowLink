@@ -8,6 +8,7 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/services/firebase/config';
 import { createCompany } from '@/services/firebase/companies';
@@ -15,6 +16,7 @@ import { useAuth } from '@/context/auth-context';
 
 export default function CompanySetupScreen() {
 	const { user, refreshRole } = useAuth();
+	const router = useRouter();
 
 	const [name, setName] = useState('');
 	const [address, setAddress] = useState('');
@@ -65,7 +67,8 @@ export default function CompanySetupScreen() {
 			await updateDoc(doc(db, 'users', user.uid), { companyId });
 			// Refresh AuthContext so companyId is immediately available
 			await refreshRole();
-			// AuthContext role redirect will route to /(admin) tabs automatically
+			// Navigate to the Jobs tab now that setup is complete
+			router.replace('/(admin)');
 		} catch (e: any) {
 			setSubmitError(e.message ?? 'Failed to register company. Please try again.');
 		} finally {
