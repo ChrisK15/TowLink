@@ -113,7 +113,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Companies & Admin | 7/7 | Complete   | 2026-03-16 |
-| 2. Company-Based Dispatch | 0/3 | Planning complete | - |
+| 2. Company-Based Dispatch | 2/3 | In Progress|  |
 | 3. Driver Flow & Maps | 0/TBD | Not started | - |
 | 4. Push Notifications | 0/TBD | Not started | - |
 | 5. Security, Reliability & Testing | 0/TBD | Not started | - |

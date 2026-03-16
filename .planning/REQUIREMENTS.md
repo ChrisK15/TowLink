@@ -24,9 +24,9 @@ Requirements for MVP release. Each maps to a roadmap phase.
 
 ### Dispatch
 
-- [ ] **DISP-01**: Incoming commuter request is auto-routed to the nearest affiliated tow yard
-- [ ] **DISP-02**: Within the matched company, job is assigned to an available driver using a fair distribution algorithm
-- [ ] **DISP-03**: If the assigned driver declines, job is re-assigned to the next available driver in the same company
+- [x] **DISP-01**: Incoming commuter request is auto-routed to the nearest affiliated tow yard
+- [x] **DISP-02**: Within the matched company, job is assigned to an available driver using a fair distribution algorithm
+- [x] **DISP-03**: If the assigned driver declines, job is re-assigned to the next available driver in the same company
 
 ### Driver Flow
 
@@ -125,9 +125,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COMP-04 | Phase 1 | Complete |
 | COMP-05 | Phase 1 | Complete |
 | AUTH-01 | Phase 1 | Complete |
-| DISP-01 | Phase 2 | Pending |
-| DISP-02 | Phase 2 | Pending |
-| DISP-03 | Phase 2 | Pending |
+| DISP-01 | Phase 2 | Complete |
+| DISP-02 | Phase 2 | Complete |
+| DISP-03 | Phase 2 | Complete |
 | DRVR-01 | Phase 3 | Pending |
 | DRVR-02 | Phase 3 | Pending |
 | DRVR-03 | Phase 3 | Pending |
