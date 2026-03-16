@@ -17,7 +17,7 @@ export const unstable_settings = {
 };
 
 function RootLayoutNav() {
-	const { user, role, loading } = useAuth();
+	const { user, role, companyId, loading } = useAuth();
 
 	if (loading) {
 		return (
@@ -34,6 +34,9 @@ function RootLayoutNav() {
 	}
 	if (role === 'driver') {
 		return <Redirect href="/(driver)" />;
+	}
+	if (role === 'admin') {
+		return <Redirect href="/(admin)" />;
 	}
 	if (role === null) {
 		return <Redirect href="/(auth)/onboarding/commuter-login" />;
@@ -58,6 +61,7 @@ export default function RootLayout() {
 								options={{ headerShown: false }}
 							/>
 							<Stack.Screen name="(driver)" options={{ headerShown: false }} />
+							<Stack.Screen name="(admin)" options={{ headerShown: false }} />
 						</Stack>
 						<StatusBar style="auto" />
 					</ThemeProvider>

@@ -5,6 +5,7 @@ import {
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { auth, db } from './config';
+import { findCompanyByEmail } from './companies';
 
 export async function signInWithEmail(
 	email: string,
@@ -68,6 +69,62 @@ export async function signUpWithEmail(
 		};
 	} catch (error: any) {
 		console.error('Signup error:', error);
+		if (error.code === 'auth/email-already-in-use') {
+			throw new Error(
+				'This email is already registered. Please log in or use another one to sign up.',
+			);
+		}
+		if (error.code === 'auth/weak-password') {
+			throw new Error('Password is too weak.');
+		}
+		if (error.code === 'auth/invalid-email') {
+			throw new Error('Invalid email format.');
+		}
+		throw new Error('Failed to create account. Please try again.');
+	}
+}
+
+// Driver-specific signup: email must be pre-authorized by a company admin.
+// CRITICAL ORDER: findCompanyByEmail MUST be called before createUserWithEmailAndPassword.
+// If account creation succeeds but auth check fails, you get a zombie auth account with no role.
+export async function signUpDriverWithEmail(
+	email: string,
+	password: string,
+): Promise<{ userId: string; email: string; companyId: string }> {
+	// 1. Check authorization BEFORE creating auth account
+	const company = await findCompanyByEmail(email);
+	if (!company) {
+		throw new Error(
+			"This email isn't registered with a tow yard. Contact your company admin.",
+		);
+	}
+
+	try {
+		// 2. Create auth account
+		const userCredential = await createUserWithEmailAndPassword(
+			auth,
+			email,
+			password,
+		);
+		const user = userCredential.user;
+
+		// 3. Create user doc with role='driver' and companyId already set
+		await setDoc(doc(db, 'users', user.uid), {
+			id: user.uid,
+			email: user.email,
+			role: 'driver',
+			companyId: company.id,
+			isActive: true,
+			createdAt: Timestamp.now(),
+		});
+
+		return {
+			userId: user.uid,
+			email: user.email ?? email,
+			companyId: company.id,
+		};
+	} catch (error: any) {
+		console.error('Driver signup error:', error);
 		if (error.code === 'auth/email-already-in-use') {
 			throw new Error(
 				'This email is already registered. Please log in or use another one to sign up.',
