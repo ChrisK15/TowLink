@@ -33,10 +33,13 @@ export function FindingDriverModal({
 	const dot1Anim = useRef(new Animated.Value(0)).current;
 	const dot2Anim = useRef(new Animated.Value(0)).current;
 	const dot3Anim = useRef(new Animated.Value(0)).current;
+	const contentOpacity = useRef(new Animated.Value(1)).current;
+
+	const isNoDrivers = request?.status === 'no_drivers';
 
 	// Three-dot pulse animation
 	useEffect(() => {
-		if (!visible) return;
+		if (!visible || isNoDrivers) return;
 
 		const makePulse = (anim: Animated.Value, delay: number) =>
 			Animated.sequence([
@@ -62,11 +65,26 @@ export function FindingDriverModal({
 		);
 		loop.start();
 		return () => loop.stop();
-	}, [visible, dot1Anim, dot2Anim, dot3Anim]);
+	}, [visible, isNoDrivers, dot1Anim, dot2Anim, dot3Anim]);
 
 	// React to request status changes
 	useEffect(() => {
 		if (!request || !requestId) return;
+
+		if (request.status === 'no_drivers') {
+			// Fade out current content, then back in with no_drivers state
+			Animated.timing(contentOpacity, {
+				toValue: 0,
+				duration: 200,
+				useNativeDriver: true,
+			}).start(() => {
+				Animated.timing(contentOpacity, {
+					toValue: 1,
+					duration: 200,
+					useNativeDriver: true,
+				}).start();
+			});
+		}
 
 		if (request.status === 'accepted') {
 			const commuterId = request.commuterId;
@@ -97,7 +115,7 @@ export function FindingDriverModal({
 			);
 			onCancel();
 		}
-	}, [request?.status, requestId, onDriverFound, onCancel]);
+	}, [request?.status, requestId, onDriverFound, onCancel, contentOpacity]);
 
 	const handleCancelRequest = async () => {
 		if (!requestId) return;
@@ -130,32 +148,47 @@ export function FindingDriverModal({
 				<View style={styles.divider} />
 
 				{/* Center content */}
-				<View style={styles.content}>
-					<View style={styles.spinnerCircle}>
-						<ActivityIndicator size="large" color="#1565C0" />
-					</View>
+				<Animated.View style={[styles.content, { opacity: contentOpacity }]}>
+					{isNoDrivers ? (
+						<>
+							<Text style={styles.noDriversIcon}>⚠️</Text>
+							<Text style={styles.headline}>No Drivers Available</Text>
+							<Text style={styles.body}>
+								All nearby tow yards are currently busy. Please try again in a few
+								minutes.
+							</Text>
+						</>
+					) : (
+						<>
+							<View style={styles.spinnerCircle}>
+								<ActivityIndicator size="large" color="#1565C0" />
+							</View>
 
-					<Text style={styles.headline}>Finding the Best Available Driver</Text>
-					<Text style={styles.body}>
-						We're matching you with a qualified driver near your location. This
-						usually takes a few seconds.
-					</Text>
+							<Text style={styles.headline}>Finding the Best Available Driver</Text>
+							<Text style={styles.body}>
+								We&apos;re matching you with a qualified driver near your location.
+								This usually takes a few seconds.
+							</Text>
 
-					{/* Animated dots */}
-					<View style={styles.dotsRow}>
-						<Animated.View style={[styles.dot, { opacity: dot1Anim }]} />
-						<Animated.View style={[styles.dot, { opacity: dot2Anim }]} />
-						<Animated.View style={[styles.dot, { opacity: dot3Anim }]} />
-					</View>
-				</View>
+							{/* Animated dots */}
+							<View style={styles.dotsRow}>
+								<Animated.View style={[styles.dot, { opacity: dot1Anim }]} />
+								<Animated.View style={[styles.dot, { opacity: dot2Anim }]} />
+								<Animated.View style={[styles.dot, { opacity: dot3Anim }]} />
+							</View>
+						</>
+					)}
+				</Animated.View>
 
-				{/* Cancel button */}
+				{/* Cancel / Try Again button */}
 				<View style={styles.footer}>
 					<TouchableOpacity
 						style={styles.cancelButton}
-						onPress={handleCancelRequest}
+						onPress={isNoDrivers ? onCancel : handleCancelRequest}
 					>
-						<Text style={styles.cancelButtonText}>Cancel Request</Text>
+						<Text style={styles.cancelButtonText}>
+							{isNoDrivers ? 'Try Again' : 'Cancel Request'}
+						</Text>
 					</TouchableOpacity>
 				</View>
 			</View>
@@ -235,6 +268,10 @@ const styles = StyleSheet.create({
 		height: 10,
 		borderRadius: 5,
 		backgroundColor: '#1565C0',
+	},
+	noDriversIcon: {
+		fontSize: 48,
+		marginBottom: 16,
 	},
 	footer: {
 		padding: 24,
