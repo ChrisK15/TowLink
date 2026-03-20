@@ -157,14 +157,10 @@ export async function updateTripStatus(
 			await updateDoc(doc(db, 'trips', tripId), {
 				status: status,
 			});
-			// Reset driver availability on cancellation too
-			const tripSnap = await getDoc(doc(db, 'trips', tripId));
-			const driverId = tripSnap.data()?.driverId;
-			if (driverId) {
-				await updateDoc(doc(db, 'drivers', driverId), {
-					isActivelyDriving: false,
-				});
-			}
+			// Driver availability reset is handled by the driver's own screen
+			// (app/(driver)/index.tsx) when it detects trip.status === 'cancelled'.
+			// We can't do it here because the commuter may be the caller,
+			// and security rules require isOwner(driverId) for driver doc updates.
 		} else if (status === 'in_progress') {
 			await updateDoc(doc(db, 'trips', tripId), {
 				status: status,
