@@ -8,10 +8,13 @@ export function useWatchRequest(requestId: string | null) {
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
+		setRequest(null);
+		setError(null);
 		if (!requestId) {
 			setLoading(false);
 			return;
 		}
+		setLoading(true);
 		const unsubscribe = listenToRequest(requestId, (updatedRequest) => {
 			if (!updatedRequest) {
 				setError('Request not found');

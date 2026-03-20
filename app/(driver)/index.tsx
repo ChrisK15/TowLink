@@ -12,7 +12,7 @@ import {
 import { enrichRequestWithCalculations } from '@/services/requestCalculations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
-import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
 	Alert,
@@ -26,7 +26,7 @@ import {
 import MapView, { Marker } from 'react-native-maps';
 
 export default function DriverScreen() {
-	const { signOut, user } = useAuth();
+	const { signOut, user, companyId } = useAuth();
 	const [driverLocation, setDriverLocation] = useState<{
 		latitude: number;
 		longitude: number;
@@ -116,7 +116,21 @@ export default function DriverScreen() {
 					serviceRadius: 10, // miles
 					totalTrips: 0,
 					createdAt: Timestamp.now(),
+					companyId: companyId ?? null,
+					isActive: true,
+					lastAssignedAt: null,
+					assignmentDate: '',
 				});
+			} else {
+				const data = driverSnap.data();
+				if (data.companyId === undefined && companyId) {
+					await updateDoc(doc(db, 'drivers', user.uid), {
+						companyId: companyId,
+						isActive: data.isActive ?? true,
+						lastAssignedAt: data.lastAssignedAt ?? null,
+						assignmentDate: data.assignmentDate ?? '',
+					});
+				}
 			}
 		} catch (error) {
 			console.error('Error initializing driver document:', error);
@@ -337,7 +351,7 @@ export default function DriverScreen() {
 					{showBanner && (
 						<View style={styles.infoBanner}>
 							<Text style={styles.infoBannerTitle}>
-								You're now online and broadcasting location
+								You&apos;re now online and broadcasting location
 							</Text>
 							<Text style={styles.infoBannerSubtitle}>
 								Ready to receive service requests

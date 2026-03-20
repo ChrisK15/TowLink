@@ -24,6 +24,10 @@ export interface Driver {
 	totalTrips: number;
 	lastLocationUpdate?: Date;
 	isActivelyDriving?: boolean;
+	companyId?: string; // mirrors users/{uid}.companyId for company-scoped dispatch queries
+	isActive?: boolean; // mirrors users/{uid}.isActive for deactivation filtering in Cloud Functions
+	lastAssignedAt?: Date | null; // null = never assigned today; set by Cloud Function on claim
+	assignmentDate?: string; // 'YYYY-MM-DD' — daily reset detection for fair distribution
 }
 
 export interface VehicleInfo {
@@ -61,11 +65,13 @@ export interface Request {
 	pickupAddress: string;
 	dropoffAddress: string;
 	serviceType: ServiceType;
-	status: 'searching' | 'claimed' | 'matched' | 'accepted' | 'cancelled';
+	status: 'searching' | 'claimed' | 'matched' | 'accepted' | 'cancelled' | 'no_drivers';
 	matchedDriverId?: string; // only exists after being matched
 	claimedByDriverId?: string;
 	claimExpiresAt?: Date;
 	notifiedDriverIds?: string[];
+	matchedCompanyId?: string; // set by Cloud Function when company is matched
+	triedCompanyIds?: string[]; // companies fully exhausted during dispatch
 	createdAt: Date;
 	expiresAt: Date;
 	commuterName?: string;

@@ -20,6 +20,7 @@ interface FindingDriverModalProps {
 	requestId: string | null;
 	onDriverFound: (tripId: string) => void;
 	onCancel: () => void;
+	onRetry: () => void;
 }
 
 export function FindingDriverModal({
@@ -27,16 +28,20 @@ export function FindingDriverModal({
 	requestId,
 	onDriverFound,
 	onCancel,
+	onRetry,
 }: FindingDriverModalProps) {
 	const { request } = useWatchRequest(requestId);
 
 	const dot1Anim = useRef(new Animated.Value(0)).current;
 	const dot2Anim = useRef(new Animated.Value(0)).current;
 	const dot3Anim = useRef(new Animated.Value(0)).current;
+	const contentOpacity = useRef(new Animated.Value(1)).current;
+
+	const isNoDrivers = request?.status === 'no_drivers';
 
 	// Three-dot pulse animation
 	useEffect(() => {
-		if (!visible) return;
+		if (!visible || isNoDrivers) return;
 
 		const makePulse = (anim: Animated.Value, delay: number) =>
 			Animated.sequence([
@@ -62,11 +67,26 @@ export function FindingDriverModal({
 		);
 		loop.start();
 		return () => loop.stop();
-	}, [visible, dot1Anim, dot2Anim, dot3Anim]);
+	}, [visible, isNoDrivers, dot1Anim, dot2Anim, dot3Anim]);
 
 	// React to request status changes
 	useEffect(() => {
 		if (!request || !requestId) return;
+
+		if (request.status === 'no_drivers') {
+			// Fade out current content, then back in with no_drivers state
+			Animated.timing(contentOpacity, {
+				toValue: 0,
+				duration: 200,
+				useNativeDriver: true,
+			}).start(() => {
+				Animated.timing(contentOpacity, {
+					toValue: 1,
+					duration: 200,
+					useNativeDriver: true,
+				}).start();
+			});
+		}
 
 		if (request.status === 'accepted') {
 			const commuterId = request.commuterId;
@@ -97,7 +117,7 @@ export function FindingDriverModal({
 			);
 			onCancel();
 		}
-	}, [request?.status, requestId, onDriverFound, onCancel]);
+	}, [request?.status, requestId, onDriverFound, onCancel, contentOpacity]);
 
 	const handleCancelRequest = async () => {
 		if (!requestId) return;
@@ -130,33 +150,69 @@ export function FindingDriverModal({
 				<View style={styles.divider} />
 
 				{/* Center content */}
-				<View style={styles.content}>
-					<View style={styles.spinnerCircle}>
-						<ActivityIndicator size="large" color="#1565C0" />
-					</View>
+				<Animated.View style={[styles.content, { opacity: contentOpacity }]}>
+					{isNoDrivers ? (
+						<>
+							<Text style={styles.noDriversIcon}>⚠️</Text>
+							<Text style={styles.headline}>No Drivers Available</Text>
+							<Text style={styles.body}>
+								All nearby tow yards are currently busy. Please try again in a few
+								minutes.
+							</Text>
+						</>
+					) : (
+						<>
+							<View style={styles.spinnerCircle}>
+								<ActivityIndicator size="large" color="#1565C0" />
+							</View>
 
-					<Text style={styles.headline}>Finding the Best Available Driver</Text>
-					<Text style={styles.body}>
-						We're matching you with a qualified driver near your location. This
-						usually takes a few seconds.
-					</Text>
+							<Text style={styles.headline}>Finding the Best Available Driver</Text>
+							<Text style={styles.body}>
+								We&apos;re matching you with a qualified driver near your location.
+								This usually takes a few seconds.
+							</Text>
 
-					{/* Animated dots */}
-					<View style={styles.dotsRow}>
-						<Animated.View style={[styles.dot, { opacity: dot1Anim }]} />
-						<Animated.View style={[styles.dot, { opacity: dot2Anim }]} />
-						<Animated.View style={[styles.dot, { opacity: dot3Anim }]} />
-					</View>
-				</View>
+							{/* Animated dots */}
+							<View style={styles.dotsRow}>
+								<Animated.View style={[styles.dot, { opacity: dot1Anim }]} />
+								<Animated.View style={[styles.dot, { opacity: dot2Anim }]} />
+								<Animated.View style={[styles.dot, { opacity: dot3Anim }]} />
+							</View>
+						</>
+					)}
+				</Animated.View>
 
-				{/* Cancel button */}
+				{/* Footer buttons */}
 				<View style={styles.footer}>
-					<TouchableOpacity
-						style={styles.cancelButton}
-						onPress={handleCancelRequest}
-					>
-						<Text style={styles.cancelButtonText}>Cancel Request</Text>
-					</TouchableOpacity>
+					{isNoDrivers ? (
+						<>
+							<TouchableOpacity
+								style={styles.retryButton}
+								onPress={async () => {
+									if (requestId) await cancelRequest(requestId);
+									onRetry();
+								}}
+							>
+								<Text style={styles.retryButtonText}>Try Again</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={styles.dismissButton}
+								onPress={async () => {
+									if (requestId) await cancelRequest(requestId);
+									onCancel();
+								}}
+							>
+								<Text style={styles.dismissButtonText}>Dismiss</Text>
+							</TouchableOpacity>
+						</>
+					) : (
+						<TouchableOpacity
+							style={styles.cancelButton}
+							onPress={handleCancelRequest}
+						>
+							<Text style={styles.cancelButtonText}>Cancel Request</Text>
+						</TouchableOpacity>
+					)}
 				</View>
 			</View>
 		</Modal>
@@ -236,10 +292,38 @@ const styles = StyleSheet.create({
 		borderRadius: 5,
 		backgroundColor: '#1565C0',
 	},
+	noDriversIcon: {
+		fontSize: 48,
+		marginBottom: 16,
+	},
 	footer: {
 		padding: 24,
 		borderTopWidth: 1,
 		borderTopColor: '#E0E0E0',
+		gap: 12,
+	},
+	retryButton: {
+		backgroundColor: '#1565C0',
+		borderRadius: 12,
+		paddingVertical: 16,
+		alignItems: 'center',
+	},
+	retryButtonText: {
+		fontSize: 16,
+		fontWeight: '600',
+		color: '#FFF',
+	},
+	dismissButton: {
+		borderWidth: 1.5,
+		borderColor: '#CCC',
+		borderRadius: 12,
+		paddingVertical: 16,
+		alignItems: 'center',
+	},
+	dismissButtonText: {
+		fontSize: 16,
+		fontWeight: '600',
+		color: '#666',
 	},
 	cancelButton: {
 		borderWidth: 1.5,

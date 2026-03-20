@@ -2,16 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Completed 01-companies-admin/01-07-PLAN.md — Phase 1 all plans done
-last_updated: "2026-03-16T04:50:51.498Z"
-last_activity: 2026-03-15 — Roadmap created for v1.0 Company-Based Dispatch Pivot (5 phases, 27 requirements mapped)
+status: unknown
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-03-20T18:15:16.172Z"
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 7
-  completed_plans: 7
-  percent: 0
+  total_plans: 10
+  completed_plans: 9
 ---
 
 # Project State
@@ -21,20 +19,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-15)
 
 **Core value:** A stranded commuter can get a tow truck from a local affiliated tow yard dispatched to their exact GPS location in minutes, without the tow yard needing a manual dispatcher.
-**Current focus:** Phase 1 — Companies & Admin
+**Current focus:** Phase 02 — company-based-dispatch
 
 ## Current Position
 
-Phase: 1 of 5 (Companies & Admin)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-03-15 — Roadmap created for v1.0 Company-Based Dispatch Pivot (5 phases, 27 requirements mapped)
-
-Progress: [░░░░░░░░░░] 0%
+Phase: 02 (company-based-dispatch) — EXECUTING
+Plan: 1 of 3
 
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: 0
 - Average duration: -
 - Total execution time: -
@@ -46,6 +41,7 @@ Progress: [░░░░░░░░░░] 0%
 | - | - | - | - |
 
 **Recent Trend:**
+
 - Last 5 plans: none yet
 - Trend: -
 
@@ -57,6 +53,8 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-companies-admin P05 | 64s | 1 tasks | 1 files |
 | Phase 01-companies-admin P06 | 1min | 2 tasks | 1 files |
 | Phase 01-companies-admin P07 | N/A | 1 tasks | 6 files |
+| Phase 02-company-based-dispatch P02 | 6min | 2 tasks | 5 files |
+| Phase 02-company-based-dispatch P01 | 7min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -85,6 +83,12 @@ Recent decisions affecting current work:
 - [Phase 01-companies-admin]: Replaced BottomSheetModal with React Native Modal — BottomSheetModal (Gorhom) was not responding to taps on iOS during verification; built-in Modal is simpler and works reliably
 - [Phase 01-companies-admin]: Firestore rules for companies collection were entirely absent (default deny) — added during Phase 1 verification; future phases should audit security rules as part of each feature plan
 - [Phase 01-companies-admin]: Used declarative <Redirect> component instead of useEffect/router.replace to fix navigator-not-ready timing warning
+- [Phase 02-company-based-dispatch]: findFairDriver uses UTC daily reset boundary for assignmentDate comparison - consistent across all Cloud Function runs
+- [Phase 02-company-based-dispatch]: 100km outer search radius in findNearestCompanies with per-company serviceRadiusKm secondary filter for rural coverage
+- [Phase 02-company-based-dispatch]: triedCompanyIds array on request documents prevents infinite re-dispatch to exhausted companies
+- [Phase 02-company-based-dispatch]: handleClaimTimeouts handles both expired claims and declined requests (searching with non-empty notifiedDriverIds) in same scheduler run
+- [Phase 02-company-based-dispatch]: initializeDriverDocument backfills companyId on existing driver docs — ensures Cloud Functions can query all drivers by companyId without manual migration
+- [Phase 02-company-based-dispatch]: Try Again button in FindingDriverModal calls onCancel() directly, not cancelRequest() — no_drivers is a terminal Firestore status; cancelling it would be a no-op or error
 
 ### Pending Todos
 
@@ -98,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T04:37:40.598Z
-Stopped at: Completed 01-companies-admin/01-07-PLAN.md — Phase 1 all plans done
+Last session: 2026-03-16T18:53:55.096Z
+Stopped at: Completed 02-01-PLAN.md
 Resume file: None

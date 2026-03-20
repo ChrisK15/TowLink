@@ -42,6 +42,7 @@ interface DriverRowProps {
 
 function DriverRow({ driver, onDeactivatePress }: DriverRowProps) {
 	const isDeactivated = driver.isActive === false;
+	const isOnline = (driver as any).isAvailable === true;
 
 	const renderRightActions = () => (
 		<TouchableOpacity
@@ -76,6 +77,11 @@ function DriverRow({ driver, onDeactivatePress }: DriverRowProps) {
 			<View style={styles.chipContainer}>
 				{isDeactivated ? (
 					<Text style={styles.chipDeactivated}>Deactivated</Text>
+				) : isOnline ? (
+					<View style={styles.chipOnlineRow}>
+						<View style={styles.chipDotOnline} />
+						<Text style={styles.chipOnlineText}>Online</Text>
+					</View>
 				) : (
 					<View style={styles.chipOfflineRow}>
 						<View style={styles.chipDot} />
@@ -380,15 +386,31 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		gap: 4,
 	},
+	chipOnlineRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+	},
 	chipDot: {
 		width: 12,
 		height: 12,
 		borderRadius: 6,
 		backgroundColor: '#8E8E93',
 	},
+	chipDotOnline: {
+		width: 12,
+		height: 12,
+		borderRadius: 6,
+		backgroundColor: '#34C759',
+	},
 	chipOfflineText: {
 		fontSize: 14,
 		color: '#8E8E93',
+	},
+	chipOnlineText: {
+		fontSize: 14,
+		color: '#34C759',
+		fontWeight: '600',
 	},
 	chipDeactivated: {
 		fontSize: 14,

@@ -33,13 +33,13 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 7 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Data layer: Company type + Firestore company service (6 functions)
-- [ ] 01-02-PLAN.md — Auth extension: admin role + companyId in AuthContext + root layout routing
-- [ ] 01-03-PLAN.md — Driver signup: signUpDriverWithEmail + pre-authorization email check
-- [ ] 01-04-PLAN.md — Realtime hooks + admin route group scaffold (stubs for /(admin))
-- [ ] 01-05-PLAN.md — Admin Jobs tab: real-time FlatList with status badges
-- [ ] 01-06-PLAN.md — Admin Drivers tab: roster + swipe-to-deactivate + Add Driver sheet
-- [ ] 01-07-PLAN.md — Human verify: all 6 Phase 1 manual flows
+- [x] 01-01-PLAN.md — Data layer: Company type + Firestore company service (6 functions)
+- [x] 01-02-PLAN.md — Auth extension: admin role + companyId in AuthContext + root layout routing
+- [x] 01-03-PLAN.md — Driver signup: signUpDriverWithEmail + pre-authorization email check
+- [x] 01-04-PLAN.md — Realtime hooks + admin route group scaffold (stubs for /(admin))
+- [x] 01-05-PLAN.md — Admin Jobs tab: real-time FlatList with status badges
+- [x] 01-06-PLAN.md — Admin Drivers tab: roster + swipe-to-deactivate + Add Driver sheet
+- [x] 01-07-PLAN.md — Human verify: all 6 Phase 1 manual flows
 
 ### Phase 2: Company-Based Dispatch
 **Goal**: Commuter requests are automatically routed to the nearest affiliated tow yard and fairly distributed to an available driver within that company
@@ -49,10 +49,12 @@ Plans:
   1. When a commuter submits a tow request, the system routes it to the geographically nearest affiliated tow yard without any manual dispatcher action
   2. Within the matched company, the job is assigned to an available driver using a fair distribution algorithm — no single driver always gets first pick
   3. If the assigned driver declines, the job is immediately re-assigned to the next available driver in the same company without any commuter action
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: TBD
+- [x] 02-01-PLAN.md — App-side data model + driver init fix + trip companyId propagation + FindingDriverModal no_drivers handler
+- [x] 02-02-PLAN.md — Cloud Functions rewrite: findNearestCompanies + findFairDriver + dispatch engine + Jest tests
+- [x] 02-03-PLAN.md — Deploy Cloud Functions + human verification of all 3 dispatch flows
 
 ### Phase 3: Driver Flow & Maps
 **Goal**: Drivers can execute the full job lifecycle from acceptance to completion, with live map navigation and real-time commuter visibility throughout the trip
@@ -111,7 +113,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Companies & Admin | 7/7 | Complete   | 2026-03-16 |
-| 2. Company-Based Dispatch | 0/TBD | Not started | - |
+| 2. Company-Based Dispatch | 2/3 | In Progress|  |
 | 3. Driver Flow & Maps | 0/TBD | Not started | - |
 | 4. Push Notifications | 0/TBD | Not started | - |
 | 5. Security, Reliability & Testing | 0/TBD | Not started | - |
