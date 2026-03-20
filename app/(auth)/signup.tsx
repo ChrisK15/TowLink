@@ -73,6 +73,7 @@ export default function SignupScreen() {
 			)}
 			<Text style={styles.title}>Create Account</Text>
 			<TextInput
+				testID="signup-email-input"
 				placeholder="Email"
 				placeholderTextColor="#888"
 				value={email}
@@ -82,6 +83,7 @@ export default function SignupScreen() {
 				style={styles.input}
 			/>
 			<TextInput
+				testID="signup-password-input"
 				placeholder="Password"
 				placeholderTextColor="#888"
 				value={password}
@@ -91,6 +93,7 @@ export default function SignupScreen() {
 				style={styles.input}
 			/>
 			<TextInput
+				testID="signup-confirm-password-input"
 				placeholder="Confirm Password"
 				placeholderTextColor="#888"
 				value={confirmPassword}
@@ -101,6 +104,7 @@ export default function SignupScreen() {
 			/>
 			{error ? <Text style={styles.errorText}>{error}</Text> : null}
 			<Pressable
+				testID="signup-btn"
 				onPress={handleSignup}
 				disabled={loading}
 				style={[styles.button, loading ? styles.buttonDisabled : null]}

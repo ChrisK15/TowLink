@@ -187,6 +187,7 @@ export function FindingDriverModal({
 					{isNoDrivers ? (
 						<>
 							<TouchableOpacity
+								testID="try-again-btn"
 								style={styles.retryButton}
 								onPress={async () => {
 									if (requestId) await cancelRequest(requestId);
@@ -207,6 +208,7 @@ export function FindingDriverModal({
 						</>
 					) : (
 						<TouchableOpacity
+							testID="cancel-search-btn"
 							style={styles.cancelButton}
 							onPress={handleCancelRequest}
 						>

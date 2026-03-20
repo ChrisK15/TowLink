@@ -101,6 +101,7 @@ export default function CommuterScreen() {
 			{/* Request Button bottom */}
 			{!activeTripId && (
 				<TouchableOpacity
+					testID="request-assistance-btn"
 					style={styles.requestButton}
 					onPress={handleRequestAssistance}
 				>
