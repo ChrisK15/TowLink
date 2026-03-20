@@ -9,7 +9,8 @@
 		"start": "npm run shell",
 		"deploy": "firebase deploy --only functions",
 		"logs": "firebase functions:log",
-		"test": "jest"
+		"test": "jest --testPathIgnorePatterns=integration",
+		"test:integration": "FIRESTORE_EMULATOR_HOST=localhost:8080 jest --testPathPatterns=integration --forceExit"
 	},
 	"engines": {
 		"node": "22"
