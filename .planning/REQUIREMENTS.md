@@ -128,24 +128,24 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DISP-01 | Phase 2 | Complete |
 | DISP-02 | Phase 2 | Complete |
 | DISP-03 | Phase 2 | Complete |
-| DRVR-01 | Phase 3 | Pending |
-| DRVR-02 | Phase 3 | Pending |
-| DRVR-03 | Phase 3 | Pending |
-| DRVR-04 | Phase 3 | Pending |
-| MAP-01 | Phase 3 | Pending |
-| MAP-02 | Phase 3 | Pending |
-| MAP-03 | Phase 3 | Pending |
-| NOTF-01 | Phase 4 | Pending |
-| NOTF-02 | Phase 4 | Pending |
-| NOTF-03 | Phase 4 | Pending |
-| NOTF-04 | Phase 4 | Pending |
-| NOTF-05 | Phase 4 | Pending |
-| NOTF-06 | Phase 4 | Pending |
-| SEC-01 | Phase 5 | Pending |
-| SEC-02 | Phase 5 | Pending |
-| SEC-03 | Phase 5 | Pending |
-| SEC-04 | Phase 5 | Pending |
-| TEST-01 | Phase 5 | Pending |
+| DRVR-01 | Phase 4 | Pending |
+| DRVR-02 | Phase 4 | Pending |
+| DRVR-03 | Phase 4 | Pending |
+| DRVR-04 | Phase 4 | Pending |
+| MAP-01 | Phase 4 | Pending |
+| MAP-02 | Phase 4 | Pending |
+| MAP-03 | Phase 4 | Pending |
+| NOTF-01 | Phase 5 | Pending |
+| NOTF-02 | Phase 5 | Pending |
+| NOTF-03 | Phase 5 | Pending |
+| NOTF-04 | Phase 5 | Pending |
+| NOTF-05 | Phase 5 | Pending |
+| NOTF-06 | Phase 5 | Pending |
+| SEC-01 | Phase 6 | Pending |
+| SEC-02 | Phase 6 | Pending |
+| SEC-03 | Phase 6 | Pending |
+| SEC-04 | Phase 6 | Pending |
+| TEST-01 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 27 total
@@ -155,4 +155,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 ---
 
 *Requirements defined: 2026-03-13*
-*Last updated: 2026-03-15 after B2B dispatch pivot — company-based model replaces independent driver marketplace*
+*Last updated: 2026-03-20 — Fixed TEST-01 traceability (Phase 3, not Phase 5); fixed DRVR/MAP/SEC phase mappings*
