@@ -122,6 +122,15 @@ None — no external service configuration required. Cloud Functions will need d
 - Driver document must have `companyId`, `isActive`, `lastAssignedAt`, `assignmentDate` fields — `initializeDriverDocument()` in `app/(driver)/index.tsx` already writes all of these (confirmed during execution)
 - Remaining concern: `acceptClaimedRequest()` in `services/firebase/firestore.ts` should copy `matchedCompanyId` from request to trip as `companyId` — needed for Admin Jobs tab (Pitfall 6 from RESEARCH.md); out of scope for this plan
 
+## Self-Check: PASSED
+
+- functions/src/index.ts: FOUND
+- functions/jest.config.js: FOUND
+- functions/src/__tests__/dispatch.test.ts: FOUND
+- .planning/phases/02-company-based-dispatch/02-02-SUMMARY.md: FOUND
+- Commit 97586e7: FOUND
+- Commit 4e309cb: FOUND
+
 ---
 *Phase: 02-company-based-dispatch*
 *Completed: 2026-03-16*
