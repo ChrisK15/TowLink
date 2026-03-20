@@ -59,7 +59,7 @@ Requirements for MVP release. Each maps to a roadmap phase.
 
 ### Testing
 
-- [ ] **TEST-01**: Maestro E2E test suite covers commuter request and driver dispatch flows
+- [x] **TEST-01**: Maestro E2E test suite covers commuter request and driver dispatch flows
 
 ---
 
@@ -145,7 +145,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SEC-02 | Phase 6 | Pending |
 | SEC-03 | Phase 6 | Pending |
 | SEC-04 | Phase 6 | Pending |
-| TEST-01 | Phase 3 | Pending |
+| TEST-01 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 27 total
