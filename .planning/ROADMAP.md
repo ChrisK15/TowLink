@@ -14,9 +14,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Companies & Admin** - Establish the company entity, admin dashboard, and company-linked driver auth that the entire dispatch model depends on (completed 2026-03-16)
 - [ ] **Phase 2: Company-Based Dispatch** - Replace individual driver matching with nearest-company routing and fair in-company job assignment
-- [ ] **Phase 3: Driver Flow & Maps** - Complete the driver job execution flow and map/location UX for active trips
-- [ ] **Phase 4: Push Notifications** - Configure EAS builds and implement push notifications for drivers and commuters
-- [ ] **Phase 5: Security, Reliability & Testing** - Harden Firestore rules, add loading/error states, fix startup flicker, and ship E2E test coverage
+- [ ] **Phase 3: Maestro E2E Testing** - Set up Maestro E2E testing framework and write automated test flows for commuter request and driver dispatch workflows
+- [ ] **Phase 4: Driver Flow & Maps** - Complete the driver job execution flow and map/location UX for active trips
+- [ ] **Phase 5: Push Notifications** - Configure EAS builds and implement push notifications for drivers and commuters
+- [ ] **Phase 6: Security, Reliability & Testing** - Harden Firestore rules, add loading/error states, fix startup flicker, and ship E2E test coverage
 
 ## Phase Details
 
@@ -56,9 +57,24 @@ Plans:
 - [x] 02-02-PLAN.md — Cloud Functions rewrite: findNearestCompanies + findFairDriver + dispatch engine + Jest tests
 - [x] 02-03-PLAN.md — Deploy Cloud Functions + human verification of all 3 dispatch flows
 
-### Phase 3: Driver Flow & Maps
-**Goal**: Drivers can execute the full job lifecycle from acceptance to completion, with live map navigation and real-time commuter visibility throughout the trip
+### Phase 3: Maestro E2E Testing
+**Goal**: Set up Maestro E2E testing framework and write automated test flows for commuter request and driver dispatch workflows
 **Depends on**: Phase 2
+**Requirements**: TEST-01
+**Success Criteria** (what must be TRUE):
+  1. Maestro is installed and configured to run against the Expo development build
+  2. An automated test flow covers the commuter request submission flow end-to-end
+  3. An automated test flow covers the driver receiving, accepting, and completing a trip
+  4. Tests can be run with a single command and produce pass/fail results
+**Plans**: 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Firebase emulator fix + emulator connection + dev build config + seed script
+- [ ] 03-02-PLAN.md — testID props on screens + Maestro YAML test flows + single-command runner + human verify
+
+### Phase 4: Driver Flow & Maps
+**Goal**: Drivers can execute the full job lifecycle from acceptance to completion, with live map navigation and real-time commuter visibility throughout the trip
+**Depends on**: Phase 3
 **Requirements**: DRVR-01, DRVR-02, DRVR-03, DRVR-04, MAP-01, MAP-02, MAP-03
 **Success Criteria** (what must be TRUE):
   1. A driver receives an assigned job and can accept or decline it from the driver dashboard
@@ -70,12 +86,12 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
+- [ ] 04-01: TBD
+- [ ] 04-02: TBD
 
-### Phase 4: Push Notifications
+### Phase 5: Push Notifications
 **Goal**: Drivers and commuters receive timely push notifications for key dispatch events, reliably testable on physical devices via EAS builds
-**Depends on**: Phase 3
+**Depends on**: Phase 4
 **Requirements**: NOTF-01, NOTF-02, NOTF-03, NOTF-04, NOTF-05, NOTF-06
 **Success Criteria** (what must be TRUE):
   1. An EAS development build runs on a physical iOS or Android device and push notifications can be triggered and received
@@ -86,12 +102,12 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 05-01: TBD
+- [ ] 05-02: TBD
 
-### Phase 5: Security, Reliability & Testing
+### Phase 6: Security, Reliability & Testing
 **Goal**: The app is hardened with role-based Firestore rules, consistent loading/error states, and verified end-to-end on real devices via an automated test suite
-**Depends on**: Phase 4
+**Depends on**: Phase 5
 **Requirements**: SEC-01, SEC-02, SEC-03, SEC-04, TEST-01
 **Success Criteria** (what must be TRUE):
   1. Firestore security rules enforce that only admins can write company data, only drivers can write their own status and location, and only commuters can create requests — rule violations are rejected
@@ -102,18 +118,19 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
+- [ ] 06-01: TBD
+- [ ] 06-02: TBD
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Companies & Admin | 7/7 | Complete   | 2026-03-16 |
-| 2. Company-Based Dispatch | 2/3 | In Progress|  |
-| 3. Driver Flow & Maps | 0/TBD | Not started | - |
-| 4. Push Notifications | 0/TBD | Not started | - |
-| 5. Security, Reliability & Testing | 0/TBD | Not started | - |
+| 1. Companies & Admin | 7/7 | Complete | 2026-03-16 |
+| 2. Company-Based Dispatch | 3/3 | Complete | 2026-03-20 |
+| 3. Maestro E2E Testing | 0/2 | Not started | - |
+| 4. Driver Flow & Maps | 0/TBD | Not started | - |
+| 5. Push Notifications | 0/TBD | Not started | - |
+| 6. Security, Reliability & Testing | 0/TBD | Not started | - |
