@@ -8,7 +8,12 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "test:e2e": "npm run test:e2e:setup && npm run test:e2e:run",
+    "test:e2e:setup": "curl -s -o /dev/null http://localhost:8080/ 2>/dev/null && echo 'Emulators running' || (echo 'Start emulators first: npm run emulators' && exit 1) && node scripts/seed-emulator.js",
+    "test:e2e:run": "maestro test .maestro/",
+    "emulators": "firebase emulators:start --only auth,firestore,functions",
+    "emulators:seed": "node scripts/seed-emulator.js"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
@@ -19,6 +24,7 @@
     "@react-navigation/native": "^7.1.8",
     "expo": "~54.0.32",
     "expo-constants": "~18.0.9",
+    "expo-dev-client": "~6.0.20",
     "expo-font": "~14.0.9",
     "expo-haptics": "~15.0.8",
     "expo-image": "~3.0.11",
@@ -48,6 +54,7 @@
     "@types/react-native": "^0.72.8",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
+    "firebase-admin": "^13.7.0",
     "firebase-tools": "^15.6.0",
     "typescript": "~5.9.2"
   },
