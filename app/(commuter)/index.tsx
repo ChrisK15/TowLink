@@ -130,6 +130,11 @@ export default function CommuterScreen() {
 					setShowFindingModal(false);
 					setActiveRequestId(null);
 				}}
+				onRetry={() => {
+					setShowFindingModal(false);
+					setActiveRequestId(null);
+					setShowServiceSheet(true);
+				}}
 			/>
 
 			{activeTripId && (

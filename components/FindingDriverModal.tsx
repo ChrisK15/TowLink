@@ -20,6 +20,7 @@ interface FindingDriverModalProps {
 	requestId: string | null;
 	onDriverFound: (tripId: string) => void;
 	onCancel: () => void;
+	onRetry: () => void;
 }
 
 export function FindingDriverModal({
@@ -27,6 +28,7 @@ export function FindingDriverModal({
 	requestId,
 	onDriverFound,
 	onCancel,
+	onRetry,
 }: FindingDriverModalProps) {
 	const { request } = useWatchRequest(requestId);
 
@@ -180,16 +182,37 @@ export function FindingDriverModal({
 					)}
 				</Animated.View>
 
-				{/* Cancel / Try Again button */}
+				{/* Footer buttons */}
 				<View style={styles.footer}>
-					<TouchableOpacity
-						style={styles.cancelButton}
-						onPress={isNoDrivers ? onCancel : handleCancelRequest}
-					>
-						<Text style={styles.cancelButtonText}>
-							{isNoDrivers ? 'Try Again' : 'Cancel Request'}
-						</Text>
-					</TouchableOpacity>
+					{isNoDrivers ? (
+						<>
+							<TouchableOpacity
+								style={styles.retryButton}
+								onPress={async () => {
+									if (requestId) await cancelRequest(requestId);
+									onRetry();
+								}}
+							>
+								<Text style={styles.retryButtonText}>Try Again</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={styles.dismissButton}
+								onPress={async () => {
+									if (requestId) await cancelRequest(requestId);
+									onCancel();
+								}}
+							>
+								<Text style={styles.dismissButtonText}>Dismiss</Text>
+							</TouchableOpacity>
+						</>
+					) : (
+						<TouchableOpacity
+							style={styles.cancelButton}
+							onPress={handleCancelRequest}
+						>
+							<Text style={styles.cancelButtonText}>Cancel Request</Text>
+						</TouchableOpacity>
+					)}
 				</View>
 			</View>
 		</Modal>
@@ -277,6 +300,30 @@ const styles = StyleSheet.create({
 		padding: 24,
 		borderTopWidth: 1,
 		borderTopColor: '#E0E0E0',
+		gap: 12,
+	},
+	retryButton: {
+		backgroundColor: '#1565C0',
+		borderRadius: 12,
+		paddingVertical: 16,
+		alignItems: 'center',
+	},
+	retryButtonText: {
+		fontSize: 16,
+		fontWeight: '600',
+		color: '#FFF',
+	},
+	dismissButton: {
+		borderWidth: 1.5,
+		borderColor: '#CCC',
+		borderRadius: 12,
+		paddingVertical: 16,
+		alignItems: 'center',
+	},
+	dismissButtonText: {
+		fontSize: 16,
+		fontWeight: '600',
+		color: '#666',
 	},
 	cancelButton: {
 		borderWidth: 1.5,

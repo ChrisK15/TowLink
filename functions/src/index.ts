@@ -3,128 +3,13 @@ import * as logger from 'firebase-functions/logger';
 import { setGlobalOptions } from 'firebase-functions/options';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
-import { distanceBetween, geohashQueryBounds } from 'geofire-common';
+import { findFairDriver, findNearestCompanies } from './dispatch.js';
 
 setGlobalOptions({ region: 'us-west2' });
 
 // Initialize Firebase Admin SDK
 admin.initializeApp();
 const db = admin.firestore();
-
-/**
- * Find all affiliated tow yard companies near a location, sorted by distance.
- * Uses geohash range queries on the companies collection, then filters
- * by each company's own serviceRadiusKm.
- */
-async function findNearestCompanies(
-	location: { latitude: number; longitude: number },
-	searchRadiusKm: number,
-): Promise<Array<{ companyId: string; name: string; distance: number }>> {
-	const center = [location.latitude, location.longitude] as [number, number];
-	const radiusInM = searchRadiusKm * 1000;
-	const bounds = geohashQueryBounds(center, radiusInM);
-
-	logger.info(`findNearestCompanies: ${bounds.length} geohash bounds for ${searchRadiusKm}km radius`);
-
-	const promises = bounds.map((bound) =>
-		db.collection('companies')
-			.where('geohash', '>=', bound[0])
-			.where('geohash', '<=', bound[1])
-			.get()
-	);
-	const snapshots = await Promise.all(promises);
-
-	const companies: Array<{ companyId: string; name: string; distance: number }> = [];
-	const seen = new Set<string>(); // deduplicate across geohash bounds
-
-	for (const snap of snapshots) {
-		for (const doc of snap.docs) {
-			if (seen.has(doc.id)) continue;
-			seen.add(doc.id);
-
-			const data = doc.data();
-			if (!data.location) continue;
-
-			const companyCenter = [data.location.latitude, data.location.longitude] as [number, number];
-			const distance = distanceBetween(center, companyCenter);
-
-			// Only include companies whose service radius covers the commuter's location
-			if (distance <= data.serviceRadiusKm) {
-				companies.push({ companyId: doc.id, name: data.name, distance });
-			}
-		}
-	}
-
-	companies.sort((a, b) => a.distance - b.distance);
-	logger.info(`findNearestCompanies: found ${companies.length} companies in range`);
-	return companies;
-}
-
-/**
- * Find the fairest available driver in a specific company.
- * Selection criteria (per user decision):
- * 1. Least-recent assignment — driver with oldest lastAssignedAt gets priority
- * 2. Proximity as tiebreaker — closer driver wins if lastAssignedAt is equal
- * 3. Daily reset — assignments from previous days treated as never-assigned
- * 4. No cooldown — a driver who just completed a trip is immediately eligible
- */
-async function findFairDriver(
-	location: { latitude: number; longitude: number },
-	companyId: string,
-	excludeDriverIds: string[],
-	todayStr: string,
-): Promise<{ driverId: string; distance: number } | null> {
-	const snap = await db.collection('drivers')
-		.where('companyId', '==', companyId)
-		.where('isAvailable', '==', true)
-		.where('isActivelyDriving', '==', false)
-		.get();
-
-	const center = [location.latitude, location.longitude] as [number, number];
-
-	const candidates: Array<{
-		driverId: string;
-		distance: number;
-		lastAssignedAt: admin.firestore.Timestamp | null;
-	}> = [];
-
-	for (const doc of snap.docs) {
-		if (excludeDriverIds.includes(doc.id)) continue;
-		const data = doc.data();
-		if (!data.currentLocation) continue;
-		// Skip deactivated drivers
-		if (data.isActive === false) continue;
-
-		const distance = distanceBetween(center, [
-			data.currentLocation.latitude,
-			data.currentLocation.longitude,
-		]);
-
-		// Daily reset: if assignmentDate is not today, treat lastAssignedAt as null
-		const assignmentDate = data.assignmentDate ?? '';
-		const isNewDay = assignmentDate !== todayStr;
-		const lastAssignedAt = isNewDay ? null : (data.lastAssignedAt ?? null);
-
-		candidates.push({ driverId: doc.id, distance, lastAssignedAt });
-	}
-
-	if (candidates.length === 0) {
-		logger.info(`findFairDriver: no available drivers in company ${companyId}`);
-		return null;
-	}
-
-	// Sort: null lastAssignedAt (never assigned today) first = 0ms,
-	// then oldest assignment first, then closest distance as tiebreaker
-	candidates.sort((a, b) => {
-		const aTime = a.lastAssignedAt?.toMillis() ?? 0;
-		const bTime = b.lastAssignedAt?.toMillis() ?? 0;
-		if (aTime !== bTime) return aTime - bTime;
-		return a.distance - b.distance;
-	});
-
-	logger.info(`findFairDriver: selected ${candidates[0].driverId} from ${candidates.length} candidates in company ${companyId}`);
-	return { driverId: candidates[0].driverId, distance: candidates[0].distance };
-}
 
 /**
  * Triggered when a new request document is created.
@@ -151,7 +36,7 @@ export const matchDriverOnRequestCreate = onDocumentCreated(
 		}
 
 		const todayStr = new Date().toISOString().split('T')[0]; // UTC 'YYYY-MM-DD'
-		const companies = await findNearestCompanies(requestData.location, 100); // 100km outer search radius
+		const companies = await findNearestCompanies(db, requestData.location, 100); // 100km outer search radius
 
 		if (companies.length === 0) {
 			logger.warn(`No companies in range for request ${requestId}`);
@@ -161,6 +46,7 @@ export const matchDriverOnRequestCreate = onDocumentCreated(
 
 		for (const company of companies) {
 			const driver = await findFairDriver(
+				db,
 				requestData.location,
 				company.companyId,
 				requestData.notifiedDriverIds ?? [],
@@ -248,14 +134,21 @@ export const handleClaimTimeouts = onSchedule(
 			return data.notifiedDriverIds && data.notifiedDriverIds.length > 0;
 		});
 
-		const allDocs = [...expiredClaimsSnapshot.docs, ...declinedDocs];
+		// Retry no_drivers requests that haven't expired yet — a driver may have come online
+		const noDriversSnapshot = await db
+			.collection('requests')
+			.where('status', '==', 'no_drivers')
+			.where('expiresAt', '>', now)
+			.get();
+
+		const allDocs = [...expiredClaimsSnapshot.docs, ...declinedDocs, ...noDriversSnapshot.docs];
 
 		if (allDocs.length === 0) {
-			logger.info('No expired or declined claims found');
+			logger.info('No expired, declined, or retryable claims found');
 			return;
 		}
 
-		logger.info(`Found ${allDocs.length} claims to process (${expiredClaimsSnapshot.size} expired, ${declinedDocs.length} declined)`);
+		logger.info(`Found ${allDocs.length} claims to process (${expiredClaimsSnapshot.size} expired, ${declinedDocs.length} declined, ${noDriversSnapshot.size} no_drivers retry)`);
 
 		const todayStr = new Date().toISOString().split('T')[0];
 
@@ -266,6 +159,19 @@ export const handleClaimTimeouts = onSchedule(
 			logger.info(`Processing request ${requestId} (status: ${requestData.status})`);
 
 			try {
+				// If the request was no_drivers, reset for a fresh retry — a driver may have come online
+				// Keep notifiedDriverIds so we don't re-assign to drivers who already declined
+				if (requestData.status === 'no_drivers') {
+					await db.collection('requests').doc(requestId).update({
+						status: 'searching',
+						triedCompanyIds: [],
+						matchedCompanyId: null,
+						claimedByDriverId: null,
+					});
+					logger.info(`Reset no_drivers request ${requestId} for retry (keeping ${(requestData.notifiedDriverIds ?? []).length} excluded drivers)`);
+					// Fall through to the re-matching logic below
+				}
+
 				// If the request is still 'claimed' (expired), reset it to 'searching' first
 				if (requestData.status === 'claimed') {
 					await db.runTransaction(async (transaction) => {
@@ -296,6 +202,7 @@ export const handleClaimTimeouts = onSchedule(
 				// Step 1: Try to find another driver in the currently matched company
 				if (matchedCompanyId && !triedCompanyIds.includes(matchedCompanyId)) {
 					const driver = await findFairDriver(
+						db,
 						freshData.location,
 						matchedCompanyId,
 						notifiedDriverIds,
@@ -339,7 +246,7 @@ export const handleClaimTimeouts = onSchedule(
 				}
 
 				// Step 2: Advance to next nearest company
-				const companies = await findNearestCompanies(freshData.location, 100);
+				const companies = await findNearestCompanies(db, freshData.location, 100);
 				const updatedTriedIds = [
 					...triedCompanyIds,
 					...(matchedCompanyId && !triedCompanyIds.includes(matchedCompanyId) ? [matchedCompanyId] : []),
@@ -349,6 +256,7 @@ export const handleClaimTimeouts = onSchedule(
 					if (updatedTriedIds.includes(company.companyId)) continue; // Skip exhausted companies
 
 					const driver = await findFairDriver(
+						db,
 						freshData.location,
 						company.companyId,
 						notifiedDriverIds,

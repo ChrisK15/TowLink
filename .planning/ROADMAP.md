@@ -52,9 +52,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — App-side data model + driver init fix + trip companyId propagation + FindingDriverModal no_drivers handler
-- [ ] 02-02-PLAN.md — Cloud Functions rewrite: findNearestCompanies + findFairDriver + dispatch engine + Jest tests
-- [ ] 02-03-PLAN.md — Deploy Cloud Functions + human verification of all 3 dispatch flows
+- [x] 02-01-PLAN.md — App-side data model + driver init fix + trip companyId propagation + FindingDriverModal no_drivers handler
+- [x] 02-02-PLAN.md — Cloud Functions rewrite: findNearestCompanies + findFairDriver + dispatch engine + Jest tests
+- [x] 02-03-PLAN.md — Deploy Cloud Functions + human verification of all 3 dispatch flows
 
 ### Phase 3: Driver Flow & Maps
 **Goal**: Drivers can execute the full job lifecycle from acceptance to completion, with live map navigation and real-time commuter visibility throughout the trip

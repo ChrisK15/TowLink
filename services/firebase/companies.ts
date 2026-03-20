@@ -106,25 +106,55 @@ export function listenToCompanyJobs(
 }
 
 // COMP-05: Real-time listener for all drivers belonging to a company.
-// Queries users collection where companyId == X and role == 'driver'.
+// Listens to both users (name/email) and drivers (availability) collections,
+// merging isAvailable into each returned User object.
 // Returns an unsubscribe function — call on component unmount.
 export function listenToCompanyDrivers(
 	companyId: string,
-	callback: (drivers: User[]) => void,
+	callback: (drivers: (User & { isAvailable?: boolean })[]) => void,
 ): () => void {
-	const q = query(
+	let usersData: User[] = [];
+	let availabilityMap: Record<string, boolean> = {};
+
+	function merge() {
+		const merged = usersData.map((u) => ({
+			...u,
+			isAvailable: availabilityMap[u.id] ?? false,
+		}));
+		callback(merged);
+	}
+
+	const usersQuery = query(
 		collection(db, 'users'),
 		where('companyId', '==', companyId),
 		where('role', '==', 'driver'),
 	);
-	return onSnapshot(q, (snapshot) => {
-		const drivers = snapshot.docs.map((d) => ({
+	const driversQuery = query(
+		collection(db, 'drivers'),
+		where('companyId', '==', companyId),
+	);
+
+	const unsubUsers = onSnapshot(usersQuery, (snapshot) => {
+		usersData = snapshot.docs.map((d) => ({
 			id: d.id,
 			...d.data(),
 			createdAt: d.data().createdAt?.toDate() ?? new Date(),
 		})) as User[];
-		callback(drivers);
+		merge();
 	});
+
+	const unsubDrivers = onSnapshot(driversQuery, (snapshot) => {
+		availabilityMap = {};
+		for (const d of snapshot.docs) {
+			availabilityMap[d.id] = d.data().isAvailable ?? false;
+		}
+		merge();
+	});
+
+	return () => {
+		unsubUsers();
+		unsubDrivers();
+	};
 }
 
 // Re-export Company type for convenient access by consumers of this module

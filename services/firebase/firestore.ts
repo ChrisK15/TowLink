@@ -145,6 +145,26 @@ export async function updateTripStatus(
 				status: status,
 				completionTime: Timestamp.now(),
 			});
+			// Reset driver availability so they can receive new requests
+			const tripSnap = await getDoc(doc(db, 'trips', tripId));
+			const driverId = tripSnap.data()?.driverId;
+			if (driverId) {
+				await updateDoc(doc(db, 'drivers', driverId), {
+					isActivelyDriving: false,
+				});
+			}
+		} else if (status === 'cancelled') {
+			await updateDoc(doc(db, 'trips', tripId), {
+				status: status,
+			});
+			// Reset driver availability on cancellation too
+			const tripSnap = await getDoc(doc(db, 'trips', tripId));
+			const driverId = tripSnap.data()?.driverId;
+			if (driverId) {
+				await updateDoc(doc(db, 'drivers', driverId), {
+					isActivelyDriving: false,
+				});
+			}
 		} else if (status === 'in_progress') {
 			await updateDoc(doc(db, 'trips', tripId), {
 				status: status,
@@ -232,9 +252,13 @@ export async function acceptClaimedRequest(
 	requestId: string,
 	driverId: string,
 ): Promise<string> {
+	// Pre-generate a trip document ID so we can create it inside the transaction.
+	// This ensures the trip exists by the time the commuter's listener sees status 'accepted'.
+	const tripRef = doc(collection(db, 'trips'));
+
 	await runTransaction(db, async (transaction) => {
-		const docRef = doc(db, 'requests', requestId);
-		const docSnapshot = await transaction.get(docRef);
+		const requestRef = doc(db, 'requests', requestId);
+		const docSnapshot = await transaction.get(requestRef);
 		const data = docSnapshot.data();
 		if (!data) {
 			throw new Error(`Request ${requestId} not found`);
@@ -248,36 +272,32 @@ export async function acceptClaimedRequest(
 		if (data.claimExpiresAt.toDate() < new Date()) {
 			throw new Error(`Request ${requestId} expired.`);
 		}
-		transaction.update(docRef, {
+
+		// Create the trip and accept the request atomically
+		transaction.set(tripRef, {
+			requestId: requestId,
+			commuterId: data.commuterId,
+			driverId: driverId,
+			companyId: data.matchedCompanyId ?? null,
+			status: 'en_route',
+			pickupLocation: data.location,
+			dropoffLocation: data.dropoffLocation,
+			pickupAddress: data.pickupAddress,
+			dropoffAddress: data.dropoffAddress,
+			startTime: Timestamp.now(),
+			arrivalTime: null,
+			completionTime: null,
+			distance: 0,
+			estimatedPrice: data.estimatedPrice ?? 65,
+			finalPrice: null,
+			driverPath: [],
+		});
+
+		transaction.update(requestRef, {
 			status: 'accepted',
 			matchedDriverId: driverId,
 		});
 	});
-
-	const requestDoc = await getDoc(doc(db, 'requests', requestId));
-	const requestData = requestDoc.data();
-
-	const tripData = {
-		requestId: requestId,
-		commuterId: requestData?.commuterId,
-		driverId: driverId,
-		companyId: requestData?.matchedCompanyId ?? null,
-		status: 'en_route',
-		pickupLocation: requestData?.location,
-		dropoffLocation: requestData?.dropoffLocation,
-		pickupAddress: requestData?.pickupAddress,
-		dropoffAddress: requestData?.dropoffAddress,
-		startTime: Timestamp.now(),
-		arrivalTime: null,
-		completionTime: null,
-		distance: 0,
-		estimatedPrice: requestData?.estimatedPrice ?? 65,
-		finalPrice: null,
-		driverPath: [],
-	};
-
-	const tripRef = await addDoc(collection(db, 'trips'), tripData);
-	console.log('trip created: ', tripRef.id);
 
 	// Mark driver as busy so they don't receive more requests
 	await updateDoc(doc(db, 'drivers', driverId), {
