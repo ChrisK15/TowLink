@@ -5,13 +5,10 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test:e2e": "./scripts/run-e2e.sh",
-    "test:e2e:setup": "curl -s -o /dev/null http://localhost:8080/ 2>/dev/null && echo 'Emulators running' || (echo 'Start emulators first: npm run emulators' && exit 1) && node scripts/seed-emulator.js",
-    "test:e2e:run": "maestro test .maestro/",
     "emulators": "firebase emulators:start --only auth,firestore,functions",
     "emulators:seed": "node scripts/seed-emulator.js"
   },
