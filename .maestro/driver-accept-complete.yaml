@@ -14,13 +14,17 @@ appId: com.towlink.app
     id: "go-online-btn"
 
 # Dismiss the "You are now online!" alert
+- extendedWaitUntil:
+    visible:
+      text: "OK"
+    timeout: 5000
 - tapOn:
     text: "OK"
-    timeout: 5000
 
 # The request popup should appear with the seeded job
-- assertVisible:
-    text: "New Request"
+- extendedWaitUntil:
+    visible:
+      text: "New Request"
     timeout: 15000
 
 # Accept the request
@@ -28,25 +32,29 @@ appId: com.towlink.app
     id: "accept-request-btn"
 
 # Should see active trip sheet with "En Route to Pickup"
-- assertVisible:
-    text: "En Route to Pickup"
+- extendedWaitUntil:
+    visible:
+      text: "En Route to Pickup"
     timeout: 10000
 
 # Advance through trip stages
 - tapOn:
     id: "advance-trip-btn"
-- assertVisible:
-    text: "Arrived at Pickup"
+- extendedWaitUntil:
+    visible:
+      text: "Arrived at Pickup"
     timeout: 5000
 
 - tapOn:
     id: "advance-trip-btn"
-- assertVisible:
-    text: "Service in Progress"
+- extendedWaitUntil:
+    visible:
+      text: "Service in Progress"
     timeout: 5000
 
 - tapOn:
     id: "advance-trip-btn"
-- assertVisible:
-    text: "Trip Completed"
+- extendedWaitUntil:
+    visible:
+      text: "Trip Completed"
     timeout: 5000

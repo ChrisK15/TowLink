@@ -11,6 +11,7 @@ appId: com.towlink.app
 - hideKeyboard
 - tapOn:
     id: "login-btn"
-- assertVisible:
-    text: "Commuter Screen"
+- extendedWaitUntil:
+    visible:
+      text: "Commuter Screen"
     timeout: 10000

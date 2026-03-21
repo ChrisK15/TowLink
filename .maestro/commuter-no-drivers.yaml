@@ -45,11 +45,13 @@ appId: com.towlink.app
 
 # Should eventually show no drivers available
 # Using 60s timeout to account for Cloud Functions emulator cold-start latency (15-25s)
-- assertVisible:
-    text: "No drivers available"
+- extendedWaitUntil:
+    visible:
+      text: "No drivers available"
     timeout: 60000
 
 # Verify Try Again button appears
-- assertVisible:
-    id: "try-again-btn"
+- extendedWaitUntil:
+    visible:
+      id: "try-again-btn"
     timeout: 5000

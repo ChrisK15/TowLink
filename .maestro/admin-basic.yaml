@@ -13,14 +13,16 @@ appId: com.towlink.app
     text: "Drivers"
 
 # Should see drivers content (the seeded drivers should appear)
-- assertVisible:
-    text: "Drivers"
+- extendedWaitUntil:
+    visible:
+      text: "Drivers"
     timeout: 5000
 
 # Tap back to Jobs tab
 - tapOn:
     text: "Jobs"
 
-- assertVisible:
-    text: "Jobs"
+- extendedWaitUntil:
+    visible:
+      text: "Jobs"
     timeout: 5000

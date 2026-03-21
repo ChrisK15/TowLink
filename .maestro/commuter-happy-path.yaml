@@ -39,6 +39,7 @@ appId: com.towlink.app
     id: "submit-request-btn"
 
 # Verify the finding driver modal appears
-- assertVisible:
-    text: "Searching"
+- extendedWaitUntil:
+    visible:
+      text: "Searching"
     timeout: 10000

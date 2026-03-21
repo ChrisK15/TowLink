@@ -10,13 +10,17 @@ appId: com.towlink.app
     id: "go-online-btn"
 
 # Dismiss alert
+- extendedWaitUntil:
+    visible:
+      text: "OK"
+    timeout: 5000
 - tapOn:
     text: "OK"
-    timeout: 5000
 
 # Wait for request popup
-- assertVisible:
-    text: "New Request"
+- extendedWaitUntil:
+    visible:
+      text: "New Request"
     timeout: 15000
 
 # Decline the request
@@ -24,14 +28,19 @@ appId: com.towlink.app
     id: "decline-request-btn"
 
 # Should see "Request Declined" alert
-- assertVisible:
-    text: "Request Declined"
+- extendedWaitUntil:
+    visible:
+      text: "Request Declined"
     timeout: 5000
+- extendedWaitUntil:
+    visible:
+      text: "OK"
+    timeout: 3000
 - tapOn:
     text: "OK"
-    timeout: 3000
 
 # Driver should return to waiting state
-- assertVisible:
-    text: "Waiting for requests"
+- extendedWaitUntil:
+    visible:
+      text: "Waiting for requests"
     timeout: 5000
