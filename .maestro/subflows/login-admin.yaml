@@ -40,10 +40,10 @@ appId: com.towlink.app
 # (Admin uses same login path as driver - there's no admin-specific onboarding)
 - extendedWaitUntil:
     visible:
-      text: "Continue as Driver"
+      text: "Continue as Driver →"
     timeout: 10000
 - tapOn:
-    text: "Continue as Driver"
+    text: "Continue as Driver →"
 
 # Signup screen: tap "Already have an account? Login" to get to login screen
 - extendedWaitUntil:

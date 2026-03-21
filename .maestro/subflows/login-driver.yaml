@@ -39,10 +39,10 @@ appId: com.towlink.app
 # Role selection: Continue as Driver -> goes to signup screen
 - extendedWaitUntil:
     visible:
-      text: "Continue as Driver"
+      text: "Continue as Driver →"
     timeout: 10000
 - tapOn:
-    text: "Continue as Driver"
+    text: "Continue as Driver →"
 
 # Signup screen: tap "Already have an account? Login" to get to login screen
 - extendedWaitUntil:

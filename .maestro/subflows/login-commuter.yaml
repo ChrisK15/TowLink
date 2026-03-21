@@ -39,10 +39,10 @@ appId: com.towlink.app
 # Role selection: Continue as Customer
 - extendedWaitUntil:
     visible:
-      text: "Continue as Customer"
+      text: "Continue as Customer →"
     timeout: 10000
 - tapOn:
-    text: "Continue as Customer"
+    text: "Continue as Customer →"
 
 # Commuter login screen: enter credentials
 - extendedWaitUntil:
