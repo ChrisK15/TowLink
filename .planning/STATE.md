@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-03-PLAN.md
-last_updated: "2026-03-21T19:54:57.794Z"
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-03-21T19:55:34.613Z"
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 16
-  completed_plans: 14
+  completed_plans: 15
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 ## Current Position
 
 Phase: 04 (driver-flow-maps) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 
 ## Performance Metrics
 
@@ -59,6 +59,7 @@ Plan: 3 of 4
 | Phase 03-maestro-e2e-testing P02 | 12min | 2 tasks | 18 files |
 | Phase 04-driver-flow-maps P01 | 103s | 2 tasks | 4 files |
 | Phase 04-driver-flow-maps P03 | 5min | 2 tasks | 2 files |
+| Phase 04-driver-flow-maps P02 | 8min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -100,6 +101,9 @@ Recent decisions affecting current work:
 - [Phase 04-driver-flow-maps]: fetchDirections reads EXPO_PUBLIC_GOOGLE_MAPS_API_KEY from process.env directly (not passed as param) — simpler call site for driver and commuter screens
 - [Phase 04-driver-flow-maps]: decodePolyline implemented inline (20 lines) without npm package — algorithm is short, no dependency overhead
 - [Phase 04-driver-flow-maps]: ETA displayed as-is from Directions API durationText; route useEffect depends on trip?.status and !!driverLocation boolean to prevent stale closures
+- [Phase 04-driver-flow-maps]: fetchDirections triggered on trip?.id and trip?.status only — avoids re-fetching on every 5s location tick and prevents API rate abuse
+- [Phase 04-driver-flow-maps]: cancelled flag pattern for watchPositionAsync cleanup prevents state updates on unmount in async IIFE
+- [Phase 04-driver-flow-maps]: CancelJobButton hidden outside en_route per D-13 — prevents accidental cancellation; resets request status to searching for re-dispatch
 
 ### Pending Todos
 
@@ -113,6 +117,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T19:54:57.792Z
-Stopped at: Completed 04-03-PLAN.md
+Last session: 2026-03-21T19:55:34.611Z
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
