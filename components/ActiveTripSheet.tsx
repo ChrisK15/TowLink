@@ -228,6 +228,7 @@ export function ActiveTripSheet({
 
 				{ACTION_LABELS[trip?.status ?? ''] && (
 					<TouchableOpacity
+						testID="advance-trip-btn"
 						style={[
 							styles.actionButton,
 							isUpdating && styles.actionButtonDisabled,

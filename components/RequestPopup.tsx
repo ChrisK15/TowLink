@@ -215,6 +215,7 @@ export function RequestPopup({
 				{/* Action Buttons */}
 				<View style={styles.buttonContainer}>
 					<TouchableOpacity
+						testID="accept-request-btn"
 						style={[styles.acceptButton, isLoading && { opacity: 0.5 }]}
 						onPress={onAccept}
 						disabled={isLoading}
@@ -224,6 +225,7 @@ export function RequestPopup({
 						</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
+						testID="decline-request-btn"
 						style={styles.declineButton}
 						onPress={onDecline}
 						disabled={isLoading}

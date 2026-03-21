@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
-import { initializeAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeAuth, connectAuthEmulator } from 'firebase/auth';
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 // @ts-ignore - Using internal path as workaround for Firebase 12 React Native persistence
 import { getReactNativePersistence } from '@firebase/auth/dist/rn/index.js';
@@ -27,3 +27,11 @@ export const auth = initializeAuth(app, {
 
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+// Connect to Firebase emulators when running E2E tests (per D-01, D-03)
+let emulatorsConnected = false;
+if (process.env.EXPO_PUBLIC_USE_FIREBASE_EMULATOR === 'true' && !emulatorsConnected) {
+	connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+	connectFirestoreEmulator(db, '127.0.0.1', 8080);
+	emulatorsConnected = true;
+}

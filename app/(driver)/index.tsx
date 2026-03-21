@@ -308,6 +308,7 @@ export default function DriverScreen() {
 						</View>
 
 						<Switch
+							testID="online-toggle"
 							style={{ alignSelf: 'center' }}
 							value={isOnline}
 							onValueChange={handleToggleOnline}
@@ -365,6 +366,7 @@ export default function DriverScreen() {
 								Go online to start receiving requests
 							</Text>
 							<TouchableOpacity
+								testID="go-online-btn"
 								style={styles.goOnlineButton}
 								onPress={() => handleToggleOnline(true)}
 								disabled={isToggling}

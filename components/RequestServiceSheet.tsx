@@ -336,6 +336,7 @@ export function RequestServiceSheet({
 							<View style={styles.formSection}>
 								<Text style={styles.formSectionTitle}>Pickup Location</Text>
 								<TouchableOpacity
+									testID="detect-location-btn"
 									style={styles.detectButton}
 									onPress={handleDetectLocation}
 									disabled={isDetectingLocation}
@@ -350,6 +351,7 @@ export function RequestServiceSheet({
 								<View style={styles.inputRow}>
 									<Text style={styles.inputIcon}>📍</Text>
 									<TextInput
+										testID="pickup-address-input"
 										style={styles.textInput}
 										placeholder="Enter pickup address"
 										placeholderTextColor="#999"
@@ -366,6 +368,7 @@ export function RequestServiceSheet({
 								<View style={styles.inputRow}>
 									<Text style={styles.inputIcon}>🔴</Text>
 									<TextInput
+										testID="dropoff-address-input"
 										style={styles.textInput}
 										placeholder="Enter destination address"
 										placeholderTextColor="#999"
@@ -382,6 +385,7 @@ export function RequestServiceSheet({
 								<Text style={styles.formSectionTitle}>Vehicle Details</Text>
 								<View style={styles.vehicleRow}>
 									<TextInput
+										testID="vehicle-year-input"
 										style={[
 											styles.textInputStandalone,
 											styles.vehicleInputHalf,
@@ -394,6 +398,7 @@ export function RequestServiceSheet({
 										maxLength={4}
 									/>
 									<TextInput
+										testID="vehicle-make-input"
 										style={[
 											styles.textInputStandalone,
 											styles.vehicleInputHalf,
@@ -406,6 +411,7 @@ export function RequestServiceSheet({
 									/>
 								</View>
 								<TextInput
+									testID="vehicle-model-input"
 									style={[styles.textInputStandalone, styles.vehicleInputFull]}
 									placeholder="Model"
 									placeholderTextColor="#999"
@@ -475,6 +481,7 @@ export function RequestServiceSheet({
 						</ScrollView>
 						<View style={styles.footer}>
 							<TouchableOpacity
+								testID="submit-request-btn"
 								style={[
 									styles.submitButton,
 									isFormValid && styles.submitButtonEnabled,

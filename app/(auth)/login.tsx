@@ -43,6 +43,7 @@ export default function LoginScreen() {
 		<View style={styles.view}>
 			<Text style={styles.title}>Login</Text>
 			<TextInput
+				testID="email-input"
 				placeholder="Email"
 				placeholderTextColor="#888"
 				value={email}
@@ -52,6 +53,7 @@ export default function LoginScreen() {
 				style={styles.placeholder}
 			/>
 			<TextInput
+				testID="password-input"
 				placeholder="Password"
 				placeholderTextColor="#888"
 				value={password}
@@ -62,6 +64,7 @@ export default function LoginScreen() {
 			/>
 			{error ? <Text style={styles.error}>{error}</Text> : null}
 			<Pressable
+				testID="login-btn"
 				onPress={handleLogin}
 				disabled={loading}
 				style={[

@@ -113,6 +113,7 @@ export default function CommuterLoginScreen() {
 					<View style={styles.formGroup}>
 						<Text style={styles.label}>Email Address</Text>
 						<TextInput
+							testID="commuter-email-input"
 							style={styles.input}
 							placeholder="you@example.com"
 							placeholderTextColor="#9CA3AF"
@@ -132,6 +133,7 @@ export default function CommuterLoginScreen() {
 						<Text style={styles.label}>Password</Text>
 						<View style={styles.passwordContainer}>
 							<TextInput
+								testID="commuter-password-input"
 								style={styles.passwordInput}
 								placeholder="••••••••"
 								placeholderTextColor="#9CA3AF"
@@ -166,6 +168,7 @@ export default function CommuterLoginScreen() {
 
 					{/* Sign In button */}
 					<Pressable
+						testID="commuter-sign-in-btn"
 						style={[styles.button, loading && styles.buttonDisabled]}
 						onPress={handleSignIn}
 						disabled={loading}
