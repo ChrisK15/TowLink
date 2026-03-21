@@ -5,6 +5,7 @@ status: draft
 shadcn_initialized: false
 preset: none
 created: 2026-03-21
+revised: 2026-03-21
 ---
 
 # Phase 4 — UI Design Contract
@@ -28,6 +29,15 @@ created: 2026-03-21
 
 ---
 
+## Screen Focal Points
+
+| Screen | Focal Point |
+|--------|-------------|
+| Driver screen (active trip) | The InstructionCard pinned at the top of the map — it is the single dominant element the driver reads while moving; the action button is secondary until they reach a waypoint. |
+| Commuter screen (active trip) | The driver's live marker on the map and the ETA figure in the sheet — the commuter's only question is "where is the driver and when do they arrive?" |
+
+---
+
 ## Spacing Scale
 
 Declared values (multiples of 4). Sourced from audit of ActiveTripSheet, CommuterTripSheet, RequestPopup:
@@ -37,14 +47,13 @@ Declared values (multiples of 4). Sourced from audit of ActiveTripSheet, Commute
 | xs | 4px | Icon gaps, dot spacing, thin divider margin |
 | sm | 8px | Button row gaps, contact button gaps, badge padding |
 | md | 16px | Sheet horizontal padding, card padding, button vertical padding |
-| lg | 20px | Header padding, infoRow vertical padding |
-| xl | 24px | — |
-| 2xl | 32px | Sheet bottom margin (safe area clearance) |
-| 3xl | 48px | — |
+| lg | 24px | Header padding, infoRow vertical padding |
+| xl | 32px | Sheet bottom margin (safe area clearance) |
+| 2xl | 48px | — |
 
 Exceptions:
+- Header/infoRow padding in existing components currently renders at 20px — retain as-is to avoid visual regression; do not use 20px for any new elements. New elements use `lg` (24px).
 - Drag handle touch target: `paddingVertical: 12` (non-scale, preserves existing hit area — do not change)
-- Bottom-sheet safe area bottom margin: 32px (matches existing ActionButton marginBottom)
 - Touch targets for contact/action buttons: minimum 40×40px (existing pattern: contactButton 40×40, initialsCircle 44×44)
 
 ---
@@ -55,18 +64,17 @@ Sourced from StyleSheet audit across ActiveTripSheet, CommuterTripSheet, Request
 
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
-| Body | 14px | 400 (normal) | 1.5 (lineHeight: 21 where explicit) |
 | Label | 12px | 400 (normal) | 1.4 |
-| Heading | 17–18px | 700 (bold) | 1.3 |
-| Display | 20–24px | 700 (bold) | 1.2 |
+| Body | 14px | 400 (normal) | 1.5 (lineHeight: 21 where explicit) |
+| Heading | 17px | 700 (bold) | 1.3 |
+| Display | 24px | 700 (bold) | 1.2 |
 
 Notes:
-- Body (14px/400) is used for info labels, progress step labels, address text
-- Label (12px/400) is used for section labels, vehicle sub-labels, location category labels
-- Heading (17–18px/700) is used for driver name, commuter name in sheet rows
-- Display (20–24px/700) is used for ETA value, fare amount, request popup title
-- Font weight "500" (medium) is used for secondary values (infoValue, vehicleValue) — acceptable third weight for data-dense cards only
-- Status badge text: 13px/600 (semibold) — existing pattern, retain as-is
+- Label (12px/400): section labels, status badge text, vehicle sub-labels, location category labels. Status badges previously rendered at 13px — absorb into 12px Label role; visual difference is imperceptible.
+- Body (14px/400): info labels, progress step labels, address text, distance text in InstructionCard, "Open in Maps" button text.
+- Heading (17px/700): driver name, commuter name in sheet rows, InstructionCard instruction text. InstructionCard previously specified 16px/600 — use 17px/700 (Heading role) to stay within the 4-size / 2-weight contract.
+- Display (24px/700): ETA value, fare amount, request popup title. Sizes previously ranging 20–24px are unified to 24px for Display.
+- Two weights only: 400 and 700. Previously used 500 (medium) and 600 (semibold) are replaced — use 400 where subtle weight is desired, 700 where emphasis is needed.
 
 ---
 
@@ -110,7 +118,7 @@ Overlay banner pinned to top of driver MapView (above the sheet). Displays next-
 - Position: absolute, top: 60 (below status bar), left: 16, right: 16
 - Background: #FFFFFF, borderRadius: 12, padding: 16
 - Shadow: elevation 4 (Android), iOS shadowColor '#000' / opacity 0.12 / radius 8
-- Layout: row — turn icon (Ionicons, 24px, color #34C759) | instruction text (16px/600) | distance text (14px/400, color #666)
+- Layout: row — turn icon (Ionicons, 24px, color #34C759) | instruction text (17px/700, Heading role) | distance text (14px/400, Body role, color #666)
 - Step-change animation: fade out old text / fade in new text using `Animated.timing`, 200ms
 - When no active trip: hidden (do not render)
 
@@ -136,7 +144,7 @@ Shown only when `trip.status === 'en_route'`. Red button at bottom of ActiveTrip
 
 - Style: matches existing cancelButton pattern from CommuterTripSheet exactly
 - backgroundColor: #FF3B30, paddingVertical: 16, borderRadius: 12, marginHorizontal: 16, marginBottom: 8
-- Text: "Cancel Job", color white, fontSize 16, fontWeight '700'
+- Text: "Cancel Job", color white, fontSize 16 (Body role), fontWeight '700'
 - Confirmation: native Alert (matches existing pattern in CommuterTripSheet.handleCancelTrip)
 
 ### OpenInMapsButton (in ActiveTripSheet)
@@ -144,7 +152,7 @@ Shown only when `trip.status === 'en_route'`. Red button at bottom of ActiveTrip
 Text button near pickup address in ActiveTripSheet info card.
 
 - Style: no background, paddingVertical: 4
-- Text: "Open in Maps", color #007AFF, fontSize 14, fontWeight '500'
+- Text: "Open in Maps", color #007AFF, fontSize 14 (Body role), fontWeight '400'
 - Position: below pickupAddress infoRow
 
 ---
