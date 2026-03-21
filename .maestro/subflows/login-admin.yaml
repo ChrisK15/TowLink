@@ -2,6 +2,21 @@ appId: com.towlink.app
 ---
 - launchApp:
     clearState: true
+
+# Dismiss Expo dev client launcher
+- extendedWaitUntil:
+    visible:
+      text: "localhost"
+    timeout: 10000
+- tapOn:
+    text: "localhost"
+- extendedWaitUntil:
+    visible:
+      text: "Continue"
+    timeout: 10000
+- tapOn:
+    text: "Continue"
+
 - tapOn:
     id: "email-input"
 - inputText: "test-admin@test.com"
