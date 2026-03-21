@@ -1,4 +1,5 @@
 import { ActiveTripSheet } from '@/components/ActiveTripSheet';
+import { InstructionCard } from '@/components/InstructionCard';
 import { RequestPopup } from '@/components/RequestPopup';
 import { useAuth } from '@/context/auth-context';
 import { useActiveTrip } from '@/hooks/use-active-trip';
@@ -10,6 +11,8 @@ import {
 	updateDriverAvailability,
 } from '@/services/firebase/firestore';
 import { enrichRequestWithCalculations } from '@/services/requestCalculations';
+import { DirectionsResult, fetchDirections } from '@/services/directions';
+import { getDistanceInKm } from '@/services/geoLocationUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import { doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
@@ -23,7 +26,7 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'react-native-maps';
 
 export default function DriverScreen() {
 	const { signOut, user, companyId } = useAuth();
@@ -37,6 +40,8 @@ export default function DriverScreen() {
 	const [showBanner, setShowbanner] = useState(false);
 	const [isActioning, setIsActioning] = useState(false);
 	const [activeTripId, setActiveTripId] = useState<string | null>(null);
+	const [routeData, setRouteData] = useState<DirectionsResult | null>(null);
+	const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
 	const { claimedRequest } = useClaimedRequest(user?.uid ?? null, isOnline);
 	const { trip, commuterName, commuterPhone } = useActiveTrip(activeTripId);
@@ -87,6 +92,99 @@ export default function DriverScreen() {
 			setShowbanner(false);
 		}
 	}, [isOnline]);
+
+	// Live location watcher — writes to Firestore every 5s during active trip (D-07, D-08, D-09)
+	useEffect(() => {
+		if (!activeTripId || !user?.uid) return;
+		let cancelled = false;
+		let subscription: Location.LocationSubscription | null = null;
+
+		(async () => {
+			try {
+				subscription = await Location.watchPositionAsync(
+					{
+						accuracy: Location.LocationAccuracy.BestForNavigation,
+						timeInterval: 5000,
+						distanceInterval: 5,
+					},
+					(location) => {
+						if (cancelled) return;
+						const coords = {
+							latitude: location.coords.latitude,
+							longitude: location.coords.longitude,
+						};
+						setDriverLocation(coords);
+						updateDoc(doc(db, 'drivers', user.uid!), {
+							currentLocation: coords,
+						});
+					},
+				);
+				if (cancelled) subscription.remove();
+			} catch (error) {
+				console.error('Location watcher error:', error);
+			}
+		})();
+
+		return () => {
+			cancelled = true;
+			subscription?.remove();
+		};
+	}, [activeTripId, user?.uid]);
+
+	// Fetch directions once on trip start and when trip status changes destination (D-01)
+	useEffect(() => {
+		if (!trip || !driverLocation) return;
+		if (trip.status === 'completed' || trip.status === 'cancelled') return;
+
+		const destination =
+			trip.status === 'in_progress'
+				? trip.dropoffLocation
+				: trip.pickupLocation;
+
+		fetchDirections(driverLocation, destination).then((result) => {
+			if (result) {
+				setRouteData(result);
+				setCurrentStepIndex(0);
+			}
+		});
+	}, [trip?.id, trip?.status]);
+
+	// GPS-to-step matching: advance at 30m, reroute at 150m deviation (D-04, D-05)
+	useEffect(() => {
+		if (!driverLocation || !routeData || !routeData.steps.length) return;
+		if (!trip || trip.status === 'completed' || trip.status === 'cancelled') return;
+
+		const steps = routeData.steps;
+		if (currentStepIndex >= steps.length - 1) return;
+
+		const nextStep = steps[currentStepIndex + 1];
+		const distToNextKm = getDistanceInKm(driverLocation, nextStep.startLocation);
+
+		if (distToNextKm * 1000 < 30) {
+			setCurrentStepIndex((prev) => prev + 1);
+			return;
+		}
+
+		const currentStep = steps[currentStepIndex];
+		const distToCurrentKm = getDistanceInKm(
+			driverLocation,
+			currentStep.startLocation,
+		);
+
+		if (distToCurrentKm * 1000 > 150) {
+			// Off route — reroute (D-05)
+			const destination =
+				trip.status === 'in_progress'
+					? trip.dropoffLocation
+					: trip.pickupLocation;
+			fetchDirections(driverLocation, destination).then((result) => {
+				if (result) {
+					setRouteData(result);
+					setCurrentStepIndex(0);
+				}
+			});
+		}
+	}, [driverLocation, routeData, currentStepIndex]);
 
 	const enrichedRequest = useMemo(() => {
 		if (!claimedRequest || !driverLocation) return claimedRequest;
@@ -291,7 +389,22 @@ export default function DriverScreen() {
 						pinColor="green"
 					/>
 				)}
+				{routeData && (
+					<Polyline
+						coordinates={routeData.polylineCoords}
+						strokeColor="#34C759"
+						strokeWidth={4}
+					/>
+				)}
 			</MapView>
+
+			{activeTripId && trip && (
+				<InstructionCard
+					currentStep={routeData?.steps[currentStepIndex] ?? null}
+					isCalculating={!routeData}
+					hasArrived={trip.status === 'arrived'}
+				/>
+			)}
 
 			{/* Hide all driver UI during an active trip */}
 			{!activeTripId && (
