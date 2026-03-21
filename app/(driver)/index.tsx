@@ -188,8 +188,8 @@ export default function DriverScreen() {
 
 			if (status !== 'granted') {
 				Alert.alert(
-					'Location Permission Required',
-					'TowLink needs location access to show your position. Please enable it in Settings.',
+					'Location Required',
+					'TowLink needs your location to show directions and update your position for the commuter. Enable it in Settings.',
 					[
 						{ text: 'Cancel', style: 'cancel' },
 						{ text: 'Open Settings', onPress: () => Linking.openSettings() },

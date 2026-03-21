@@ -4,7 +4,7 @@ import { CommuterTripSheet } from '@/components/CommuterTripSheet';
 import { useAuth } from '@/context/auth-context';
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 export default function CommuterScreen() {
@@ -29,7 +29,14 @@ export default function CommuterScreen() {
 			const { status } = await Location.requestForegroundPermissionsAsync();
 
 			if (status !== 'granted') {
-				Alert.alert('Permission denied, location access needed');
+				Alert.alert(
+					'Location Required',
+					'TowLink needs your location to request roadside assistance. Enable it in Settings.',
+					[
+						{ text: 'Cancel', style: 'cancel' },
+						{ text: 'Open Settings', onPress: () => Linking.openSettings() },
+					],
+				);
 				return;
 			}
 
