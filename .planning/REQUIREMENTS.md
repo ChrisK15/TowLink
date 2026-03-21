@@ -38,7 +38,7 @@ Requirements for MVP release. Each maps to a roadmap phase.
 ### Maps & Location
 
 - [x] **MAP-01**: Commuter sees real-time driver location on map during active trip
-- [ ] **MAP-02**: Route polyline and ETA are shown on commuter map once a driver is assigned
+- [x] **MAP-02**: Route polyline and ETA are shown on commuter map once a driver is assigned
 - [x] **MAP-03**: Location permissions handled gracefully on iOS and Android
 
 ### Notifications
@@ -133,7 +133,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DRVR-03 | Phase 4 | Pending |
 | DRVR-04 | Phase 4 | Pending |
 | MAP-01 | Phase 4 | Complete |
-| MAP-02 | Phase 4 | Pending |
+| MAP-02 | Phase 4 | Complete |
 | MAP-03 | Phase 4 | Complete |
 | NOTF-01 | Phase 5 | Pending |
 | NOTF-02 | Phase 5 | Pending |

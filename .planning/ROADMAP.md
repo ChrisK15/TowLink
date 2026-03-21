@@ -87,8 +87,8 @@ Plans:
 
 Plans:
 - [x] 04-01-PLAN.md — Directions API service + useDriverLocation hook + location permission UX
-- [ ] 04-02-PLAN.md — Driver screen: InstructionCard + route polyline + live location watcher + cancel/open-in-maps
-- [ ] 04-03-PLAN.md — Commuter screen: DriverMarker + route polyline + live ETA
+- [x] 04-02-PLAN.md — Driver screen: InstructionCard + route polyline + live location watcher + cancel/open-in-maps
+- [x] 04-03-PLAN.md — Commuter screen: DriverMarker + route polyline + live ETA
 - [ ] 04-04-PLAN.md — Seed data extension + human verification of all Phase 4 flows
 
 ### Phase 5: Push Notifications
@@ -133,6 +133,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Companies & Admin | 7/7 | Complete | 2026-03-16 |
 | 2. Company-Based Dispatch | 3/3 | Complete | 2026-03-20 |
 | 3. Maestro E2E Testing | 2/2 | Complete   | 2026-03-21 |
-| 4. Driver Flow & Maps | 1/4 | In Progress|  |
+| 4. Driver Flow & Maps | 3/4 | In Progress|  |
 | 5. Push Notifications | 0/TBD | Not started | - |
 | 6. Security, Reliability & Testing | 0/TBD | Not started | - |
