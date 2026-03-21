@@ -31,15 +31,15 @@ Requirements for MVP release. Each maps to a roadmap phase.
 ### Driver Flow
 
 - [ ] **DRVR-01**: Driver can accept or decline an assigned job
-- [ ] **DRVR-02**: Driver can navigate to commuter location using map directions during active trip
+- [x] **DRVR-02**: Driver can navigate to commuter location using map directions during active trip
 - [ ] **DRVR-03**: Driver can advance trip status through all stages (en route → arrived → in progress → completed)
 - [ ] **DRVR-04**: Driver can cancel an accepted job before the trip starts
 
 ### Maps & Location
 
-- [ ] **MAP-01**: Commuter sees real-time driver location on map during active trip
+- [x] **MAP-01**: Commuter sees real-time driver location on map during active trip
 - [ ] **MAP-02**: Route polyline and ETA are shown on commuter map once a driver is assigned
-- [ ] **MAP-03**: Location permissions handled gracefully on iOS and Android
+- [x] **MAP-03**: Location permissions handled gracefully on iOS and Android
 
 ### Notifications
 
@@ -129,12 +129,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DISP-02 | Phase 2 | Complete |
 | DISP-03 | Phase 2 | Complete |
 | DRVR-01 | Phase 4 | Pending |
-| DRVR-02 | Phase 4 | Pending |
+| DRVR-02 | Phase 4 | Complete |
 | DRVR-03 | Phase 4 | Pending |
 | DRVR-04 | Phase 4 | Pending |
-| MAP-01 | Phase 4 | Pending |
+| MAP-01 | Phase 4 | Complete |
 | MAP-02 | Phase 4 | Pending |
-| MAP-03 | Phase 4 | Pending |
+| MAP-03 | Phase 4 | Complete |
 | NOTF-01 | Phase 5 | Pending |
 | NOTF-02 | Phase 5 | Pending |
 | NOTF-03 | Phase 5 | Pending |
