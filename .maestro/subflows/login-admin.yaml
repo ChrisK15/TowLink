@@ -30,11 +30,11 @@ appId: com.towlink.app
       text: "Welcome to TowLink"
     timeout: 10000
 - tapOn:
-    text: "Next"
+    text: "Next →"
 - tapOn:
-    text: "Next"
+    text: "Next →"
 - tapOn:
-    text: "Get Started"
+    text: "Get Started →"
 
 # Role selection: Continue as Driver -> goes to signup screen
 # (Admin uses same login path as driver - there's no admin-specific onboarding)
