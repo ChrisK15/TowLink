@@ -1,0 +1,37 @@
+appId: com.towlink.app
+---
+# Driver logs in and declines the pre-seeded claimed request.
+# Seed creates request with status:'claimed' + claimedByDriverId:<test-driver-uid>.
+# This verifies the decline button works and the popup dismisses.
+
+- runFlow: subflows/login-driver.yaml
+
+- tapOn:
+    id: "go-online-btn"
+
+# Dismiss alert
+- tapOn:
+    text: "OK"
+    timeout: 5000
+
+# Wait for request popup
+- assertVisible:
+    text: "New Request"
+    timeout: 15000
+
+# Decline the request
+- tapOn:
+    id: "decline-request-btn"
+
+# Should see "Request Declined" alert
+- assertVisible:
+    text: "Request Declined"
+    timeout: 5000
+- tapOn:
+    text: "OK"
+    timeout: 3000
+
+# Driver should return to waiting state
+- assertVisible:
+    text: "Waiting for requests"
+    timeout: 5000

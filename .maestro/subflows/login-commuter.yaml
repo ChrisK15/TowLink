@@ -1,0 +1,16 @@
+appId: com.towlink.app
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: "email-input"
+- inputText: "test-commuter@test.com"
+- tapOn:
+    id: "password-input"
+- inputText: "password123"
+- hideKeyboard
+- tapOn:
+    id: "login-btn"
+- assertVisible:
+    text: "Commuter Screen"
+    timeout: 10000

@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test:e2e": "npm run test:e2e:setup && npm run test:e2e:run",
+    "test:e2e": "./scripts/run-e2e.sh",
     "test:e2e:setup": "curl -s -o /dev/null http://localhost:8080/ 2>/dev/null && echo 'Emulators running' || (echo 'Start emulators first: npm run emulators' && exit 1) && node scripts/seed-emulator.js",
     "test:e2e:run": "maestro test .maestro/",
     "emulators": "firebase emulators:start --only auth,firestore,functions",
