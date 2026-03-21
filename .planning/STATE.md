@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-maestro-e2e-testing-01 (03-01-PLAN.md)
-last_updated: "2026-03-20T23:49:47.273Z"
+stopped_at: "Checkpoint 03-02: awaiting human verify (build dev build + run E2E suite)"
+last_updated: "2026-03-21T00:01:38.971Z"
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 12
-  completed_plans: 11
+  completed_plans: 12
 ---
 
 # Project State
@@ -56,6 +56,7 @@ Plan: 2 of 2
 | Phase 02-company-based-dispatch P02 | 6min | 2 tasks | 5 files |
 | Phase 02-company-based-dispatch P01 | 7min | 2 tasks | 4 files |
 | Phase 03-maestro-e2e-testing P01 | 3min | 2 tasks | 8 files |
+| Phase 03-maestro-e2e-testing P02 | 12min | 2 tasks | 18 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,9 @@ Recent decisions affecting current work:
 - [Phase 03-maestro-e2e-testing]: emulatorsConnected guard in config.ts prevents connectAuthEmulator crash on hot reload
 - [Phase 03-maestro-e2e-testing]: Seed request uses status:'claimed' + claimedByDriverId to match listenForClaimedRequests() query contract exactly
 - [Phase 03-maestro-e2e-testing]: npm run emulators starts emulators in separate terminal; test:e2e uses curl connectivity check (--detach unreliable on macOS)
+- [Phase 03-maestro-e2e-testing]: scrollUntilVisible used for submit-request-btn which may be below the fold in the request sheet
+- [Phase 03-maestro-e2e-testing]: commuter-no-drivers uses Anchorage AK address to trigger no_drivers (out of LA company service radius)
+- [Phase 03-maestro-e2e-testing]: test:e2e delegates to scripts/run-e2e.sh for emulator check, seed, location grant, and maestro run
 
 ### Pending Todos
 
@@ -106,6 +110,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T23:49:47.270Z
-Stopped at: Completed 03-maestro-e2e-testing-01 (03-01-PLAN.md)
+Last session: 2026-03-21T00:01:38.969Z
+Stopped at: Checkpoint 03-02: awaiting human verify (build dev build + run E2E suite)
 Resume file: None
