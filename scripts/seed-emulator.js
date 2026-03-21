@@ -205,6 +205,26 @@ async function seed() {
   });
   console.log('  Created pre-claimed request: test-request-claimed');
 
+  // Step 8: Create active en_route trip for commuter-side Phase 4 testing
+  // Allows testing commuter map (driver marker, route polyline, ETA) without
+  // manually going through the full accept flow first.
+  await db.collection('trips').doc('test-trip-enroute').set({
+    requestId: 'test-request-claimed',
+    commuterId: commuterRecord.uid,
+    driverId: driverRecord.uid,
+    status: 'en_route',
+    pickupLocation: { latitude: 34.0522, longitude: -118.2437 },
+    dropoffLocation: { latitude: 34.0625, longitude: -118.241 },
+    pickupAddress: '123 Main St, Los Angeles, CA',
+    dropoffAddress: '456 Oak Ave, Los Angeles, CA',
+    startTime: admin.firestore.Timestamp.now(),
+    distance: 1.2,
+    estimatedPrice: 45,
+    driverPath: [],
+    companyId: 'test-company-01',
+  });
+  console.log('  Created en_route trip: test-trip-enroute');
+
   console.log('');
   console.log('=== Seed complete! ===');
   console.log('');
@@ -216,6 +236,7 @@ async function seed() {
   console.log('');
   console.log('Company:   test-company-01 (Test Tow Yard)');
   console.log('Request:   test-request-claimed (status: claimed, claimedByDriverId: driver uid)');
+  console.log('Trip:      test-trip-enroute (status: en_route, for commuter-side Phase 4 testing)');
   console.log('');
 
   process.exit(0);
