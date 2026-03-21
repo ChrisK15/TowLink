@@ -55,7 +55,8 @@ appId: com.towlink.app
 - tapOn:
     id: "commuter-password-input"
 - inputText: "password123"
-- hideKeyboard
+- tapOn:
+    point: "50%,10%"
 - tapOn:
     id: "commuter-sign-in-btn"
 

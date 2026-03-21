@@ -64,7 +64,8 @@ appId: com.towlink.app
 - tapOn:
     id: "password-input"
 - inputText: "password123"
-- hideKeyboard
+- tapOn:
+    point: "50%,10%"
 - tapOn:
     id: "login-btn"
 

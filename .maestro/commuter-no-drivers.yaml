@@ -21,7 +21,8 @@ appId: com.towlink.app
 - tapOn:
     id: "dropoff-address-input"
 - inputText: "456 Oak Ave, Anchorage, AK"
-- hideKeyboard
+- tapOn:
+    point: "50%,10%"
 
 - tapOn:
     id: "vehicle-year-input"
@@ -34,7 +35,8 @@ appId: com.towlink.app
 - tapOn:
     id: "vehicle-model-input"
 - inputText: "Civic"
-- hideKeyboard
+- tapOn:
+    point: "50%,10%"
 
 - scrollUntilVisible:
     element:

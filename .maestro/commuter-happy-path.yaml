@@ -15,7 +15,8 @@ appId: com.towlink.app
 - tapOn:
     id: "dropoff-address-input"
 - inputText: "456 Oak Ave, Los Angeles, CA"
-- hideKeyboard
+- tapOn:
+    point: "50%,10%"
 
 - tapOn:
     id: "vehicle-year-input"
@@ -28,7 +29,8 @@ appId: com.towlink.app
 - tapOn:
     id: "vehicle-model-input"
 - inputText: "Camry"
-- hideKeyboard
+- tapOn:
+    point: "50%,10%"
 
 # Scroll down to find submit button and tap
 - scrollUntilVisible:
