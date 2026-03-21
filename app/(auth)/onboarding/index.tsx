@@ -70,7 +70,7 @@ export default function OnboardingScreen() {
 			/>
 			<View style={styles.bottom}>
 				<PaginationDots total={SLIDES.length} activeIndex={activeIndex} />
-				<Pressable style={styles.button} onPress={handleNext}>
+				<Pressable testID="onboarding-next-btn" style={styles.button} onPress={handleNext}>
 					<Text style={styles.buttonText}>
 						{activeIndex === SLIDES.length - 1 ? 'Get Started' : 'Next'} →
 					</Text>

@@ -24,25 +24,25 @@ appId: com.towlink.app
 - tapOn:
     point: "50%,30%"
 
-# Onboarding: tap Next 2 times, then Get Started
+# Onboarding: tap Next 2 times, then Get Started (using testID)
 - extendedWaitUntil:
     visible:
-      text: "Welcome to TowLink"
+      id: "onboarding-next-btn"
     timeout: 10000
 - tapOn:
-    text: "Next →"
+    id: "onboarding-next-btn"
 - tapOn:
-    text: "Next →"
+    id: "onboarding-next-btn"
 - tapOn:
-    text: "Get Started →"
+    id: "onboarding-next-btn"
 
-# Role selection: Continue as Driver -> goes to signup screen
+# Role selection: Continue as Driver (using testID)
 - extendedWaitUntil:
     visible:
-      text: "Continue as Driver →"
+      id: "role-driver-btn"
     timeout: 10000
 - tapOn:
-    text: "Continue as Driver →"
+    id: "role-driver-btn"
 
 # Signup screen: tap "Already have an account? Login" to get to login screen
 - extendedWaitUntil:

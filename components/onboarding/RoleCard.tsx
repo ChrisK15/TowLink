@@ -11,8 +11,9 @@ interface RoleCardProps {
 }
 
 export default function RoleCard({ iconName, title, description, ctaLabel, onPress }: RoleCardProps) {
+	const testId = ctaLabel.toLowerCase().includes('customer') ? 'role-customer-btn' : 'role-driver-btn';
 	return (
-		<Pressable style={styles.card} onPress={onPress}>
+		<Pressable testID={testId} style={styles.card} onPress={onPress}>
 			<View style={styles.iconBox}>
 				<Ionicons name={iconName} size={28} color="#1E6FD9" />
 			</View>

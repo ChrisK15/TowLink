@@ -24,25 +24,25 @@ appId: com.towlink.app
 - tapOn:
     point: "50%,30%"
 
-# Onboarding: tap Next 2 times, then Get Started
+# Onboarding: tap Next 2 times, then Get Started (using testID)
 - extendedWaitUntil:
     visible:
-      text: "Welcome to TowLink"
+      id: "onboarding-next-btn"
     timeout: 10000
 - tapOn:
-    text: "Next →"
+    id: "onboarding-next-btn"
 - tapOn:
-    text: "Next →"
+    id: "onboarding-next-btn"
 - tapOn:
-    text: "Get Started →"
+    id: "onboarding-next-btn"
 
-# Role selection: Continue as Customer
+# Role selection: Continue as Customer (using testID)
 - extendedWaitUntil:
     visible:
-      text: "Continue as Customer →"
+      id: "role-customer-btn"
     timeout: 10000
 - tapOn:
-    text: "Continue as Customer →"
+    id: "role-customer-btn"
 
 # Commuter login screen: enter credentials
 - extendedWaitUntil:
