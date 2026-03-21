@@ -20,13 +20,11 @@ appId: com.towlink.app
 - tapOn:
     text: "Continue"
 
-# Close Expo dev menu (X button)
+# Close Expo dev menu (X icon in top-right)
 - extendedWaitUntil:
     visible:
-      text: "Close"
-    timeout: 5000
-- tapOn:
-    text: "Close"
+      text: "Welcome to TowLink"
+    timeout: 15000
 
 # Onboarding: tap Next 2 times, then Get Started
 - extendedWaitUntil:
