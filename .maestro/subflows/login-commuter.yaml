@@ -1,15 +1,18 @@
 appId: com.towlink.app
 ---
+# Launch app and navigate through Expo dev client + onboarding to commuter login
 - launchApp:
     clearState: true
 
-# Dismiss Expo dev client launcher
+# Expo dev client: tap the dev server
 - extendedWaitUntil:
     visible:
-      text: "localhost"
+      text: "http://localhost:8081"
     timeout: 10000
 - tapOn:
-    text: "localhost"
+    text: "http://localhost:8081"
+
+# Expo dev client: tap Continue
 - extendedWaitUntil:
     visible:
       text: "Continue"
@@ -17,16 +20,51 @@ appId: com.towlink.app
 - tapOn:
     text: "Continue"
 
+# Close Expo dev menu (X button)
+- extendedWaitUntil:
+    visible:
+      text: "Close"
+    timeout: 5000
 - tapOn:
-    id: "email-input"
+    text: "Close"
+
+# Onboarding: tap Next 2 times, then Get Started
+- extendedWaitUntil:
+    visible:
+      text: "Welcome to TowLink"
+    timeout: 10000
+- tapOn:
+    text: "Next"
+- tapOn:
+    text: "Next"
+- tapOn:
+    text: "Get Started"
+
+# Role selection: Continue as Customer
+- extendedWaitUntil:
+    visible:
+      text: "Continue as Customer"
+    timeout: 10000
+- tapOn:
+    text: "Continue as Customer"
+
+# Commuter login screen: enter credentials
+- extendedWaitUntil:
+    visible:
+      id: "commuter-email-input"
+    timeout: 10000
+- tapOn:
+    id: "commuter-email-input"
 - inputText: "test-commuter@test.com"
 - tapOn:
-    id: "password-input"
+    id: "commuter-password-input"
 - inputText: "password123"
 - hideKeyboard
 - tapOn:
-    id: "login-btn"
+    id: "commuter-sign-in-btn"
+
+# Wait for commuter screen to load
 - extendedWaitUntil:
     visible:
-      text: "Commuter Screen"
+      text: "Request Roadside Assistance"
     timeout: 10000

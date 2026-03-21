@@ -1,15 +1,18 @@
 appId: com.towlink.app
 ---
+# Launch app and navigate through Expo dev client + onboarding to admin login
 - launchApp:
     clearState: true
 
-# Dismiss Expo dev client launcher
+# Expo dev client: tap the dev server
 - extendedWaitUntil:
     visible:
-      text: "localhost"
+      text: "http://localhost:8081"
     timeout: 10000
 - tapOn:
-    text: "localhost"
+    text: "http://localhost:8081"
+
+# Expo dev client: tap Continue
 - extendedWaitUntil:
     visible:
       text: "Continue"
@@ -17,6 +20,48 @@ appId: com.towlink.app
 - tapOn:
     text: "Continue"
 
+# Close Expo dev menu (X button)
+- extendedWaitUntil:
+    visible:
+      text: "Close"
+    timeout: 5000
+- tapOn:
+    text: "Close"
+
+# Onboarding: tap Next 2 times, then Get Started
+- extendedWaitUntil:
+    visible:
+      text: "Welcome to TowLink"
+    timeout: 10000
+- tapOn:
+    text: "Next"
+- tapOn:
+    text: "Next"
+- tapOn:
+    text: "Get Started"
+
+# Role selection: Continue as Driver -> goes to signup screen
+# (Admin uses same login path as driver - there's no admin-specific onboarding)
+- extendedWaitUntil:
+    visible:
+      text: "Continue as Driver"
+    timeout: 10000
+- tapOn:
+    text: "Continue as Driver"
+
+# Signup screen: tap "Already have an account? Login" to get to login screen
+- extendedWaitUntil:
+    visible:
+      text: "Already have an account? Login"
+    timeout: 10000
+- tapOn:
+    text: "Already have an account? Login"
+
+# Login screen: enter admin credentials
+- extendedWaitUntil:
+    visible:
+      id: "email-input"
+    timeout: 10000
 - tapOn:
     id: "email-input"
 - inputText: "test-admin@test.com"
@@ -26,6 +71,8 @@ appId: com.towlink.app
 - hideKeyboard
 - tapOn:
     id: "login-btn"
+
+# Wait for admin screen to load
 - extendedWaitUntil:
     visible:
       text: "Jobs"
