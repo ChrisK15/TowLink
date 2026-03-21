@@ -144,7 +144,7 @@ Shown only when `trip.status === 'en_route'`. Red button at bottom of ActiveTrip
 
 - Style: matches existing cancelButton pattern from CommuterTripSheet exactly
 - backgroundColor: #FF3B30, paddingVertical: 16, borderRadius: 12, marginHorizontal: 16, marginBottom: 8
-- Text: "Cancel Job", color white, fontSize 16 (Body role), fontWeight '700'
+- Text: "Cancel Job", color white, fontSize 14 (Body role), fontWeight '700'
 - Confirmation: native Alert (matches existing pattern in CommuterTripSheet.handleCancelTrip)
 
 ### OpenInMapsButton (in ActiveTripSheet)
