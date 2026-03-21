@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: "Checkpoint 03-02: awaiting human verify (build dev build + run E2E suite)"
+stopped_at: "Phase 03 complete — Firebase emulator infra kept, Maestro E2E dropped"
 last_updated: "2026-03-21T00:01:38.971Z"
 progress:
   total_phases: 6
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-15)
 
 **Core value:** A stranded commuter can get a tow truck from a local affiliated tow yard dispatched to their exact GPS location in minutes, without the tow yard needing a manual dispatcher.
-**Current focus:** Phase 03 — maestro-e2e-testing
+**Current focus:** Phase 03 complete — ready for Phase 04
 
 ## Current Position
 
-Phase: 03 (maestro-e2e-testing) — EXECUTING
-Plan: 2 of 2
+Phase: 03 (firebase-emulator-infra) — COMPLETE
+Plan: 2 of 2 (complete)
 
 ## Performance Metrics
 
@@ -91,12 +91,10 @@ Recent decisions affecting current work:
 - [Phase 02-company-based-dispatch]: handleClaimTimeouts handles both expired claims and declined requests (searching with non-empty notifiedDriverIds) in same scheduler run
 - [Phase 02-company-based-dispatch]: initializeDriverDocument backfills companyId on existing driver docs — ensures Cloud Functions can query all drivers by companyId without manual migration
 - [Phase 02-company-based-dispatch]: Try Again button in FindingDriverModal calls onCancel() directly, not cancelRequest() — no_drivers is a terminal Firestore status; cancelling it would be a no-op or error
-- [Phase 03-maestro-e2e-testing]: emulatorsConnected guard in config.ts prevents connectAuthEmulator crash on hot reload
-- [Phase 03-maestro-e2e-testing]: Seed request uses status:'claimed' + claimedByDriverId to match listenForClaimedRequests() query contract exactly
-- [Phase 03-maestro-e2e-testing]: npm run emulators starts emulators in separate terminal; test:e2e uses curl connectivity check (--detach unreliable on macOS)
-- [Phase 03-maestro-e2e-testing]: scrollUntilVisible used for submit-request-btn which may be below the fold in the request sheet
-- [Phase 03-maestro-e2e-testing]: commuter-no-drivers uses Anchorage AK address to trigger no_drivers (out of LA company service radius)
-- [Phase 03-maestro-e2e-testing]: test:e2e delegates to scripts/run-e2e.sh for emulator check, seed, location grant, and maestro run
+- [Phase 03-firebase-emulator-infra]: emulatorsConnected guard in config.ts prevents connectAuthEmulator crash on hot reload
+- [Phase 03-firebase-emulator-infra]: Seed request uses status:'claimed' + claimedByDriverId to match listenForClaimedRequests() query contract exactly
+- [Phase 03-firebase-emulator-infra]: npm run emulators starts emulators in separate terminal (--detach unreliable on macOS)
+- [Phase 03-firebase-emulator-infra]: Maestro E2E dropped — Expo dev client launcher/onboarding/dev menu made automated flows too brittle; manual testing preferred
 
 ### Pending Todos
 
@@ -111,5 +109,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-21T00:01:38.969Z
-Stopped at: Checkpoint 03-02: awaiting human verify (build dev build + run E2E suite)
+Stopped at: Phase 03 complete — Maestro dropped, Firebase emulator infra retained
 Resume file: None

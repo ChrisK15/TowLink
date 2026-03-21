@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Companies & Admin** - Establish the company entity, admin dashboard, and company-linked driver auth that the entire dispatch model depends on (completed 2026-03-16)
 - [ ] **Phase 2: Company-Based Dispatch** - Replace individual driver matching with nearest-company routing and fair in-company job assignment
-- [x] **Phase 3: Maestro E2E Testing** - Set up Maestro E2E testing framework and write automated test flows for commuter request and driver dispatch workflows (completed 2026-03-21)
+- [x] **Phase 3: Firebase Emulator Infrastructure** - Set up Firebase emulators, emulator connection in app, and deterministic seed script for local development and testing (completed 2026-03-21)
 - [ ] **Phase 4: Driver Flow & Maps** - Complete the driver job execution flow and map/location UX for active trips
 - [ ] **Phase 5: Push Notifications** - Configure EAS builds and implement push notifications for drivers and commuters
 - [ ] **Phase 6: Security, Reliability & Testing** - Harden Firestore rules, add loading/error states, fix startup flicker, and ship E2E test coverage
@@ -57,20 +57,20 @@ Plans:
 - [x] 02-02-PLAN.md — Cloud Functions rewrite: findNearestCompanies + findFairDriver + dispatch engine + Jest tests
 - [x] 02-03-PLAN.md — Deploy Cloud Functions + human verification of all 3 dispatch flows
 
-### Phase 3: Maestro E2E Testing
-**Goal**: Set up Maestro E2E testing framework and write automated test flows for commuter request and driver dispatch workflows
+### Phase 3: Firebase Emulator Infrastructure
+**Goal**: Set up Firebase emulators with Auth+Firestore+Functions, connect the app to emulators via env var, and create a deterministic seed script for local development and testing
 **Depends on**: Phase 2
-**Requirements**: TEST-01
+**Requirements**: TEST-01 (partial — emulator infra only; Maestro E2E dropped due to Expo dev client friction)
 **Success Criteria** (what must be TRUE):
-  1. Maestro is installed and configured to run against the Expo development build
-  2. An automated test flow covers the commuter request submission flow end-to-end
-  3. An automated test flow covers the driver receiving, accepting, and completing a trip
-  4. Tests can be run with a single command and produce pass/fail results
+  1. Firebase emulators start with Auth, Firestore, and Functions without errors
+  2. App connects to emulators when EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true
+  3. Seed script creates deterministic test users, company, and request data
+  4. testID props on interactive elements for future testing use
 **Plans**: 2 plans
 
 Plans:
 - [x] 03-01-PLAN.md — Firebase emulator fix + emulator connection + dev build config + seed script
-- [x] 03-02-PLAN.md — testID props on screens + Maestro YAML test flows + single-command runner + human verify
+- [x] 03-02-PLAN.md — testID props on screens + onboarding testIDs (Maestro flows created then removed)
 
 ### Phase 4: Driver Flow & Maps
 **Goal**: Drivers can execute the full job lifecycle from acceptance to completion, with live map navigation and real-time commuter visibility throughout the trip
@@ -114,7 +114,7 @@ Plans:
   2. Every screen that triggers a Firebase operation shows a loading indicator while the operation is pending
   3. When a Firebase operation fails, the user sees a readable error message rather than a raw exception or a silent failure
   4. Authenticated users opening the app are routed directly to their correct dashboard without the startup route-flicker bug
-  5. A Maestro E2E test suite executes the commuter request flow and driver dispatch flow on a real device without manual intervention
+  5. Firebase emulators are available for local testing of dispatch flows without hitting production
 **Plans**: TBD
 
 Plans:

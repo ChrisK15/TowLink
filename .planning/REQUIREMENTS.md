@@ -59,7 +59,7 @@ Requirements for MVP release. Each maps to a roadmap phase.
 
 ### Testing
 
-- [x] **TEST-01**: Maestro E2E test suite covers commuter request and driver dispatch flows
+- [~] **TEST-01**: Firebase emulator infrastructure for local testing (Maestro E2E dropped — Expo dev client too brittle for automated flows)
 
 ---
 
@@ -145,7 +145,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SEC-02 | Phase 6 | Pending |
 | SEC-03 | Phase 6 | Pending |
 | SEC-04 | Phase 6 | Pending |
-| TEST-01 | Phase 3 | Complete |
+| TEST-01 | Phase 3 | Partial (emulator infra only, Maestro dropped) |
 
 **Coverage:**
 - v1 requirements: 27 total
