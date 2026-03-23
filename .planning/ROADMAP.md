@@ -89,7 +89,7 @@ Plans:
 - [x] 04-01-PLAN.md — Directions API service + useDriverLocation hook + location permission UX
 - [x] 04-02-PLAN.md — Driver screen: InstructionCard + route polyline + live location watcher + cancel/open-in-maps
 - [x] 04-03-PLAN.md — Commuter screen: DriverMarker + route polyline + live ETA
-- [ ] 04-04-PLAN.md — Seed data extension + human verification of all Phase 4 flows
+- [x] 04-04-PLAN.md — Seed data extension + human verification of all Phase 4 flows
 
 ### Phase 5: Push Notifications
 **Goal**: Drivers and commuters receive timely push notifications for key dispatch events, reliably testable on physical devices via EAS builds
