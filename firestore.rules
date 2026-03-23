@@ -208,6 +208,15 @@ service cloud.firestore {
             && resource.data.claimedByDriverId == request.auth.uid
             && request.resource.data.status == 'searching'
             && request.resource.data.claimedByDriverId == null)
+
+          ||
+
+          // [5] Driver cancelling an accepted request (re-dispatch back to searching)
+          (isDriver()
+            && resource.data.status == 'accepted'
+            && resource.data.matchedDriverId == request.auth.uid
+            && request.resource.data.status == 'searching'
+            && request.resource.data.claimedByDriverId == null)
         );
 
       // No one can delete requests (keep for records)

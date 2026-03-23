@@ -29,6 +29,7 @@ const STATUS_BANNER_TEXT: Record<string, string> = {
 interface CommuterTripSheetProps {
 	tripId: string;
 	onTripCompleted: () => void;
+	eta: string | null;
 }
 
 function ProgressStep({
@@ -83,6 +84,7 @@ function ProgressStep({
 export function CommuterTripSheet({
 	tripId,
 	onTripCompleted,
+	eta,
 }: CommuterTripSheetProps) {
 	const { trip, driverName, driverPhone, driverVehicle } =
 		useCommuterTrip(tripId);
@@ -214,8 +216,7 @@ export function CommuterTripSheet({
 						<Text style={styles.statusText}>
 							{STATUS_BANNER_TEXT[trip?.status ?? ''] ?? 'Loading...'}
 						</Text>
-						<Text style={styles.etaText}>8 min away</Text>
-						{/* TODO Sprint 4: Replace with live ETA from driver location */}
+						<Text style={styles.etaText}>{eta ? `${eta}` : '-- min away'}</Text>
 					</View>
 				</View>
 				<View style={styles.liveBadge}>

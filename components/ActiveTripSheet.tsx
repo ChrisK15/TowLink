@@ -1,7 +1,9 @@
+import { db } from '@/services/firebase/config';
 import { updateTripStatus } from '@/services/firebase/firestore';
 import { Trip } from '@/types/models';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
+import { doc, updateDoc } from 'firebase/firestore';
 import {
 	ActivityIndicator,
 	Alert,
@@ -129,6 +131,49 @@ export function ActiveTripSheet({
 		}
 	}
 
+	const handleCancelJob = () => {
+		if (!trip || trip.status !== 'en_route') return;
+		Alert.alert(
+			'Cancel Job?',
+			'This job will be reassigned to another driver.',
+			[
+				{ text: 'Keep Job', style: 'cancel' },
+				{
+					text: 'Yes, Cancel Job',
+					style: 'destructive',
+					onPress: async () => {
+						try {
+							await updateTripStatus(trip.id, 'cancelled');
+							await updateDoc(doc(db, 'requests', trip.requestId), {
+								status: 'searching',
+								claimedByDriverId: null,
+								claimExpiresAt: null,
+							});
+						} catch (error: any) {
+							Alert.alert('Error', error.message);
+						}
+					},
+				},
+			],
+		);
+	};
+
+	const handleOpenInMaps = async () => {
+		if (!trip) return;
+		const coords = trip.pickupLocation;
+		const appleMapsUrl = `maps://?daddr=${coords.latitude},${coords.longitude}`;
+		const googleMapsUrl = `comgooglemaps://?daddr=${coords.latitude},${coords.longitude}`;
+		const googleWebUrl = `https://www.google.com/maps/dir/?api=1&destination=${coords.latitude},${coords.longitude}`;
+
+		try {
+			if (await Linking.canOpenURL(appleMapsUrl)) { await Linking.openURL(appleMapsUrl); return; }
+		} catch {}
+		try {
+			if (await Linking.canOpenURL(googleMapsUrl)) { await Linking.openURL(googleMapsUrl); return; }
+		} catch {}
+		await Linking.openURL(googleWebUrl);
+	};
+
 	const toggleSheet = () => {
 		const toValue = isExpanded ? COLLAPSED_HEIGHT : EXPANDED_HEIGHT;
 		Animated.spring(sheetHeight, {
@@ -207,6 +252,13 @@ export function ActiveTripSheet({
 						<Text style={styles.infoValue}>{trip?.pickupAddress ?? '—'}</Text>
 					</View>
 
+					<TouchableOpacity
+						onPress={handleOpenInMaps}
+						style={styles.openInMapsButton}
+					>
+						<Text style={styles.openInMapsText}>Open in Maps</Text>
+					</TouchableOpacity>
+
 					<View style={styles.infoRow}>
 						<Text style={styles.infoLabel}>🏁 Dropoff</Text>
 						<Text style={styles.infoValue}>{trip?.dropoffAddress ?? '—'}</Text>
@@ -225,6 +277,16 @@ export function ActiveTripSheet({
 						<ProgressStep key={step.label} {...step} />
 					))}
 				</View>
+
+				{trip?.status === 'en_route' && (
+					<TouchableOpacity
+						testID="cancel-job-btn"
+						style={styles.cancelJobButton}
+						onPress={handleCancelJob}
+					>
+						<Text style={styles.cancelJobText}>Cancel Job</Text>
+					</TouchableOpacity>
+				)}
 
 				{ACTION_LABELS[trip?.status ?? ''] && (
 					<TouchableOpacity
@@ -386,6 +448,29 @@ const styles = StyleSheet.create({
 		color: 'white',
 		fontSize: 16,
 		fontWeight: '700',
+	},
+	cancelJobButton: {
+		backgroundColor: '#FF3B30',
+		marginHorizontal: 16,
+		marginTop: 8,
+		marginBottom: 8,
+		paddingVertical: 16,
+		borderRadius: 12,
+		alignItems: 'center',
+	},
+	cancelJobText: {
+		color: 'white',
+		fontSize: 14,
+		fontWeight: '700',
+	},
+	openInMapsButton: {
+		paddingVertical: 4,
+		paddingHorizontal: 20,
+	},
+	openInMapsText: {
+		color: '#007AFF',
+		fontSize: 14,
+		fontWeight: '400',
 	},
 });
 

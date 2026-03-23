@@ -83,11 +83,13 @@ Plans:
   4. A driver who accepted a job can cancel it before the trip starts, returning the job to the dispatch queue
   5. A commuter on the active trip screen sees the driver's live location on the map plus a route polyline and ETA once a driver is assigned
   6. Location permission prompts appear gracefully on both iOS and Android and handle denial without crashing
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [x] 04-01-PLAN.md — Directions API service + useDriverLocation hook + location permission UX
+- [x] 04-02-PLAN.md — Driver screen: InstructionCard + route polyline + live location watcher + cancel/open-in-maps
+- [x] 04-03-PLAN.md — Commuter screen: DriverMarker + route polyline + live ETA
+- [x] 04-04-PLAN.md — Seed data extension + human verification of all Phase 4 flows
 
 ### Phase 5: Push Notifications
 **Goal**: Drivers and commuters receive timely push notifications for key dispatch events, reliably testable on physical devices via EAS builds
@@ -121,6 +123,17 @@ Plans:
 - [ ] 06-01: TBD
 - [ ] 06-02: TBD
 
+## Backlog
+
+### Phase 999.1: Expandable Turn-by-Turn Directions (BACKLOG)
+
+**Goal:** Tap the InstructionCard banner during an active trip to expand a full scrollable list of turn-by-turn directions
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**
@@ -131,6 +144,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Companies & Admin | 7/7 | Complete | 2026-03-16 |
 | 2. Company-Based Dispatch | 3/3 | Complete | 2026-03-20 |
 | 3. Maestro E2E Testing | 2/2 | Complete   | 2026-03-21 |
-| 4. Driver Flow & Maps | 0/TBD | Not started | - |
+| 4. Driver Flow & Maps | 3/4 | In Progress|  |
 | 5. Push Notifications | 0/TBD | Not started | - |
 | 6. Security, Reliability & Testing | 0/TBD | Not started | - |
