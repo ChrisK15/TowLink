@@ -5,10 +5,11 @@ import { useAuth } from '@/context/auth-context';
 import { useDriverLocation } from '@/hooks/use-driver-location';
 import { useCommuterTrip } from '@/hooks/use-commuter-trip';
 import { fetchDirections } from '@/services/directions';
+import { getActiveTripForCommuter } from '@/services/firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker, Polyline, MapMarker } from 'react-native-maps';
 
 export default function CommuterScreen() {
@@ -29,16 +30,26 @@ export default function CommuterScreen() {
 	const driverLocation = useDriverLocation(trip?.driverId ?? null);
 	const driverMarkerRef = useRef<MapMarker>(null);
 
+	// Check for existing active trip on mount
+	useEffect(() => {
+		if (!user?.uid) return;
+		getActiveTripForCommuter(user.uid).then((result) => {
+			if (result) setActiveTripId(result.id);
+		});
+	}, [user?.uid]);
+
 	// Get location
 	useEffect(() => {
 		getUserLocation();
 	}, []);
 
-	// Smooth marker animation
+	// Smooth marker animation (Google Maps only — Apple Maps doesn't support it)
+	const prevDriverLocation = useRef(driverLocation);
 	useEffect(() => {
-		if (driverLocation && driverMarkerRef.current) {
+		if (driverLocation && driverMarkerRef.current && prevDriverLocation.current && Platform.OS === 'android') {
 			driverMarkerRef.current.animateMarkerToCoordinate(driverLocation, 250);
 		}
+		prevDriverLocation.current = driverLocation;
 	}, [driverLocation]);
 
 	// Fetch route and ETA based on trip status, refresh every 30s

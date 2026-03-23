@@ -161,17 +161,17 @@ export function ActiveTripSheet({
 	const handleOpenInMaps = async () => {
 		if (!trip) return;
 		const coords = trip.pickupLocation;
-		const googleMapsUrl = `comgooglemaps://?daddr=${coords.latitude},${coords.longitude}`;
 		const appleMapsUrl = `maps://?daddr=${coords.latitude},${coords.longitude}`;
+		const googleMapsUrl = `comgooglemaps://?daddr=${coords.latitude},${coords.longitude}`;
 		const googleWebUrl = `https://www.google.com/maps/dir/?api=1&destination=${coords.latitude},${coords.longitude}`;
 
-		const canOpenGoogle = await Linking.canOpenURL(googleMapsUrl);
-		if (canOpenGoogle) {
-			await Linking.openURL(googleMapsUrl);
-		} else {
-			const canOpenApple = await Linking.canOpenURL(appleMapsUrl);
-			await Linking.openURL(canOpenApple ? appleMapsUrl : googleWebUrl);
-		}
+		try {
+			if (await Linking.canOpenURL(appleMapsUrl)) { await Linking.openURL(appleMapsUrl); return; }
+		} catch {}
+		try {
+			if (await Linking.canOpenURL(googleMapsUrl)) { await Linking.openURL(googleMapsUrl); return; }
+		} catch {}
+		await Linking.openURL(googleWebUrl);
 	};
 
 	const toggleSheet = () => {

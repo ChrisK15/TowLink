@@ -8,6 +8,7 @@ import { db } from '@/services/firebase/config';
 import {
 	acceptClaimedRequest,
 	declineClaimedRequest,
+	getActiveTripForDriver,
 	updateDriverAvailability,
 } from '@/services/firebase/firestore';
 import { enrichRequestWithCalculations } from '@/services/requestCalculations';
@@ -63,6 +64,14 @@ export default function DriverScreen() {
 		}
 	}, [user]);
 
+	// Restore active trip on mount
+	useEffect(() => {
+		if (!user?.uid) return;
+		getActiveTripForDriver(user.uid).then((result) => {
+			if (result) setActiveTripId(result.id);
+		});
+	}, [user?.uid]);
+
 	useEffect(() => {
 		if (trip?.status === 'completed' || trip?.status === 'cancelled') {
 			setActiveTripId(null);
@@ -116,7 +125,7 @@ export default function DriverScreen() {
 						setDriverLocation(coords);
 						updateDoc(doc(db, 'drivers', user.uid!), {
 							currentLocation: coords,
-						});
+						}).catch(() => {});
 					},
 				);
 				if (cancelled) subscription.remove();
@@ -373,7 +382,15 @@ export default function DriverScreen() {
 				}
 			>
 				{driverLocation && (
-					<Marker coordinate={driverLocation} pinColor="red" />
+					<Marker
+						coordinate={driverLocation}
+						anchor={{ x: 0.5, y: 0.5 }}
+						flat
+					>
+						<View style={styles.driverArrow}>
+							<Ionicons name="navigate" size={24} color="#1565C0" />
+						</View>
+					</Marker>
 				)}
 				{activeTripId && trip?.pickupLocation && (
 					<Marker
@@ -392,7 +409,7 @@ export default function DriverScreen() {
 				{routeData && (
 					<Polyline
 						coordinates={routeData.polylineCoords}
-						strokeColor="#34C759"
+						strokeColor="#1565C0"
 						strokeWidth={4}
 					/>
 				)}
@@ -531,6 +548,16 @@ export default function DriverScreen() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+	},
+	driverArrow: {
+		backgroundColor: 'white',
+		borderRadius: 20,
+		padding: 4,
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.25,
+		shadowRadius: 3,
+		elevation: 4,
 	},
 	map: {
 		flex: 1,

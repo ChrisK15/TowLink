@@ -377,6 +377,34 @@ export async function cancelRequest(requestId: string): Promise<void> {
 	});
 }
 
+export async function getActiveTripForDriver(
+	driverId: string,
+): Promise<{ id: string } | null> {
+	const activeStatuses = ['en_route', 'arrived', 'in_progress'];
+	const q = query(
+		collection(db, 'trips'),
+		where('driverId', '==', driverId),
+		where('status', 'in', activeStatuses),
+	);
+	const snapshot = await getDocs(q);
+	if (snapshot.empty) return null;
+	return { id: snapshot.docs[0].id };
+}
+
+export async function getActiveTripForCommuter(
+	commuterId: string,
+): Promise<{ id: string } | null> {
+	const activeStatuses = ['en_route', 'arrived', 'in_progress'];
+	const q = query(
+		collection(db, 'trips'),
+		where('commuterId', '==', commuterId),
+		where('status', 'in', activeStatuses),
+	);
+	const snapshot = await getDocs(q);
+	if (snapshot.empty) return null;
+	return { id: snapshot.docs[0].id };
+}
+
 export async function getTripByRequestId(
 	requestId: string,
 	commuterId: string,
