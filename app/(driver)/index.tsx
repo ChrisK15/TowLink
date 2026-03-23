@@ -13,6 +13,7 @@ import {
 } from '@/services/firebase/firestore';
 import { enrichRequestWithCalculations } from '@/services/requestCalculations';
 import { DirectionsResult, fetchDirections } from '@/services/directions';
+import { Ionicons } from '@expo/vector-icons';
 import { getDistanceInKm } from '@/services/geoLocationUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
