@@ -123,6 +123,17 @@ Plans:
 - [ ] 06-01: TBD
 - [ ] 06-02: TBD
 
+## Backlog
+
+### Phase 999.1: Expandable Turn-by-Turn Directions (BACKLOG)
+
+**Goal:** Tap the InstructionCard banner during an active trip to expand a full scrollable list of turn-by-turn directions
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
 ## Progress
 
 **Execution Order:**
