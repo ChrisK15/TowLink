@@ -78,9 +78,11 @@ export default function DriverScreen() {
 	useEffect(() => {
 		if (trip?.status === 'completed') {
 			setShowCompletion(true);
+			setRouteData(null);
 			// Do NOT clear activeTripId here — trip data needed for summary screen
 			// Do NOT restore availability here — done in handleCompletionDone (Pitfall 3)
 		} else if (trip?.status === 'cancelled') {
+			setRouteData(null);
 			setActiveTripId(null);
 			if (user?.uid) {
 				updateDriverAvailability(user.uid, true, driverLocation ?? undefined);
