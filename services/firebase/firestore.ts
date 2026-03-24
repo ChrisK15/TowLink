@@ -26,6 +26,8 @@ export async function createRequest(
 	estimatedPrice: number,
 	distanceMiles: number,
 	additionalNotes?: string,
+	commuterName?: string,
+	commuterPhone?: string,
 ): Promise<string> {
 	if (pickupLocation.latitude === 0 && pickupLocation.longitude === 0) {
 		throw new Error('Invalid pickup location.');
@@ -48,6 +50,8 @@ export async function createRequest(
 
 	const requestData = {
 		commuterId: commuterId,
+		commuterName: commuterName ?? null,
+		commuterPhone: commuterPhone ?? null,
 		location: pickupLocation,
 		dropoffLocation: dropoffLocation,
 		pickupAddress: pickupAddress,

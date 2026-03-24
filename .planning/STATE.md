@@ -113,7 +113,7 @@ None yet.
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
-| 260323-fnd | Update Jira with Phase 4 completions | 2026-03-23 | pending | [260323-fnd-update-jira-with-what-was-completed-in-p](./quick/260323-fnd-update-jira-with-what-was-completed-in-p/) |
+| 260323-fnd | Update Jira with Phase 4 completions | 2026-03-23 | 80ba6b7 | [260323-fnd-update-jira-with-what-was-completed-in-p](./quick/260323-fnd-update-jira-with-what-was-completed-in-p/) |
 
 ### Blockers/Concerns
 

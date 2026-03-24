@@ -67,14 +67,14 @@ async function seed() {
   const commuterRecord = await auth.createUser({
     email: 'test-commuter@test.com',
     password: 'password123',
-    displayName: 'Test Commuter',
+    displayName: 'Sarah Johnson',
   });
   console.log('  Created commuter:', commuterRecord.uid);
 
   const driverRecord = await auth.createUser({
     email: 'test-driver@test.com',
     password: 'password123',
-    displayName: 'Test Driver',
+    displayName: 'Mike Torres',
   });
   console.log('  Created driver:', driverRecord.uid);
 
@@ -113,6 +113,8 @@ async function seed() {
   // Step 4: Create user documents
   await db.collection('users').doc(commuterRecord.uid).set({
     email: 'test-commuter@test.com',
+    name: 'Sarah Johnson',
+    phone: '(213) 555-0147',
     role: 'commuter',
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
   });
@@ -128,6 +130,8 @@ async function seed() {
 
   await db.collection('users').doc(driverRecord.uid).set({
     email: 'test-driver@test.com',
+    name: 'Mike Torres',
+    phone: '(213) 555-0283',
     role: 'driver',
     companyId: 'test-company-01',
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -149,6 +153,7 @@ async function seed() {
     isAvailable: true,
     isActive: true,
     isVerified: true,
+    isActivelyDriving: false,
     currentLocation: { latitude: 34.0495, longitude: -118.2505 },
     totalAssignmentsToday: 0,
     assignmentDate: today,
@@ -159,9 +164,11 @@ async function seed() {
   await db.collection('drivers').doc(driver2Record.uid).set({
     userId: driver2Record.uid,
     companyId: 'test-company-01',
-    isAvailable: true,
-    isActive: true,
+    isAvailable: false,
+    isActive: false,
     isVerified: true,
+    isActivelyDriving: false,
+    currentLocation: { latitude: 34.055, longitude: -118.245 },
     totalAssignmentsToday: 0,
     assignmentDate: today,
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -181,55 +188,8 @@ async function seed() {
     .add({ email: 'test-driver2@test.com' });
   console.log('  Created authorized emails for company');
 
-  // Step 7: Create pre-claimed request for driver flow tests
-  // IMPORTANT: Must use status:'claimed' and field name 'claimedByDriverId'
-  // to match listenForClaimedRequests() query in services/firebase/firestore.ts
-  // which queries: where('status', '==', 'claimed') AND where('claimedByDriverId', '==', driverId)
-  await db.collection('requests').doc('test-request-claimed').set({
-    commuterId: commuterRecord.uid,
-    claimedByDriverId: driverRecord.uid,
-    companyId: 'test-company-01',
-    status: 'claimed',
-    location: { latitude: 34.0522, longitude: -118.2437 },
-    pickupAddress: '123 Main St, Los Angeles, CA',
-    dropoffAddress: '456 Oak Ave, Los Angeles, CA',
-    dropoffLocation: { latitude: 34.0625, longitude: -118.241 },
-    matchedCompanyId: 'test-company-01',
-    serviceType: 'tow',
-    estimatedPrice: 75,
-    distanceMiles: 5.0,
-    vehicleInfo: {
-      year: 2020,
-      make: 'Toyota',
-      model: 'Camry',
-      licensePlate: '',
-      towingCapacity: '',
-    },
-    claimExpiresAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() + 5 * 60 * 1000)),
-    expiresAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() + 30 * 60 * 1000)),
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-  });
-  console.log('  Created pre-claimed request: test-request-claimed');
-
-  // Step 8: Create active en_route trip for commuter-side Phase 4 testing
-  // Allows testing commuter map (driver marker, route polyline, ETA) without
-  // manually going through the full accept flow first.
-  await db.collection('trips').doc('test-trip-enroute').set({
-    requestId: 'test-request-claimed',
-    commuterId: commuterRecord.uid,
-    driverId: driverRecord.uid,
-    status: 'en_route',
-    pickupLocation: { latitude: 34.0522, longitude: -118.2437 },
-    dropoffLocation: { latitude: 34.0625, longitude: -118.241 },
-    pickupAddress: '123 Main St, Los Angeles, CA',
-    dropoffAddress: '456 Oak Ave, Los Angeles, CA',
-    startTime: admin.firestore.Timestamp.now(),
-    distance: 1.2,
-    estimatedPrice: 45,
-    driverPath: [],
-    companyId: 'test-company-01',
-  });
-  console.log('  Created en_route trip: test-trip-enroute');
+  // No pre-seeded requests or trips — demo starts with a clean slate
+  // (Pre-claimed request and en_route trip removed for clean demo flow)
 
   console.log('');
   console.log('=== Seed complete! ===');
@@ -241,8 +201,6 @@ async function seed() {
   console.log('  Admin:     test-admin@test.com    / password123  uid:', adminRecord.uid);
   console.log('');
   console.log('Company:   test-company-01 (Test Tow Yard)');
-  console.log('Request:   test-request-claimed (status: claimed, claimedByDriverId: driver uid)');
-  console.log('Trip:      test-trip-enroute (status: en_route, for commuter-side Phase 4 testing)');
   console.log('');
 
   process.exit(0);

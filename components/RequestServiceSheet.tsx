@@ -253,6 +253,8 @@ export function RequestServiceSheet({
 				price,
 				miles,
 				additionalNotes.trim() || undefined,
+				user?.displayName ?? undefined,
+				user?.phoneNumber ?? undefined,
 			);
 
 			handleClose();
