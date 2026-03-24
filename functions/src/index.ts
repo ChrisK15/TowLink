@@ -1,4 +1,5 @@
 import * as admin from 'firebase-admin';
+import { Timestamp, FieldValue } from 'firebase-admin/firestore';
 import * as logger from 'firebase-functions/logger';
 import { setGlobalOptions } from 'firebase-functions/options';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
@@ -70,16 +71,16 @@ export const matchDriverOnRequestCreate = onDocumentCreated(
 						status: 'claimed',
 						claimedByDriverId: driver.driverId,
 						matchedCompanyId: company.companyId,
-						claimExpiresAt: admin.firestore.Timestamp.fromDate(
+						claimExpiresAt: Timestamp.fromDate(
 							new Date(Date.now() + 30 * 1000), // 30 second claim timeout
 						),
-						notifiedDriverIds: admin.firestore.FieldValue.arrayUnion(driver.driverId),
+						notifiedDriverIds: FieldValue.arrayUnion(driver.driverId),
 					});
 				});
 
 				// Update driver's fairness tracking (non-transactional — slight advantage on failure is acceptable)
 				await db.collection('drivers').doc(driver.driverId).update({
-					lastAssignedAt: admin.firestore.Timestamp.now(),
+					lastAssignedAt: Timestamp.now(),
 					assignmentDate: todayStr,
 				});
 
@@ -112,7 +113,7 @@ export const handleClaimTimeouts = onSchedule(
 	async () => {
 		logger.info('Checking for expired claims...');
 
-		const now = admin.firestore.Timestamp.now();
+		const now = Timestamp.now();
 
 		// Find requests with expired claims
 		const expiredClaimsSnapshot = await db
@@ -221,16 +222,16 @@ export const handleClaimTimeouts = onSchedule(
 							transaction.update(requestRef, {
 								status: 'claimed',
 								claimedByDriverId: driver.driverId,
-								claimExpiresAt: admin.firestore.Timestamp.fromDate(
+								claimExpiresAt: Timestamp.fromDate(
 									new Date(Date.now() + 30 * 1000),
 								),
-								notifiedDriverIds: admin.firestore.FieldValue.arrayUnion(driver.driverId),
+								notifiedDriverIds: FieldValue.arrayUnion(driver.driverId),
 							});
 						});
 
 						// Update fairness tracking
 						await db.collection('drivers').doc(driver.driverId).update({
-							lastAssignedAt: admin.firestore.Timestamp.now(),
+							lastAssignedAt: Timestamp.now(),
 							assignmentDate: todayStr,
 						});
 
@@ -240,7 +241,7 @@ export const handleClaimTimeouts = onSchedule(
 
 					// No more drivers in this company — mark it as tried
 					await db.collection('requests').doc(requestId).update({
-						triedCompanyIds: admin.firestore.FieldValue.arrayUnion(matchedCompanyId),
+						triedCompanyIds: FieldValue.arrayUnion(matchedCompanyId),
 					});
 					logger.info(`Company ${matchedCompanyId} exhausted for request ${requestId}`);
 				}
@@ -266,7 +267,7 @@ export const handleClaimTimeouts = onSchedule(
 					if (!driver) {
 						// Mark this company as tried immediately
 						await db.collection('requests').doc(requestId).update({
-							triedCompanyIds: admin.firestore.FieldValue.arrayUnion(company.companyId),
+							triedCompanyIds: FieldValue.arrayUnion(company.companyId),
 						});
 						continue;
 					}
@@ -283,16 +284,16 @@ export const handleClaimTimeouts = onSchedule(
 							status: 'claimed',
 							claimedByDriverId: driver.driverId,
 							matchedCompanyId: company.companyId,
-							claimExpiresAt: admin.firestore.Timestamp.fromDate(
+							claimExpiresAt: Timestamp.fromDate(
 								new Date(Date.now() + 30 * 1000),
 							),
-							notifiedDriverIds: admin.firestore.FieldValue.arrayUnion(driver.driverId),
+							notifiedDriverIds: FieldValue.arrayUnion(driver.driverId),
 						});
 					});
 
 					// Update fairness tracking
 					await db.collection('drivers').doc(driver.driverId).update({
-						lastAssignedAt: admin.firestore.Timestamp.now(),
+						lastAssignedAt: Timestamp.now(),
 						assignmentDate: todayStr,
 					});
 

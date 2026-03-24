@@ -271,7 +271,6 @@ export default function CommuterScreen() {
 				<Text style={styles.signOutText}>Sign Out</Text>
 			</TouchableOpacity>
 
-			<Text style={styles.title}>Commuter Screen</Text>
 		</View>
 	);
 }
