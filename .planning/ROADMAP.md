@@ -18,6 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 4: Driver Flow & Maps** - Complete the driver job execution flow and map/location UX for active trips
 - [ ] **Phase 5: Push Notifications** - Configure EAS builds and implement push notifications for drivers and commuters
 - [ ] **Phase 6: Security, Reliability & Testing** - Harden Firestore rules, add loading/error states, fix startup flicker, and ship E2E test coverage
+- [x] **Phase 7: After-Trip Completion Screen** - When a trip is completed, both driver and commuter see a trip summary/completion screen (completed 2026-03-24)
 
 ## Phase Details
 
@@ -123,13 +124,26 @@ Plans:
 - [ ] 06-01: TBD
 - [ ] 06-02: TBD
 
+### Phase 7: After-Trip Completion Screen
+**Goal**: When a trip is completed, both driver and commuter see a trip summary/completion screen instead of returning to home immediately
+**Depends on**: Phase 4
+**Requirements**: TRIP-01, TRIP-02, TRIP-03
+**Success Criteria** (what must be TRUE):
+  1. After a driver marks a trip as completed, the driver sees a trip summary screen with key details
+  2. After a trip is completed, the commuter sees a trip summary screen with key details
+  3. Both screens have a clear action to return to the home/dashboard state
+**Plans**: 1 plan
+
+Plans:
+- [x] 07-01-PLAN.md — TripCompletionScreen component + driver/commuter screen integration with deferred state clear
+
 ## Backlog
 
 ### Phase 999.1: Expandable Turn-by-Turn Directions (BACKLOG)
 
 **Goal:** Tap the InstructionCard banner during an active trip to expand a full scrollable list of turn-by-turn directions
 **Requirements:** TBD
-**Plans:** 0 plans
+**Plans:** 1/1 plans complete
 
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
@@ -137,7 +151,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -147,3 +161,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 4. Driver Flow & Maps | 3/4 | In Progress|  |
 | 5. Push Notifications | 0/TBD | Not started | - |
 | 6. Security, Reliability & Testing | 0/TBD | Not started | - |
+| 7. After-Trip Completion Screen | 1/1 | Complete   | 2026-03-24 |

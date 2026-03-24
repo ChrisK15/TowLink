@@ -1,4 +1,5 @@
 import { ActiveTripSheet } from '@/components/ActiveTripSheet';
+import { TripCompletionScreen } from '@/components/TripCompletionScreen';
 import { InstructionCard } from '@/components/InstructionCard';
 import { RequestPopup } from '@/components/RequestPopup';
 import { useAuth } from '@/context/auth-context';
@@ -44,6 +45,7 @@ export default function DriverScreen() {
 	const [activeTripId, setActiveTripId] = useState<string | null>(null);
 	const [routeData, setRouteData] = useState<DirectionsResult | null>(null);
 	const [currentStepIndex, setCurrentStepIndex] = useState(0);
+	const [showCompletion, setShowCompletion] = useState(false);
 
 	const { claimedRequest } = useClaimedRequest(user?.uid ?? null, isOnline);
 	const { trip, commuterName, commuterPhone } = useActiveTrip(activeTripId);
@@ -74,7 +76,13 @@ export default function DriverScreen() {
 	}, [user?.uid]);
 
 	useEffect(() => {
-		if (trip?.status === 'completed' || trip?.status === 'cancelled') {
+		if (trip?.status === 'completed') {
+			setShowCompletion(true);
+			setRouteData(null);
+			// Do NOT clear activeTripId here — trip data needed for summary screen
+			// Do NOT restore availability here — done in handleCompletionDone (Pitfall 3)
+		} else if (trip?.status === 'cancelled') {
+			setRouteData(null);
 			setActiveTripId(null);
 			if (user?.uid) {
 				updateDriverAvailability(user.uid, true, driverLocation ?? undefined);
@@ -366,6 +374,14 @@ export default function DriverScreen() {
 		}
 	}, [claimedRequest, user?.uid, isActioning]);
 
+	function handleCompletionDone() {
+		setShowCompletion(false);
+		setActiveTripId(null);
+		if (user?.uid) {
+			updateDriverAvailability(user.uid, true, driverLocation ?? undefined);
+		}
+	}
+
 	return (
 		<View style={styles.container}>
 			<MapView
@@ -540,6 +556,15 @@ export default function DriverScreen() {
 					trip={trip}
 					commuterName={commuterName}
 					commuterPhone={commuterPhone}
+				/>
+			)}
+			{showCompletion && trip && (
+				<TripCompletionScreen
+					visible={showCompletion}
+					role="driver"
+					trip={trip}
+					otherPartyName={commuterName}
+					onDone={handleCompletionDone}
 				/>
 			)}
 		</View>

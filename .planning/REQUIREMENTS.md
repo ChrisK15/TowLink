@@ -61,6 +61,12 @@ Requirements for MVP release. Each maps to a roadmap phase.
 
 - [~] **TEST-01**: Firebase emulator infrastructure for local testing (Maestro E2E dropped — Expo dev client too brittle for automated flows)
 
+### Trip Completion
+
+- [x] **TRIP-01**: After a driver marks a trip as completed, the driver sees a trip summary screen with estimated fare, pickup/dropoff addresses, duration, and commuter name
+- [x] **TRIP-02**: After a trip is completed, the commuter sees a trip summary screen with estimated fare, pickup/dropoff addresses, duration, and driver name
+- [x] **TRIP-03**: Both completion screens have a clear "Done" action that returns the user to their idle home/dashboard state
+
 ---
 
 ## v2 Requirements
@@ -146,13 +152,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SEC-03 | Phase 6 | Pending |
 | SEC-04 | Phase 6 | Pending |
 | TEST-01 | Phase 3 | Partial (emulator infra only, Maestro dropped) |
+| TRIP-01 | Phase 7 | Complete |
+| TRIP-02 | Phase 7 | Complete |
+| TRIP-03 | Phase 7 | Complete |
 
 **Coverage:**
-- v1 requirements: 27 total
-- Mapped to phases: 27
+- v1 requirements: 30 total
+- Mapped to phases: 30
 - Unmapped: 0
 
 ---
 
 *Requirements defined: 2026-03-13*
-*Last updated: 2026-03-20 — Fixed TEST-01 traceability (Phase 3, not Phase 5); fixed DRVR/MAP/SEC phase mappings*
+*Last updated: 2026-03-24 — Added TRIP-01, TRIP-02, TRIP-03 for Phase 7 trip completion screen*

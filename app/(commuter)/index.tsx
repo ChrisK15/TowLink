@@ -1,4 +1,5 @@
 import { RequestServiceSheet } from '@/components/RequestServiceSheet';
+import { TripCompletionScreen } from '@/components/TripCompletionScreen';
 import { FindingDriverModal } from '@/components/FindingDriverModal';
 import { CommuterTripSheet } from '@/components/CommuterTripSheet';
 import { useAuth } from '@/context/auth-context';
@@ -25,8 +26,9 @@ export default function CommuterScreen() {
 	const [activeTripId, setActiveTripId] = useState<string | null>(null);
 	const [routeCoords, setRouteCoords] = useState<{ latitude: number; longitude: number }[]>([]);
 	const [eta, setEta] = useState<string | null>(null);
+	const [showCompletion, setShowCompletion] = useState(false);
 
-	const { trip } = useCommuterTrip(activeTripId);
+	const { trip, driverName } = useCommuterTrip(activeTripId);
 	const driverLocation = useDriverLocation(trip?.driverId ?? null);
 	const driverMarkerRef = useRef<MapMarker>(null);
 
@@ -100,6 +102,18 @@ export default function CommuterScreen() {
 			animated: true,
 		});
 	}, [trip?.id, !!driverLocation]);
+
+	useEffect(() => {
+		if (trip?.status === 'completed') {
+			setShowCompletion(true);
+		}
+	}, [trip?.status]);
+
+	function handleCompletionDone() {
+		setShowCompletion(false);
+		setActiveTripId(null);
+		setActiveRequestId(null);
+	}
 
 	async function getUserLocation() {
 		try {
@@ -247,10 +261,23 @@ export default function CommuterScreen() {
 				<CommuterTripSheet
 					tripId={activeTripId}
 					onTripCompleted={() => {
-						setActiveTripId(null);
-						setActiveRequestId(null);
+						// Only clear for cancelled — completed is handled by showCompletion overlay
+						if (trip?.status === 'cancelled') {
+							setActiveTripId(null);
+							setActiveRequestId(null);
+						}
 					}}
 					eta={eta}
+				/>
+			)}
+
+			{showCompletion && trip && (
+				<TripCompletionScreen
+					visible={showCompletion}
+					role="commuter"
+					trip={trip}
+					otherPartyName={driverName}
+					onDone={handleCompletionDone}
 				/>
 			)}
 
