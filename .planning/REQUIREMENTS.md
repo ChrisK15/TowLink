@@ -63,9 +63,9 @@ Requirements for MVP release. Each maps to a roadmap phase.
 
 ### Trip Completion
 
-- [ ] **TRIP-01**: After a driver marks a trip as completed, the driver sees a trip summary screen with estimated fare, pickup/dropoff addresses, duration, and commuter name
-- [ ] **TRIP-02**: After a trip is completed, the commuter sees a trip summary screen with estimated fare, pickup/dropoff addresses, duration, and driver name
-- [ ] **TRIP-03**: Both completion screens have a clear "Done" action that returns the user to their idle home/dashboard state
+- [x] **TRIP-01**: After a driver marks a trip as completed, the driver sees a trip summary screen with estimated fare, pickup/dropoff addresses, duration, and commuter name
+- [x] **TRIP-02**: After a trip is completed, the commuter sees a trip summary screen with estimated fare, pickup/dropoff addresses, duration, and driver name
+- [x] **TRIP-03**: Both completion screens have a clear "Done" action that returns the user to their idle home/dashboard state
 
 ---
 
@@ -152,9 +152,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SEC-03 | Phase 6 | Pending |
 | SEC-04 | Phase 6 | Pending |
 | TEST-01 | Phase 3 | Partial (emulator infra only, Maestro dropped) |
-| TRIP-01 | Phase 7 | Pending |
-| TRIP-02 | Phase 7 | Pending |
-| TRIP-03 | Phase 7 | Pending |
+| TRIP-01 | Phase 7 | Complete |
+| TRIP-02 | Phase 7 | Complete |
+| TRIP-03 | Phase 7 | Complete |
 
 **Coverage:**
 - v1 requirements: 30 total
