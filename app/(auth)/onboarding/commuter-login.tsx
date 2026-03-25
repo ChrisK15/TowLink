@@ -181,7 +181,7 @@ export default function CommuterLoginScreen() {
 					{/* Create account link */}
 					<View style={styles.createAccountRow}>
 						<Text style={styles.createAccountText}>
-							Don't have an account?{' '}
+							Don&apos;t have an account?{' '}
 						</Text>
 						<Pressable
 							onPress={() => router.push('/(auth)/commuter-setup' as any)}

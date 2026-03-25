@@ -1,3 +1,4 @@
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
@@ -6,26 +7,33 @@ import {
 	DefaultTheme,
 	ThemeProvider,
 } from '@react-navigation/native';
+import * as SplashScreen from 'expo-splash-screen';
 import { Redirect, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
+import Toast from 'react-native-toast-message';
+
+SplashScreen.preventAutoHideAsync();
 
 export const unstable_settings = {
 	anchor: '(auth)',
 };
 
 function RootLayoutNav() {
-	const { user, role, companyId, loading } = useAuth();
+	const { user, role, loading } = useAuth();
+
+	useEffect(() => {
+		if (!loading) {
+			SplashScreen.hideAsync();
+		}
+	}, [loading]);
 
 	if (loading) {
-		return (
-			<View style={styles.loadingContainer}>
-				<ActivityIndicator size="large" />
-			</View>
-		);
+		return null; // Splash screen is still visible
 	}
+
 	if (!user) {
 		return <Redirect href="/(auth)" />;
 	}
@@ -53,7 +61,9 @@ export default function RootLayout() {
 					<ThemeProvider
 						value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
 					>
-						<RootLayoutNav />
+						<ErrorBoundary>
+							<RootLayoutNav />
+						</ErrorBoundary>
 						<Stack>
 							<Stack.Screen name="(auth)" options={{ headerShown: false }} />
 							<Stack.Screen
@@ -67,14 +77,7 @@ export default function RootLayout() {
 					</ThemeProvider>
 				</BottomSheetModalProvider>
 			</AuthProvider>
+			<Toast />
 		</GestureHandlerRootView>
 	);
 }
-
-const styles = StyleSheet.create({
-	loadingContainer: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-});
