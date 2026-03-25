@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: "Phase 07 shipped — PR #27"
-stopped_at: Phase 6 context gathered
-last_updated: "2026-03-25T21:32:18.925Z"
-last_activity: 2026-03-24
+status: Ready to execute
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-03-25T22:51:59.766Z"
+last_activity: 2026-03-25
 progress:
   total_phases: 8
   completed_phases: 5
-  total_plans: 17
-  completed_plans: 17
+  total_plans: 21
+  completed_plans: 18
 ---
 
 # Project State
@@ -20,12 +20,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-15)
 
 **Core value:** A stranded commuter can get a tow truck from a local affiliated tow yard dispatched to their exact GPS location in minutes, without the tow yard needing a manual dispatcher.
-**Current focus:** Phase 07 — after-trip-completion-screen
+**Current focus:** Phase 06 — security-reliability-testing
 
 ## Current Position
 
-Phase: 999.1
-Plan: Not started
+Phase: 06 (security-reliability-testing) — EXECUTING
+Plan: 2 of 4
 
 ## Performance Metrics
 
@@ -62,6 +62,7 @@ Plan: Not started
 | Phase 04-driver-flow-maps P03 | 5min | 2 tasks | 2 files |
 | Phase 04-driver-flow-maps P02 | 8min | 2 tasks | 3 files |
 | Phase 07-after-trip-completion-screen P01 | 4min | 3 tasks | 3 files |
+| Phase 06-security-reliability-testing P02 | 3min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -107,6 +108,9 @@ Recent decisions affecting current work:
 - [Phase 04-driver-flow-maps]: cancelled flag pattern for watchPositionAsync cleanup prevents state updates on unmount in async IIFE
 - [Phase 04-driver-flow-maps]: CancelJobButton hidden outside en_route per D-13 — prevents accidental cancellation; resets request status to searching for re-dispatch
 - [Phase 07-after-trip-completion-screen]: Single shared TripCompletionScreen with role prop — deferred state clear pattern on completion overlay for both driver and commuter screens
+- [Phase 06-security-reliability-testing]: SplashScreen.preventAutoHideAsync() at module level + hideAsync() in useEffect([loading]) — no route flicker on startup
+- [Phase 06-security-reliability-testing]: Toast placed OUTSIDE AuthProvider as last child of GestureHandlerRootView — above-modal rendering
+- [Phase 06-security-reliability-testing]: ErrorBoundary wraps RootLayoutNav only (not entire tree) — contains nav crashes without breaking Toast siblings
 
 ### Pending Todos
 
@@ -126,7 +130,7 @@ None yet.
 
 ## Session Continuity
 
-Last activity: 2026-03-24
-Last session: 2026-03-25T21:32:18.916Z
-Stopped at: Phase 6 context gathered
-Resume file: .planning/phases/06-security-reliability-testing/06-CONTEXT.md
+Last activity: 2026-03-25
+Last session: 2026-03-25T22:51:59.763Z
+Stopped at: Completed 06-02-PLAN.md
+Resume file: None
