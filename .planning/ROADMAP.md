@@ -118,11 +118,13 @@ Plans:
   3. When a Firebase operation fails, the user sees a readable error message rather than a raw exception or a silent failure
   4. Authenticated users opening the app are routed directly to their correct dashboard without the startup route-flicker bug
   5. Firebase emulators are available for local testing of dispatch flows without hitting production
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
+- [ ] 06-01-PLAN.md — Jest + rules-unit-testing infra + Firestore security rules tests for all 6 collections
+- [ ] 06-02-PLAN.md — LoadingOverlay, ErrorBoundary components + splash screen hold + Toast wiring in root layout
+- [ ] 06-03-PLAN.md — Alert.alert to Toast migration + LoadingOverlay migration + MapErrorBoundary wrapping across all screens
+- [ ] 06-04-PLAN.md — Emulator seed expansion + human verification of all Phase 6 requirements
 
 ### Phase 7: After-Trip Completion Screen
 **Goal**: When a trip is completed, both driver and commuter see a trip summary/completion screen instead of returning to home immediately
@@ -160,5 +162,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 3. Maestro E2E Testing | 2/2 | Complete   | 2026-03-21 |
 | 4. Driver Flow & Maps | 3/4 | In Progress|  |
 | 5. Push Notifications | 0/TBD | Not started | - |
-| 6. Security, Reliability & Testing | 0/TBD | Not started | - |
+| 6. Security, Reliability & Testing | 0/4 | Not started | - |
 | 7. After-Trip Completion Screen | 1/1 | Complete   | 2026-03-24 |
