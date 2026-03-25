@@ -1,4 +1,5 @@
 import { kmToMiles, getDistanceInKm } from '@/services/geoLocationUtils';
+import { distanceBetween } from 'geofire-common';
 
 // Mock geofire-common so tests are deterministic and don't need native modules
 jest.mock('geofire-common', () => ({
@@ -13,8 +14,7 @@ jest.mock('expo-location', () => ({
 	reverseGeocodeAsync: jest.fn(),
 }));
 
-import { distanceBetween } from 'geofire-common';
-const mockDistanceBetween = distanceBetween as jest.MockedFunction<typeof distanceBetween>;
+const mockDistanceBetween = jest.mocked(distanceBetween);
 
 // ---------------------------------------------------------------------------
 // kmToMiles

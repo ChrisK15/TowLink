@@ -1,3 +1,4 @@
+/* global jest */
 // Mock for expo-location — prevents native module loading in Node/Jest environment
 module.exports = {
 	geocodeAsync: jest.fn(() => Promise.resolve([])),

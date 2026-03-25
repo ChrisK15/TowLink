@@ -4,6 +4,7 @@ import {
 	enrichRequestWithCalculations,
 } from '@/services/requestCalculations';
 import { Request } from '@/types/models';
+import { distanceBetween } from 'geofire-common';
 import { Timestamp } from 'firebase/firestore';
 
 // Mock geofire-common's distanceBetween so tests are deterministic
@@ -13,8 +14,7 @@ jest.mock('geofire-common', () => ({
 	geohashQueryBounds: jest.fn(() => []),
 }));
 
-import { distanceBetween } from 'geofire-common';
-const mockDistanceBetween = distanceBetween as jest.MockedFunction<typeof distanceBetween>;
+const mockDistanceBetween = jest.mocked(distanceBetween);
 
 // ---------------------------------------------------------------------------
 // calculateETA
