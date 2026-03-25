@@ -124,7 +124,7 @@ Plans:
 - [x] 06-01-PLAN.md — Jest + rules-unit-testing infra + Firestore security rules tests for all 6 collections
 - [x] 06-02-PLAN.md — LoadingOverlay, ErrorBoundary components + splash screen hold + Toast wiring in root layout
 - [ ] 06-03-PLAN.md — Alert.alert to Toast migration + LoadingOverlay migration + MapErrorBoundary wrapping across all screens
-- [ ] 06-04-PLAN.md — Emulator seed expansion + human verification of all Phase 6 requirements
+- [x] 06-04-PLAN.md — Emulator seed expansion + human verification of all Phase 6 requirements
 
 ### Phase 7: After-Trip Completion Screen
 **Goal**: When a trip is completed, both driver and commuter see a trip summary/completion screen instead of returning to home immediately
@@ -145,7 +145,7 @@ Plans:
 
 **Goal:** Tap the InstructionCard banner during an active trip to expand a full scrollable list of turn-by-turn directions
 **Requirements:** TBD
-**Plans:** 1/4 plans executed
+**Plans:** 3/4 plans executed
 
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
@@ -162,5 +162,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 3. Maestro E2E Testing | 2/2 | Complete   | 2026-03-21 |
 | 4. Driver Flow & Maps | 3/4 | In Progress|  |
 | 5. Push Notifications | 0/TBD | Not started | - |
-| 6. Security, Reliability & Testing | 1/4 | In Progress|  |
+| 6. Security, Reliability & Testing | 3/4 | In Progress|  |
 | 7. After-Trip Completion Screen | 1/1 | Complete   | 2026-03-24 |
