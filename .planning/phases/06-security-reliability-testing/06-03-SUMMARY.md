@@ -78,7 +78,7 @@ All error-reporting `Alert.alert` calls across 7 screen/component files replaced
 
 ## Known Stubs
 
-None — all Toast messages use concrete operation names and next steps per the Copywriting Contract.
+None -- all Toast messages use concrete operation names and next steps per the Copywriting Contract.
 
 ## Self-Check: PASSED
 

@@ -12,6 +12,8 @@ import * as Location from 'expo-location';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker, Polyline, MapMarker } from 'react-native-maps';
+import Toast from 'react-native-toast-message';
+import { MapErrorBoundary } from '@/components/ErrorBoundary';
 
 export default function CommuterScreen() {
 	const { signOut, user } = useAuth();
@@ -138,7 +140,7 @@ export default function CommuterScreen() {
 				longitude: location.coords.longitude,
 			});
 		} catch (error) {
-			Alert.alert(String(error));
+			Toast.show({ type: 'error', text1: 'Could not get location', text2: 'Please try again.', visibilityTime: 3000 });
 		}
 	}
 
@@ -158,12 +160,12 @@ export default function CommuterScreen() {
 
 	async function handleRequestAssistance() {
 		if (!userLocation) {
-			Alert.alert('Location required, please wait for your location to load');
+			Toast.show({ type: 'error', text1: 'Location required', text2: 'Please wait for your location to load.', visibilityTime: 3000 });
 			return;
 		}
 
 		if (userLocation.latitude === 0 && userLocation.longitude === 0) {
-			Alert.alert('GPS Not Ready', 'Waiting for GPS Signal...');
+			Toast.show({ type: 'error', text1: 'GPS not ready', text2: 'Waiting for GPS signal...', visibilityTime: 3000 });
 			return;
 		}
 
@@ -172,43 +174,45 @@ export default function CommuterScreen() {
 
 	return (
 		<View style={styles.container}>
-			<MapView
-				ref={(ref) => setMapRef(ref)}
-				style={styles.map}
-				region={
-					userLocation
-						? {
-								latitude: userLocation.latitude,
-								longitude: userLocation.longitude,
-								latitudeDelta: 0.01,
-								longitudeDelta: 0.01,
-							}
-						: undefined
-				}
-			>
-				{userLocation && <Marker coordinate={userLocation} pinColor="cyan" />}
+			<MapErrorBoundary>
+				<MapView
+					ref={(ref) => setMapRef(ref)}
+					style={styles.map}
+					region={
+						userLocation
+							? {
+									latitude: userLocation.latitude,
+									longitude: userLocation.longitude,
+									latitudeDelta: 0.01,
+									longitudeDelta: 0.01,
+								}
+							: undefined
+					}
+				>
+					{userLocation && <Marker coordinate={userLocation} pinColor="cyan" />}
 
-				{driverLocation && activeTripId && (
-					<Marker
-						ref={driverMarkerRef}
-						coordinate={driverLocation}
-						tracksViewChanges={false}
-						anchor={{ x: 0.5, y: 0.5 }}
-					>
-						<View style={styles.driverMarker}>
-							<Ionicons name="car" size={18} color="white" />
-						</View>
-					</Marker>
-				)}
+					{driverLocation && activeTripId && (
+						<Marker
+							ref={driverMarkerRef}
+							coordinate={driverLocation}
+							tracksViewChanges={false}
+							anchor={{ x: 0.5, y: 0.5 }}
+						>
+							<View style={styles.driverMarker}>
+								<Ionicons name="car" size={18} color="white" />
+							</View>
+						</Marker>
+					)}
 
-				{routeCoords.length > 0 && (
-					<Polyline
-						coordinates={routeCoords}
-						strokeColor="#1565C0"
-						strokeWidth={4}
-					/>
-				)}
-			</MapView>
+					{routeCoords.length > 0 && (
+						<Polyline
+							coordinates={routeCoords}
+							strokeColor="#1565C0"
+							strokeWidth={4}
+						/>
+					)}
+				</MapView>
+			</MapErrorBoundary>
 
 			{/*Location Button bottom right*/}
 			{userLocation && (

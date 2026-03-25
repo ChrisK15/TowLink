@@ -1,7 +1,7 @@
 import { Redirect } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LoadingOverlay } from '@/components/LoadingOverlay';
 
 export default function AuthIndex() {
 	const [isLoading, setIsLoading] = useState(true);
@@ -23,11 +23,7 @@ export default function AuthIndex() {
 	}, []);
 
 	if (isLoading) {
-		return (
-			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-				<ActivityIndicator size="large" />
-			</View>
-		);
+		return <LoadingOverlay visible={true} />;
 	}
 
 	if (onboardingComplete) {

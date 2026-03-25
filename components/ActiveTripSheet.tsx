@@ -16,6 +16,7 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -101,14 +102,14 @@ export function ActiveTripSheet({
 	const handleCall = () => {
 		if (!commuterPhone) return;
 		Linking.openURL(`tel:${commuterPhone}`).catch(() => {
-			Alert.alert('Error', 'Could not open phone dialer');
+			Toast.show({ type: 'error', text1: 'Could not open phone dialer', visibilityTime: 3000 });
 		});
 	};
 
 	const handleSMS = () => {
 		if (!commuterPhone) return;
 		Linking.openURL(`sms:${commuterPhone}`).catch(() => {
-			Alert.alert('Error', 'Could not open messages');
+			Toast.show({ type: 'error', text1: 'Could not open messages', visibilityTime: 3000 });
 		});
 	};
 
@@ -127,7 +128,7 @@ export function ActiveTripSheet({
 			await updateTripStatus(trip.id, nextStatus);
 		} catch (error: any) {
 			setIsUpdating(false);
-			Alert.alert('Error', error.message);
+			Toast.show({ type: 'error', text1: 'Action failed', text2: error instanceof Error ? error.message : String(error), visibilityTime: 3000 });
 		}
 	}
 
@@ -150,7 +151,7 @@ export function ActiveTripSheet({
 								claimExpiresAt: null,
 							});
 						} catch (error: any) {
-							Alert.alert('Error', error.message);
+							Toast.show({ type: 'error', text1: 'Could not cancel job', text2: error instanceof Error ? error.message : String(error), visibilityTime: 3000 });
 						}
 					},
 				},

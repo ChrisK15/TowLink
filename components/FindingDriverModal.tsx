@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import {
-	Alert,
 	Animated,
 	ActivityIndicator,
 	Modal,
@@ -9,6 +8,7 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { useWatchRequest } from '@/hooks/use-watch-request';
 import {
 	cancelRequest,
@@ -100,10 +100,7 @@ export function FindingDriverModal({
 					if (retryTrip) {
 						onDriverFound(retryTrip.id);
 					} else {
-						Alert.alert(
-							'Something went wrong',
-							'Could not find your trip. Please try again.',
-						);
+						Toast.show({ type: 'error', text1: 'Could not find your trip', text2: 'Please try again.', visibilityTime: 3000 });
 						onCancel();
 					}
 				}
@@ -111,10 +108,7 @@ export function FindingDriverModal({
 		}
 
 		if (request.status === 'cancelled') {
-			Alert.alert(
-				'Request Cancelled',
-				'Your request was cancelled. Please try again.',
-			);
+			Toast.show({ type: 'info', text1: 'Request cancelled', text2: 'Please try again.', visibilityTime: 3000 });
 			onCancel();
 		}
 	}, [request?.status, requestId, onDriverFound, onCancel, contentOpacity]);

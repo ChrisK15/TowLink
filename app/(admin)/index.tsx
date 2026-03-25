@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-	ActivityIndicator,
 	FlatList,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
 } from 'react-native';
+import { LoadingOverlay } from '@/components/LoadingOverlay';
 import { Redirect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/auth-context';
@@ -93,23 +93,11 @@ export default function AdminJobsScreen() {
 	const { jobs, loading } = useCompanyJobs(companyId);
 
 	if (authLoading) {
-		return (
-			<View style={styles.center}>
-				<ActivityIndicator size="large" color="#007AFF" />
-			</View>
-		);
+		return <LoadingOverlay visible={true} />;
 	}
 
 	if (!companyId) {
 		return <Redirect href="/(admin)/company-setup" />;
-	}
-
-	if (loading) {
-		return (
-			<View style={styles.center}>
-				<ActivityIndicator size="large" color="#007AFF" />
-			</View>
-		);
 	}
 
 	return (
@@ -131,6 +119,7 @@ export default function AdminJobsScreen() {
 				contentContainerStyle={jobs.length === 0 ? styles.listEmptyContent : undefined}
 				style={styles.list}
 			/>
+			<LoadingOverlay visible={loading} />
 		</View>
 	);
 }

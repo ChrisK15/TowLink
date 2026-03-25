@@ -30,6 +30,8 @@ import {
 	View,
 } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
+import Toast from 'react-native-toast-message';
+import { MapErrorBoundary } from '@/components/ErrorBoundary';
 
 export default function DriverScreen() {
 	const { signOut, user, companyId } = useAuth();
@@ -255,11 +257,11 @@ export default function DriverScreen() {
 
 	async function handleToggleOnline(value: boolean) {
 		if (!user?.uid) {
-			Alert.alert('Error', 'You must be signed in');
+			Toast.show({ type: 'error', text1: 'You must be signed in', visibilityTime: 3000 });
 			return;
 		}
 		if (value && !driverLocation) {
-			Alert.alert('Location Required', 'Please enable location to go online');
+			Toast.show({ type: 'error', text1: 'Location required', text2: 'Please enable location to go online.', visibilityTime: 3000 });
 			return;
 		}
 
@@ -272,12 +274,9 @@ export default function DriverScreen() {
 			);
 			setIsOnline(value);
 			await AsyncStorage.setItem('driver_is_online', JSON.stringify(value));
-			Alert.alert(value ? 'You are now online!' : 'You are now offline!');
+			Toast.show({ type: 'success', text1: value ? 'You are now online' : 'You are now offline', visibilityTime: 2000 });
 		} catch (error: any) {
-			Alert.alert(
-				'Error toggling: ',
-				'failed to update status, please try again.',
-			);
+			Toast.show({ type: 'error', text1: 'Could not update availability', text2: 'Please try again.', visibilityTime: 3000 });
 		} finally {
 			setIsToggling(false);
 		}
@@ -321,7 +320,7 @@ export default function DriverScreen() {
 				longitude: location.coords.longitude,
 			});
 		} catch (error) {
-			Alert.alert(String(error));
+			Toast.show({ type: 'error', text1: 'Something went wrong', text2: 'Please try again.', visibilityTime: 3000 });
 		}
 	}
 
@@ -353,7 +352,7 @@ export default function DriverScreen() {
 			const tripId = await acceptClaimedRequest(claimedRequest.id, user.uid);
 			setActiveTripId(tripId);
 		} catch (error: any) {
-			Alert.alert('Error', error.message);
+			Toast.show({ type: 'error', text1: 'Could not complete action', text2: error instanceof Error ? error.message : String(error), visibilityTime: 3000 });
 		} finally {
 			setIsActioning(false);
 		}
@@ -366,9 +365,9 @@ export default function DriverScreen() {
 		setIsActioning(true);
 		try {
 			await declineClaimedRequest(claimedRequest.id, user.uid);
-			Alert.alert('Request Declined', 'Looking for another driver...');
+			Toast.show({ type: 'info', text1: 'Request declined', text2: 'Looking for another driver...', visibilityTime: 3000 });
 		} catch (error: any) {
-			Alert.alert('Error', error.message);
+			Toast.show({ type: 'error', text1: 'Could not complete action', text2: error instanceof Error ? error.message : String(error), visibilityTime: 3000 });
 		} finally {
 			setIsActioning(false);
 		}
@@ -384,53 +383,55 @@ export default function DriverScreen() {
 
 	return (
 		<View style={styles.container}>
-			<MapView
-				ref={(ref) => setMapRef(ref)}
-				style={styles.map}
-				region={
-					driverLocation
-						? {
-								latitude: driverLocation.latitude,
-								longitude: driverLocation.longitude,
-								latitudeDelta: 0.01,
-								longitudeDelta: 0.01,
-							}
-						: undefined
-				}
-			>
-				{driverLocation && (
-					<Marker
-						coordinate={driverLocation}
-						anchor={{ x: 0.5, y: 0.5 }}
-						flat
-					>
-						<View style={styles.driverArrow}>
-							<Ionicons name="navigate" size={24} color="#1565C0" />
-						</View>
-					</Marker>
-				)}
-				{activeTripId && trip?.pickupLocation && (
-					<Marker
-						coordinate={trip.pickupLocation}
-						title="Pickup"
-						pinColor="blue"
-					/>
-				)}
-				{activeTripId && trip?.dropoffLocation && (
-					<Marker
-						coordinate={trip.dropoffLocation}
-						title="Dropoff"
-						pinColor="green"
-					/>
-				)}
-				{routeData && (
-					<Polyline
-						coordinates={routeData.polylineCoords}
-						strokeColor="#1565C0"
-						strokeWidth={4}
-					/>
-				)}
-			</MapView>
+			<MapErrorBoundary>
+				<MapView
+					ref={(ref) => setMapRef(ref)}
+					style={styles.map}
+					region={
+						driverLocation
+							? {
+									latitude: driverLocation.latitude,
+									longitude: driverLocation.longitude,
+									latitudeDelta: 0.01,
+									longitudeDelta: 0.01,
+								}
+							: undefined
+					}
+				>
+					{driverLocation && (
+						<Marker
+							coordinate={driverLocation}
+							anchor={{ x: 0.5, y: 0.5 }}
+							flat
+						>
+							<View style={styles.driverArrow}>
+								<Ionicons name="navigate" size={24} color="#1565C0" />
+							</View>
+						</Marker>
+					)}
+					{activeTripId && trip?.pickupLocation && (
+						<Marker
+							coordinate={trip.pickupLocation}
+							title="Pickup"
+							pinColor="blue"
+						/>
+					)}
+					{activeTripId && trip?.dropoffLocation && (
+						<Marker
+							coordinate={trip.dropoffLocation}
+							title="Dropoff"
+							pinColor="green"
+						/>
+					)}
+					{routeData && (
+						<Polyline
+							coordinates={routeData.polylineCoords}
+							strokeColor="#1565C0"
+							strokeWidth={4}
+						/>
+					)}
+				</MapView>
+			</MapErrorBoundary>
 
 			{activeTripId && trip && (
 				<InstructionCard

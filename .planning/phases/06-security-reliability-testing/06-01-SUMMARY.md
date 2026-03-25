@@ -148,3 +148,17 @@ completed: 2026-03-25
 ---
 *Phase: 06-security-reliability-testing*
 *Completed: 2026-03-25*
+
+## Self-Check: PASSED
+
+All files exist and all commits verified:
+- FOUND: jest.config.js
+- FOUND: __tests__/firestore-rules/setup.ts
+- FOUND: __tests__/firestore-rules/requests.rules.test.ts
+- FOUND: __tests__/services/requestCalculations.test.ts
+- FOUND: __tests__/services/decodePolyline.test.ts
+- FOUND: .planning/phases/06-security-reliability-testing/06-01-SUMMARY.md
+- FOUND: 97ca2f2 (Task 1 commit)
+- FOUND: 6de7f78 (Task 2 commit)
+- FOUND: 1b853a9 (Task 3 commit)
+- FOUND: 6794b5b (lint fix commit)
