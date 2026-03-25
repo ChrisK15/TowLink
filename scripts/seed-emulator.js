@@ -205,6 +205,9 @@ async function seed() {
   });
   console.log('  Created pre-claimed request: test-request-claimed');
 
+  // Step 8: Seed Phase 6 scenarios (completed trip, in-progress trip)
+  await seedPhase6Scenarios(commuterRecord.uid, driverRecord.uid, 'test-company-01');
+
   console.log('');
   console.log('=== Seed complete! ===');
   console.log('');
@@ -219,6 +222,91 @@ async function seed() {
   console.log('');
 
   process.exit(0);
+}
+
+async function seedPhase6Scenarios(commuterId, driverId, companyId) {
+  console.log('');
+  console.log('Seeding Phase 6 scenarios...');
+
+  // Completed trip
+  await db.collection('trips').doc('seed-trip-completed').set({
+    requestId: 'seed-request-completed',
+    commuterId: commuterId,
+    driverId: driverId,
+    status: 'completed',
+    pickupLocation: { latitude: 34.0522, longitude: -118.2437 },
+    dropoffLocation: { latitude: 34.0622, longitude: -118.2537 },
+    pickupAddress: '100 N Main St, Los Angeles, CA',
+    dropoffAddress: '200 S Broadway, Los Angeles, CA',
+    startTime: new Date(Date.now() - 3600000), // 1 hour ago
+    arrivalTime: new Date(Date.now() - 2700000), // 45 min ago
+    startedAt: new Date(Date.now() - 2400000), // 40 min ago
+    completionTime: new Date(Date.now() - 1800000), // 30 min ago
+    estimatedPrice: 75,
+    finalPrice: 82.50,
+    distance: 8.5,
+    companyId: companyId,
+    driverPath: [],
+  });
+  console.log('  Created completed trip: seed-trip-completed');
+
+  // In-progress trip
+  await db.collection('trips').doc('seed-trip-inprogress').set({
+    requestId: 'seed-request-inprogress',
+    commuterId: commuterId,
+    driverId: driverId,
+    status: 'in_progress',
+    pickupLocation: { latitude: 34.0495, longitude: -118.2567 },
+    dropoffLocation: { latitude: 34.0722, longitude: -118.2637 },
+    pickupAddress: '300 W 1st St, Los Angeles, CA',
+    dropoffAddress: '400 N Figueroa St, Los Angeles, CA',
+    startTime: new Date(Date.now() - 1800000), // 30 min ago
+    arrivalTime: new Date(Date.now() - 1200000), // 20 min ago
+    startedAt: new Date(Date.now() - 600000), // 10 min ago
+    estimatedPrice: 65,
+    distance: 0,
+    companyId: companyId,
+    driverPath: [],
+  });
+  console.log('  Created in-progress trip: seed-trip-inprogress');
+
+  // Matching request for completed trip
+  await db.collection('requests').doc('seed-request-completed').set({
+    commuterId: commuterId,
+    matchedDriverId: driverId,
+    companyId: companyId,
+    status: 'accepted',
+    location: new admin.firestore.GeoPoint(34.0522, -118.2437),
+    pickupAddress: '100 N Main St, Los Angeles, CA',
+    dropoffAddress: '200 S Broadway, Los Angeles, CA',
+    dropoffLocation: new admin.firestore.GeoPoint(34.0622, -118.2537),
+    serviceType: 'tow',
+    estimatedPrice: 75,
+    distanceMiles: 8.5,
+    createdAt: new Date(Date.now() - 3700000),
+    expiresAt: new Date(Date.now() + 3600000),
+  });
+  console.log('  Created request: seed-request-completed');
+
+  // Matching request for in-progress trip
+  await db.collection('requests').doc('seed-request-inprogress').set({
+    commuterId: commuterId,
+    matchedDriverId: driverId,
+    companyId: companyId,
+    status: 'accepted',
+    location: new admin.firestore.GeoPoint(34.0495, -118.2567),
+    pickupAddress: '300 W 1st St, Los Angeles, CA',
+    dropoffAddress: '400 N Figueroa St, Los Angeles, CA',
+    dropoffLocation: new admin.firestore.GeoPoint(34.0722, -118.2637),
+    serviceType: 'tow',
+    estimatedPrice: 65,
+    distanceMiles: 0,
+    createdAt: new Date(Date.now() - 1900000),
+    expiresAt: new Date(Date.now() + 3600000),
+  });
+  console.log('  Created request: seed-request-inprogress');
+
+  console.log('Phase 6 scenarios seeded: completed trip, in-progress trip');
 }
 
 seed().catch((err) => {
