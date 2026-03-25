@@ -52,7 +52,7 @@ Requirements for MVP release. Each maps to a roadmap phase.
 
 ### Security & Reliability
 
-- [ ] **SEC-01**: Firestore rules enforce role-based access (admin writes company data, drivers write their own data, commuters write requests)
+- [x] **SEC-01**: Firestore rules enforce role-based access (admin writes company data, drivers write their own data, commuters write requests)
 - [x] **SEC-02**: Loading states shown throughout all async operations
 - [x] **SEC-03**: Error handling with user-friendly messages across all Firebase operations
 - [x] **SEC-04**: Fix route flickering on app startup for authenticated users
@@ -147,7 +147,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | NOTF-04 | Phase 5 | Pending |
 | NOTF-05 | Phase 5 | Pending |
 | NOTF-06 | Phase 5 | Pending |
-| SEC-01 | Phase 6 | Pending |
+| SEC-01 | Phase 6 | Complete |
 | SEC-02 | Phase 6 | Complete |
 | SEC-03 | Phase 6 | Complete |
 | SEC-04 | Phase 6 | Complete |

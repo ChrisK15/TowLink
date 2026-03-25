@@ -121,7 +121,7 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Jest + rules-unit-testing infra + Firestore security rules tests for all 6 collections
+- [x] 06-01-PLAN.md — Jest + rules-unit-testing infra + Firestore security rules tests for all 6 collections
 - [x] 06-02-PLAN.md — LoadingOverlay, ErrorBoundary components + splash screen hold + Toast wiring in root layout
 - [ ] 06-03-PLAN.md — Alert.alert to Toast migration + LoadingOverlay migration + MapErrorBoundary wrapping across all screens
 - [ ] 06-04-PLAN.md — Emulator seed expansion + human verification of all Phase 6 requirements
