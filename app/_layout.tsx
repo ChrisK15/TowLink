@@ -34,21 +34,23 @@ function RootLayoutNav() {
 		return null; // Splash screen is still visible
 	}
 
-	if (!user) {
-		return <Redirect href="/(auth)" />;
-	}
-	if (role === 'commuter') {
-		return <Redirect href="/(commuter)" />;
-	}
-	if (role === 'driver') {
-		return <Redirect href="/(driver)" />;
-	}
-	if (role === 'admin') {
-		return <Redirect href="/(admin)" />;
-	}
-	if (role === null) {
-		return <Redirect href="/(auth)/onboarding/commuter-login" />;
-	}
+	return (
+		<>
+			<Stack screenOptions={{ animation: 'none' }}>
+				<Stack.Screen name="(auth)" options={{ headerShown: false }} />
+				<Stack.Screen name="(commuter)" options={{ headerShown: false }} />
+				<Stack.Screen name="(driver)" options={{ headerShown: false }} />
+				<Stack.Screen name="(admin)" options={{ headerShown: false }} />
+			</Stack>
+			{!user && <Redirect href="/(auth)" />}
+			{user && role === 'commuter' && <Redirect href="/(commuter)" />}
+			{user && role === 'driver' && <Redirect href="/(driver)" />}
+			{user && role === 'admin' && <Redirect href="/(admin)" />}
+			{user && role === null && (
+				<Redirect href="/(auth)/onboarding/commuter-login" />
+			)}
+		</>
+	);
 }
 
 export default function RootLayout() {
@@ -64,15 +66,6 @@ export default function RootLayout() {
 						<ErrorBoundary>
 							<RootLayoutNav />
 						</ErrorBoundary>
-						<Stack>
-							<Stack.Screen name="(auth)" options={{ headerShown: false }} />
-							<Stack.Screen
-								name="(commuter)"
-								options={{ headerShown: false }}
-							/>
-							<Stack.Screen name="(driver)" options={{ headerShown: false }} />
-							<Stack.Screen name="(admin)" options={{ headerShown: false }} />
-						</Stack>
 						<StatusBar style="auto" />
 					</ThemeProvider>
 				</BottomSheetModalProvider>
