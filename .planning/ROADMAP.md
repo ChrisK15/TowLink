@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Firebase Emulator Infrastructure** - Set up Firebase emulators, emulator connection in app, and deterministic seed script for local development and testing (completed 2026-03-21)
 - [ ] **Phase 4: Driver Flow & Maps** - Complete the driver job execution flow and map/location UX for active trips
 - [ ] **Phase 5: Push Notifications** - Configure EAS builds and implement push notifications for drivers and commuters
-- [ ] **Phase 6: Security, Reliability & Testing** - Harden Firestore rules, add loading/error states, fix startup flicker, and ship E2E test coverage
+- [x] **Phase 6: Security, Reliability & Testing** - Harden Firestore rules, add loading/error states, fix startup flicker, and ship E2E test coverage (completed 2026-03-25)
 - [x] **Phase 7: After-Trip Completion Screen** - When a trip is completed, both driver and commuter see a trip summary/completion screen (completed 2026-03-24)
 
 ## Phase Details
@@ -118,11 +118,13 @@ Plans:
   3. When a Firebase operation fails, the user sees a readable error message rather than a raw exception or a silent failure
   4. Authenticated users opening the app are routed directly to their correct dashboard without the startup route-flicker bug
   5. Firebase emulators are available for local testing of dispatch flows without hitting production
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
+- [x] 06-01-PLAN.md — Jest + rules-unit-testing infra + Firestore security rules tests for all 6 collections
+- [x] 06-02-PLAN.md — LoadingOverlay, ErrorBoundary components + splash screen hold + Toast wiring in root layout
+- [x] 06-03-PLAN.md — Alert.alert to Toast migration + LoadingOverlay migration + MapErrorBoundary wrapping across all screens
+- [x] 06-04-PLAN.md — Emulator seed expansion + human verification of all Phase 6 requirements
 
 ### Phase 7: After-Trip Completion Screen
 **Goal**: When a trip is completed, both driver and commuter see a trip summary/completion screen instead of returning to home immediately
@@ -143,7 +145,7 @@ Plans:
 
 **Goal:** Tap the InstructionCard banner during an active trip to expand a full scrollable list of turn-by-turn directions
 **Requirements:** TBD
-**Plans:** 1/1 plans complete
+**Plans:** 4/4 plans complete
 
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
@@ -160,5 +162,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 3. Maestro E2E Testing | 2/2 | Complete   | 2026-03-21 |
 | 4. Driver Flow & Maps | 3/4 | In Progress|  |
 | 5. Push Notifications | 0/TBD | Not started | - |
-| 6. Security, Reliability & Testing | 0/TBD | Not started | - |
+| 6. Security, Reliability & Testing | 4/4 | Complete   | 2026-03-25 |
 | 7. After-Trip Completion Screen | 1/1 | Complete   | 2026-03-24 |

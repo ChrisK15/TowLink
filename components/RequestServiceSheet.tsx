@@ -9,7 +9,6 @@ import { ServiceType } from '@/types/models';
 import * as Location from 'expo-location';
 import { useState } from 'react';
 import {
-	Alert,
 	Dimensions,
 	FlatList,
 	KeyboardAvoidingView,
@@ -22,6 +21,7 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 export interface ServiceOption {
 	id: ServiceType;
@@ -151,10 +151,7 @@ export function RequestServiceSheet({
 
 			const { status } = await Location.requestForegroundPermissionsAsync();
 			if (status !== 'granted') {
-				Alert.alert(
-					'Permission Denied',
-					'Location access is needed to detect your position.',
-				);
+				Toast.show({ type: 'error', text1: 'Location permission denied', text2: 'Location access is needed to detect your position.', visibilityTime: 3000 });
 				return;
 			}
 
@@ -173,10 +170,7 @@ export function RequestServiceSheet({
 			);
 			setPickupAddress(address);
 		} catch (error) {
-			Alert.alert(
-				'Location Error',
-				'Could not detect location. Please enter your address manually.',
-			);
+			Toast.show({ type: 'error', text1: 'Could not detect location', text2: 'Please enter your address manually.', visibilityTime: 3000 });
 		} finally {
 			setIsDetectingLocation(false);
 		}
@@ -208,10 +202,7 @@ export function RequestServiceSheet({
 			if (!finalPickupCoords) {
 				finalPickupCoords = await geocodeAddress(pickupAddress);
 				if (!finalPickupCoords) {
-					Alert.alert(
-						'Address Error',
-						'Could not find your pickup address. Try using the Detect My Location button or enter a more specific address.',
-					);
+					Toast.show({ type: 'error', text1: 'Could not find pickup address', text2: 'Try using Detect My Location or enter a more specific address.', visibilityTime: 3000 });
 					return;
 				}
 			}
@@ -221,10 +212,7 @@ export function RequestServiceSheet({
 			if (!finalDropoffCoords) {
 				finalDropoffCoords = await geocodeAddress(dropoffAddress);
 				if (!finalDropoffCoords) {
-					Alert.alert(
-						'Address Error',
-						'Could not find your drop-off address. Please enter a more specific address.',
-					);
+					Toast.show({ type: 'error', text1: 'Could not find drop-off address', text2: 'Please enter a more specific address.', visibilityTime: 3000 });
 					return;
 				}
 			}
@@ -261,7 +249,7 @@ export function RequestServiceSheet({
 			onRequestCreated(requestId);
 		} catch (error) {
 			console.error('Error submitting request:', error);
-			Alert.alert('Error', 'Failed to submit request. Please try again.');
+			Toast.show({ type: 'error', text1: 'Failed to submit request', text2: 'Please try again.', visibilityTime: 3000 });
 		} finally {
 			setIsSubmitting(false);
 		}

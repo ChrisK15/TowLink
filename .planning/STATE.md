@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Ready to plan
-stopped_at: Completed 07-01-PLAN.md
-last_updated: "2026-03-24T22:10:47.281Z"
-last_activity: 2026-03-24
+stopped_at: Completed 06-security-reliability-testing/06-03-PLAN.md
+last_updated: "2026-03-27T00:47:27.256Z"
+last_activity: 2026-03-27
 progress:
   total_phases: 8
-  completed_phases: 5
-  total_plans: 17
-  completed_plans: 17
+  completed_phases: 6
+  total_plans: 21
+  completed_plans: 21
 ---
 
 # Project State
@@ -20,11 +20,11 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-15)
 
 **Core value:** A stranded commuter can get a tow truck from a local affiliated tow yard dispatched to their exact GPS location in minutes, without the tow yard needing a manual dispatcher.
-**Current focus:** Phase 07 — after-trip-completion-screen
+**Current focus:** Phase 06 — security-reliability-testing
 
 ## Current Position
 
-Phase: 999.1
+Phase: 07
 Plan: Not started
 
 ## Performance Metrics
@@ -62,6 +62,10 @@ Plan: Not started
 | Phase 04-driver-flow-maps P03 | 5min | 2 tasks | 2 files |
 | Phase 04-driver-flow-maps P02 | 8min | 2 tasks | 3 files |
 | Phase 07-after-trip-completion-screen P01 | 4min | 3 tasks | 3 files |
+| Phase 06-security-reliability-testing P02 | 3min | 2 tasks | 4 files |
+| Phase 06-security-reliability-testing P01 | 11min | 3 tasks | 14 files |
+| Phase 06-security-reliability-testing P04 | 49s | 1 tasks | 1 files |
+| Phase 06-security-reliability-testing P03 | 13min | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -107,6 +111,13 @@ Recent decisions affecting current work:
 - [Phase 04-driver-flow-maps]: cancelled flag pattern for watchPositionAsync cleanup prevents state updates on unmount in async IIFE
 - [Phase 04-driver-flow-maps]: CancelJobButton hidden outside en_route per D-13 — prevents accidental cancellation; resets request status to searching for re-dispatch
 - [Phase 07-after-trip-completion-screen]: Single shared TripCompletionScreen with role prop — deferred state clear pattern on completion overlay for both driver and commuter screens
+- [Phase 06-security-reliability-testing]: SplashScreen.preventAutoHideAsync() at module level + hideAsync() in useEffect([loading]) — no route flicker on startup
+- [Phase 06-security-reliability-testing]: Toast placed OUTSIDE AuthProvider as last child of GestureHandlerRootView — above-modal rendering
+- [Phase 06-security-reliability-testing]: ErrorBoundary wraps RootLayoutNav only (not entire tree) — contains nav crashes without breaking Toast siblings
+- [Phase 06-security-reliability-testing]: Fixed Timestamp values in rules tests: Firestore rule equality checks require identical Timestamp instances — use Timestamp.fromDate() with fixed date constants, not Timestamp.now()
+- [Phase 06-security-reliability-testing]: jest-expo unit project needs moduleNameMapper stubs for expo-location and expo/src/winter (import.meta and native modules incompatible with Jest CJS Node environment)
+- [Phase 06-security-reliability-testing]: Retained Alert.alert for multi-button confirmation dialogs; only single-button error alerts migrated to Toast.show
+- [Phase 06-security-reliability-testing]: Copied 06-02 prereqs (LoadingOverlay, ErrorBoundary, Toast layout wiring) from peer worktree due to parallel execution divergence
 
 ### Pending Todos
 
@@ -126,7 +137,7 @@ None yet.
 
 ## Session Continuity
 
-Last activity: 2026-03-24
-Last session: 2026-03-24T22:02:52.131Z
-Stopped at: Completed 07-01-PLAN.md
+Last activity: 2026-03-27
+Last session: 2026-03-25T23:16:08.440Z
+Stopped at: Completed 06-security-reliability-testing/06-03-PLAN.md
 Resume file: None

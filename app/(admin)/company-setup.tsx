@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-	ActivityIndicator,
 	ScrollView,
 	StyleSheet,
 	Text,
@@ -13,6 +12,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/services/firebase/config';
 import { createCompany } from '@/services/firebase/companies';
 import { useAuth } from '@/context/auth-context';
+import { LoadingOverlay } from '@/components/LoadingOverlay';
 
 export default function CompanySetupScreen() {
 	const { user, refreshRole } = useAuth();
@@ -146,12 +146,9 @@ export default function CompanySetupScreen() {
 				disabled={loading}
 				activeOpacity={0.8}
 			>
-				{loading ? (
-					<ActivityIndicator size="small" color="#FFFFFF" />
-				) : (
-					<Text style={styles.buttonText}>Register Company</Text>
-				)}
+				<Text style={styles.buttonText}>Register Company</Text>
 			</TouchableOpacity>
+			<LoadingOverlay visible={loading} />
 		</ScrollView>
 	);
 }

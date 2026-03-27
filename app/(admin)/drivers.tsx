@@ -12,6 +12,8 @@ import {
 	TouchableOpacity,
 	View,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
+import { LoadingOverlay } from '@/components/LoadingOverlay';
 import { Swipeable } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/auth-context';
@@ -135,7 +137,7 @@ export default function AdminDriversScreen() {
 						try {
 							await deactivateDriver(driverId);
 						} catch (e: any) {
-							Alert.alert('Error', e.message);
+							Toast.show({ type: 'error', text1: 'Could not update driver', text2: e instanceof Error ? e.message : String(e), visibilityTime: 3000 });
 						}
 					},
 				},
@@ -182,11 +184,7 @@ export default function AdminDriversScreen() {
 
 	// ─── Loading state ─────────────────────────────────────────────────────
 	if (loading) {
-		return (
-			<View style={styles.center}>
-				<ActivityIndicator size="large" color="#007AFF" />
-			</View>
-		);
+		return <LoadingOverlay visible={true} />;
 	}
 
 	return (

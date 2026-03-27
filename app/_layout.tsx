@@ -1,3 +1,4 @@
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
@@ -6,41 +7,50 @@ import {
 	DefaultTheme,
 	ThemeProvider,
 } from '@react-navigation/native';
+import * as SplashScreen from 'expo-splash-screen';
 import { Redirect, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
+import Toast from 'react-native-toast-message';
+
+SplashScreen.preventAutoHideAsync();
 
 export const unstable_settings = {
 	anchor: '(auth)',
 };
 
 function RootLayoutNav() {
-	const { user, role, companyId, loading } = useAuth();
+	const { user, role, loading } = useAuth();
+
+	useEffect(() => {
+		if (!loading) {
+			SplashScreen.hideAsync();
+		}
+	}, [loading]);
 
 	if (loading) {
-		return (
-			<View style={styles.loadingContainer}>
-				<ActivityIndicator size="large" />
-			</View>
-		);
+		return null; // Splash screen is still visible
 	}
-	if (!user) {
-		return <Redirect href="/(auth)" />;
-	}
-	if (role === 'commuter') {
-		return <Redirect href="/(commuter)" />;
-	}
-	if (role === 'driver') {
-		return <Redirect href="/(driver)" />;
-	}
-	if (role === 'admin') {
-		return <Redirect href="/(admin)" />;
-	}
-	if (role === null) {
-		return <Redirect href="/(auth)/onboarding/commuter-login" />;
-	}
+
+	return (
+		<>
+			<Stack screenOptions={{ animation: 'none' }}>
+				<Stack.Screen name="(auth)" options={{ headerShown: false }} />
+				<Stack.Screen name="(commuter)" options={{ headerShown: false }} />
+				<Stack.Screen name="(driver)" options={{ headerShown: false }} />
+				<Stack.Screen name="(admin)" options={{ headerShown: false }} />
+			</Stack>
+			{!user && <Redirect href="/(auth)" />}
+			{user && role === 'commuter' && <Redirect href="/(commuter)" />}
+			{user && role === 'driver' && <Redirect href="/(driver)" />}
+			{user && role === 'admin' && <Redirect href="/(admin)" />}
+			{user && role === null && (
+				<Redirect href="/(auth)/onboarding/commuter-login" />
+			)}
+		</>
+	);
 }
 
 export default function RootLayout() {
@@ -53,28 +63,14 @@ export default function RootLayout() {
 					<ThemeProvider
 						value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
 					>
-						<RootLayoutNav />
-						<Stack>
-							<Stack.Screen name="(auth)" options={{ headerShown: false }} />
-							<Stack.Screen
-								name="(commuter)"
-								options={{ headerShown: false }}
-							/>
-							<Stack.Screen name="(driver)" options={{ headerShown: false }} />
-							<Stack.Screen name="(admin)" options={{ headerShown: false }} />
-						</Stack>
+						<ErrorBoundary>
+							<RootLayoutNav />
+						</ErrorBoundary>
 						<StatusBar style="auto" />
 					</ThemeProvider>
 				</BottomSheetModalProvider>
 			</AuthProvider>
+			<Toast />
 		</GestureHandlerRootView>
 	);
 }
-
-const styles = StyleSheet.create({
-	loadingContainer: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-});
