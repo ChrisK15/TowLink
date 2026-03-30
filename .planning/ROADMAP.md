@@ -19,6 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 5: Push Notifications** - Configure EAS builds and implement push notifications for drivers and commuters
 - [x] **Phase 6: Security, Reliability & Testing** - Harden Firestore rules, add loading/error states, fix startup flicker, and ship E2E test coverage (completed 2026-03-25)
 - [x] **Phase 7: After-Trip Completion Screen** - When a trip is completed, both driver and commuter see a trip summary/completion screen (completed 2026-03-24)
+- [ ] **Phase 8: Frontend Styling & Global App Style** - Establish a cohesive visual design system with consistent typography, colors, spacing, and component styling
 
 ## Phase Details
 
@@ -164,3 +165,15 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 5. Push Notifications | 0/TBD | Not started | - |
 | 6. Security, Reliability & Testing | 4/4 | Complete   | 2026-03-25 |
 | 7. After-Trip Completion Screen | 1/1 | Complete   | 2026-03-24 |
+| 8. Frontend Styling & Global App Style | 0/TBD | Not started | - |
+
+### Phase 8: Frontend Styling & Global App Style
+**Goal**: Establish a cohesive visual design system with consistent typography, colors, spacing, and component styling across all screens
+**Depends on**: Phase 7
+**Requirements**: TBD
+**Success Criteria** (what must be TRUE):
+  1. TBD (define during /gsd:discuss-phase 8)
+**Plans**: TBD
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 8 to break down)
